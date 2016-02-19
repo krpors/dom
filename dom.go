@@ -91,6 +91,8 @@ func IsValidName(s string) bool {
 
 // NamedNodeMap represent collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
+	Node
+
 	GetNamedItem(string) Node
 	SetNamedItem(Node)
 	Length() int
@@ -112,7 +114,7 @@ type Node interface {
 	// Gets the first child Node of this Node. May return nil if no child nodes
 	// exist.
 	FirstChild() Node
-	Attributes() NamedNodeMap
+	GetAttributes() NamedNodeMap
 	// Gets the owner document (the Document instance which was used to create
 	// the Node).
 	OwnerDocument() Document
@@ -130,6 +132,17 @@ type Node interface {
 	setNamespaceURI(string)
 }
 
+// Attr represents an attribute in an Element.
+type Attr interface {
+	Node
+
+	GetName() string
+	IsSpecified() bool
+	GetValue() string
+	SetValue(string)
+	GetOwnerElement() Element
+}
+
 // Element represents an element in an HTML or XML document.
 type Element interface {
 	Node
@@ -138,6 +151,9 @@ type Element interface {
 	SetTagName(tagname string)
 	// Gets the tag name of this element.
 	GetTagName() string
+
+	SetAttribute(name, value string)
+	GetAttribute(name string) string
 }
 
 // Text is a Node that represents character data.
@@ -146,6 +162,22 @@ type Text interface {
 
 	GetData() string
 	SetData(s string)
+}
+
+// DocumentType belongs to a Document, but can also be nil. The DocumentType
+// interface in the DOM Core provides an interface to the list of entities
+// that are defined for the document, and little else because the effect of
+// namespaces and the various XML schema efforts on DTD representation are
+// not clearly understood as of this writing. (Direct copy of the spec).
+type DocumentType interface {
+	Node
+
+	// Gets the name of the DTD; i.e.  the name immediately following the DOCTYPE keyword.
+	GetName() string
+	// The public identifier of the external subset.
+	GetPublicID() string
+	// The system identifier of hte external subset. This may be an absolute URI or not.
+	GetSystemID() string
 }
 
 // Document is the root of the Document Object Model.
@@ -162,6 +194,9 @@ type Document interface {
 	CreateElementNS(namespaceURI, tagName string) (Element, error)
 	// Creates a Text node given the specified string and returns it.
 	CreateTextNode(string) Text
+	// Creates an Attr of the given name and returns it.
+	CreateAttribute(name string) (Attr, error)
+
 	// Gets the document element, which should be the first (and only) child Node
 	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
@@ -170,32 +205,43 @@ type Document interface {
 //================================================================================
 
 type domNamedNodeMap struct {
-	attributes map[string]Node
+	Node
+
+	Attrs map[string]Node
 }
 
 func newNamedNodeMap() NamedNodeMap {
 	nnm := &domNamedNodeMap{}
-	nnm.attributes = make(map[string]Node)
+	nnm.Attrs = make(map[string]Node)
 	return nnm
 }
 
 func (dn *domNamedNodeMap) GetNamedItem(s string) Node {
-	return dn.attributes[s]
+	return dn.Attrs[s]
 }
 
 func (dn *domNamedNodeMap) SetNamedItem(node Node) {
-	dn.attributes[node.NodeName()] = node
+	// assert that node must be an Attr
+	dn.Attrs[node.NodeName()] = node
 }
 
 func (dn *domNamedNodeMap) Length() int {
-	return len(dn.attributes)
+	return len(dn.Attrs)
+}
+
+func (dn *domNamedNodeMap) String() string {
+	s := "{"
+	for name, val := range dn.Attrs {
+		s += fmt.Sprintf("%v: %v, ", name, val.NodeValue())
+	}
+	s += "}"
+	return s
 }
 
 //================================================================================
 
 type domNode struct {
 	localName     string
-	nodeName      string
 	nodeValue     string
 	nodeType      NodeType
 	nodes         []Node
@@ -206,12 +252,19 @@ type domNode struct {
 	namespaceURI  string
 }
 
+func newNode() Node {
+	node := &domNode{}
+	node.attributes = newNamedNodeMap()
+	return node
+}
+
 func (dn *domNode) NodeName() string {
-	return dn.nodeName
+	// TODO: this is incorrect, see "Definition group NodeType" in the spec
+	return dn.nodeType.String()
 }
 
 func (dn *domNode) NodeValue() string {
-	return dn.nodeValue
+	return "TODO: what?"
 }
 
 func (dn *domNode) NodeType() NodeType {
@@ -234,7 +287,7 @@ func (dn *domNode) FirstChild() Node {
 	return dn.NodeList()[0]
 }
 
-func (dn *domNode) Attributes() NamedNodeMap {
+func (dn *domNode) GetAttributes() NamedNodeMap {
 	return dn.attributes
 }
 
@@ -274,6 +327,33 @@ func (dn *domNode) setNamespaceURI(namespaceURI string) {
 
 //================================================================================
 
+type domDocumentType struct {
+	Node
+
+	Name     string
+	PublicID string
+	SystemID string
+}
+
+func newDocumentType() DocumentType {
+	dt := &domDocumentType{}
+	dt.Node = &domNode{}
+	dt.setNodeType(DocumentTypeNode)
+	return dt
+}
+
+func (dt *domDocumentType) GetName() string {
+	return dt.Name
+}
+func (dt *domDocumentType) GetPublicID() string {
+	return dt.PublicID
+}
+func (dt *domDocumentType) GetSystemID() string {
+	return dt.SystemID
+}
+
+//================================================================================
+
 type domDocument struct {
 	Node
 }
@@ -307,6 +387,11 @@ func (de *domDocument) CreateTextNode(t string) Text {
 	text.setOwnerDocument(de)
 	text.SetData(t)
 	return text
+}
+
+func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
+	attr := newAttr(name)
+	return attr, nil
 }
 
 // 'Override' the AppendChild() function from the Node interface. One child can
@@ -345,7 +430,7 @@ type domElement struct {
 
 func newElement() Element {
 	e := &domElement{}
-	e.Node = &domNode{}
+	e.Node = newNode()
 	e.setNodeType(ElementNode)
 	return e
 }
@@ -358,8 +443,68 @@ func (de *domElement) GetTagName() string {
 	return de.TagName
 }
 
+func (de *domElement) SetAttribute(name, value string) {
+	attr := newAttr(name)
+	attr.setParentNode(de)
+	attr.SetValue(value)
+	de.Node.GetAttributes().SetNamedItem(attr)
+}
+
+func (de *domElement) GetAttribute(name string) string {
+	return ""
+}
+
 func (de *domElement) String() string {
-	return fmt.Sprintf("%s, <%s>", de.NodeType(), de.GetTagName())
+	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
+		de.NodeType(), de.GetTagName(), de.NamespaceURI(), de.GetAttributes())
+}
+
+//================================================================================
+
+type domAttr struct {
+	Node
+
+	Name         string
+	Specified    bool
+	Value        string
+	OwnerElement Element
+}
+
+func newAttr(name string) Attr {
+	a := &domAttr{}
+	a.Node = &domNode{}
+	a.setNodeType(AttributeNode)
+	a.Name = name
+	return a
+}
+
+// NodeName is an override from Node.
+func (da *domAttr) NodeName() string {
+	return da.Name
+}
+
+func (da *domAttr) GetName() string {
+	return da.Name
+}
+
+// NodeValue is an override from Node.
+func (da *domAttr) NodeValue() string {
+	return da.Value
+}
+
+func (da *domAttr) GetValue() string {
+	return da.Value
+}
+func (da *domAttr) SetValue(val string) {
+	da.Value = val
+}
+
+func (da *domAttr) IsSpecified() bool {
+	return da.Specified
+}
+
+func (da *domAttr) GetOwnerElement() Element {
+	return da.OwnerElement
 }
 
 //================================================================================
@@ -377,6 +522,10 @@ func newText() Text {
 	return t
 }
 
+func (dt *domText) NodeName() string {
+	return "#text"
+}
+
 func (dt *domText) SetData(s string) {
 	dt.Data = s
 }
@@ -386,5 +535,5 @@ func (dt *domText) GetData() string {
 }
 
 func (dt *domText) String() string {
-	return fmt.Sprintf("%s, %s", dt.NodeType(), dt.GetData())
+	return fmt.Sprintf("%s, %s, %s", dt.NodeType(), dt.NodeName(), dt.GetData())
 }

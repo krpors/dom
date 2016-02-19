@@ -58,3 +58,34 @@ func TestIsValidName(t *testing.T) {
 		}
 	}
 }
+
+// Tests the setting of attributes and that whole crapload.
+func TestAttributes(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	root.SetAttribute("first", "first value")
+	root.SetAttribute("second", "second value")
+	root.SetAttribute("third", "third value")
+	root.SetAttribute("fourth", "fourth value")
+
+	nnm := root.GetAttributes()
+	if nnm.Length() != 4 {
+		t.Errorf("expected 4 attributes, got ", root.GetAttributes().Length())
+	}
+
+	if nnm.GetNamedItem("first").NodeValue() != "first value" {
+		t.Errorf("expected 'first value'")
+	}
+
+	if nnm.GetNamedItem("second").NodeValue() != "second value" {
+		t.Errorf("expected 'second value'")
+	}
+
+	if nnm.GetNamedItem("third").NodeValue() != "third value" {
+		t.Errorf("expected 'second value'")
+	}
+
+	if nnm.GetNamedItem("fourth").NodeValue() != "fourth value" {
+		t.Errorf("expected 'second value'")
+	}
+}
