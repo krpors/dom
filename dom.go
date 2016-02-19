@@ -6,11 +6,18 @@ import (
 )
 
 var (
+	// ErrorHierarchyRequest is the error which can be returned when the node
+	// is of a type that does not allow children, if the node to append to is
+	// one of this node's ancestors or this node itself, or if this node is of
+	// type Document and the DOM application attempts to append a second
+	// DocumentType or Element node.
 	ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
 )
 
+// NodeType defines the types of nodes which exist in the DOM.
 type NodeType uint8
 
+// Enumeration of all types of Nodes in the DOM.
 const (
 	ElementNode NodeType = iota
 	AttributeNode
@@ -54,12 +61,17 @@ func (n NodeType) String() string {
 	}
 }
 
+// NamedNodeMap represent collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
 	GetNamedItem(string) Node
 	SetNamedItem(Node)
 	Length() int
 }
 
+// Node is the primary interface fo the entire Document Object Model. It represents
+// a single node in the document tree. While all objects implementing the Node
+// interface expose methods for dealing with children, not all objects implementing
+// the Node interface may have children.
 type Node interface {
 	NodeName() string
 	NodeType() NodeType
@@ -72,15 +84,16 @@ type Node interface {
 	OwnerDocument() Document
 	AppendChild(Node) error
 	HasChildNodes() bool
-	NamespaceUri() string
+	// Returns the namespace URI of this node.
+	NamespaceURI() string
 
-	// 'Setters':
 	setNodeType(NodeType)
 	setParentNode(Node)
 	setOwnerDocument(Document)
-	setNamespaceUri(string)
+	setNamespaceURI(string)
 }
 
+// Element represents an element in an HTML or XML document.
 type Element interface {
 	Node
 
@@ -88,6 +101,7 @@ type Element interface {
 	GetTagName() string
 }
 
+// Text is a Node that represents character data.
 type Text interface {
 	Node
 
@@ -95,11 +109,12 @@ type Text interface {
 	SetData(s string)
 }
 
+// Document is the root of the Document Object Model.
 type Document interface {
 	Node
 
 	CreateElement(tagName string) (Element, error)
-	CreateElementNS(namespaceUri, tagName string) (Element, error)
+	CreateElementNS(namespaceURI, tagName string) (Element, error)
 	CreateTextNode(string) Text
 	GetDocumentElement() Element
 }
@@ -110,7 +125,7 @@ type domNamedNodeMap struct {
 	attributes map[string]Node
 }
 
-func NewNamedNodeMap() NamedNodeMap {
+func newNamedNodeMap() NamedNodeMap {
 	nnm := &domNamedNodeMap{}
 	nnm.attributes = make(map[string]Node)
 	return nnm
@@ -140,7 +155,7 @@ type domNode struct {
 	firstChild    Node
 	attributes    NamedNodeMap
 	ownerDocument Document
-	namespaceUri  string
+	namespaceURI  string
 }
 
 func (dn *domNode) NodeName() string {
@@ -189,8 +204,8 @@ func (dn *domNode) HasChildNodes() bool {
 	return len(dn.nodes) > 0
 }
 
-func (dn *domNode) NamespaceUri() string {
-	return dn.namespaceUri
+func (dn *domNode) NamespaceURI() string {
+	return dn.namespaceURI
 }
 
 func (dn *domNode) setParentNode(node Node) {
@@ -205,8 +220,8 @@ func (dn *domNode) setOwnerDocument(d Document) {
 	dn.ownerDocument = d
 }
 
-func (dn *domNode) setNamespaceUri(namespaceUri string) {
-	dn.namespaceUri = namespaceUri
+func (dn *domNode) setNamespaceURI(namespaceURI string) {
+	dn.namespaceURI = namespaceURI
 }
 
 //================================================================================
@@ -215,6 +230,7 @@ type domDocument struct {
 	Node
 }
 
+// NewDocument creates a new document.
 func NewDocument() Document {
 	d := &domDocument{}
 	d.Node = &domNode{}
@@ -229,12 +245,12 @@ func (de *domDocument) CreateElement(tagName string) (Element, error) {
 	return elem, nil
 }
 
-func (de *domDocument) CreateElementNS(namespaceUri, tagName string) (Element, error) {
+func (de *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, error) {
 	elem, err := de.CreateElement(tagName)
 	if err != nil {
 		return nil, err
 	}
-	elem.setNamespaceUri(namespaceUri)
+	elem.setNamespaceURI(namespaceURI)
 	return elem, nil
 }
 
