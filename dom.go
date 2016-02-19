@@ -3,6 +3,7 @@ package dom
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 var (
@@ -12,6 +13,10 @@ var (
 	// type Document and the DOM application attempts to append a second
 	// DocumentType or Element node.
 	ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
+
+	// ErrorInvalidCharacter is returned when an invalid character is used for
+	// for example an element or attribute name.
+	ErrorInvalidCharacter = errors.New("INVALID_CHARACTER_ERR: an invalid or illegal XML character is specified")
 )
 
 // NodeType defines the types of nodes which exist in the DOM.
@@ -61,6 +66,27 @@ func (n NodeType) String() string {
 	default:
 		return "???"
 	}
+}
+
+var (
+	bleh = ":abcdefghijklmnopqrstuvwxyz_"
+)
+
+// IsValidName checks whether the given string s is a valid XML name for use
+// in Elements and Attribute names.
+func IsValidName(s string) bool {
+	if s == "" {
+		return false
+	}
+	if strings.ContainsAny(s[0:1], bleh) ||
+		strings.ContainsAny(strings.ToUpper(s), bleh) ||
+		(s[0] >= 0xC0 && s[0] <= 0xD6) ||
+		(s[0] >= 0xD8 && s[0] <= 0xF6) {
+
+		return true
+	}
+
+	return false
 }
 
 // NamedNodeMap represent collections of nodes that can be accessed by name.

@@ -38,3 +38,23 @@ func TestCreateTextNode(t *testing.T) {
 
 func TestGetDocumentElement(t *testing.T) {
 }
+
+func TestIsValidName(t *testing.T) {
+	var tests = []struct {
+		in  string
+		out bool
+	}{
+		{"", false},
+		{"a", true},
+		{"2", false},
+		{"\xC0DERP", true},
+		{"\xD6DERP", true},
+	}
+
+	for _, test := range tests {
+		actual := IsValidName(test.in)
+		if actual != test.out {
+			t.Errorf("for input '%v', expected '%v', but was '%v'", test.in, test.out, actual)
+		}
+	}
+}
