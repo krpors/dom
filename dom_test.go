@@ -19,8 +19,8 @@ func TestCreateElement(t *testing.T) {
 func TestCreateElementNS(t *testing.T) {
 	doc := NewDocument()
 	elem, _ := doc.CreateElementNS("http://example.org/2016/ns", "elem")
-	if elem.NamespaceUri() != "http://example.org/2016/ns" {
-		t.Errorf("got wrong namespace: %s", elem.NamespaceUri())
+	if elem.NamespaceURI() != "http://example.org/2016/ns" {
+		t.Errorf("got wrong namespace: %s", elem.NamespaceURI())
 	}
 }
 

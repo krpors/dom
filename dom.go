@@ -32,6 +32,8 @@ const (
 	DocumentFragmentNode
 )
 
+// String returns the string representation of the NodeType, using the default
+// representation by the W3 specification.
 func (n NodeType) String() string {
 	switch n {
 	case ElementNode:
@@ -68,7 +70,7 @@ type NamedNodeMap interface {
 	Length() int
 }
 
-// Node is the primary interface fo the entire Document Object Model. It represents
+// Node is the primary interface for the entire Document Object Model. It represents
 // a single node in the document tree. While all objects implementing the Node
 // interface expose methods for dealing with children, not all objects implementing
 // the Node interface may have children.
@@ -77,12 +79,21 @@ type Node interface {
 	NodeType() NodeType
 	NodeValue() string
 	LocalName() string
+	// Gets the list of child nodes.
 	NodeList() []Node
+	// Gets the parent node. May be nil if none was assigned.
 	ParentNode() Node
+	// Gets the first child Node of this Node. May return nil if no child nodes
+	// exist.
 	FirstChild() Node
 	Attributes() NamedNodeMap
+	// Gets the owner document (the Document instance which was used to create
+	// the Node).
 	OwnerDocument() Document
+	// Appends a child to this Node. Will return an error when this Node is not
+	// able to have any (more) children, like Text nodes.
 	AppendChild(Node) error
+	// Returns true when the Node has one or more children.
 	HasChildNodes() bool
 	// Returns the namespace URI of this node.
 	NamespaceURI() string
@@ -97,7 +108,9 @@ type Node interface {
 type Element interface {
 	Node
 
+	// Sets the tag name of this element.
 	SetTagName(tagname string)
+	// Gets the tag name of this element.
 	GetTagName() string
 }
 
@@ -113,9 +126,18 @@ type Text interface {
 type Document interface {
 	Node
 
+	// Creates an element with the given tagname and returns it. Will return
+	// an ErrorInvalidCharacter if the specified name is not an XML name according
+	// to the XML version in use, specified in the XMLVersion attribute.
 	CreateElement(tagName string) (Element, error)
+	// Creates an element of the givens qualified name and namespace URI, and
+	// returns it. Use an empty string if no namespace is necessary. See
+	// CreateElement(string).
 	CreateElementNS(namespaceURI, tagName string) (Element, error)
+	// Creates a Text node given the specified string and returns it.
 	CreateTextNode(string) Text
+	// Gets the document element, which should be the first (and only) child Node
+	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
 }
 
