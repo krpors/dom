@@ -39,8 +39,32 @@ func TestCreateTextNode(t *testing.T) {
 func TestGetDocumentElement(t *testing.T) {
 }
 
+// Tests the Attr interface implementation.
+func TestAttrNameAndValue(t *testing.T) {
+	attr := newAttr("attribute")
+	attr.SetValue("somevalue")
+
+	// NodeName() and GetName(), and NodeValue() and GetValue() are supposed
+	// to be identical, as per the spec.
+
+	if attr.NodeName() != "attribute" {
+		t.Errorf("expected '%s', was '%s'", "attribute", attr.NodeName())
+	}
+	if attr.GetName() != "attribute" {
+		t.Errorf("expected '%s', was '%s'", "attribute", attr.GetName())
+	}
+
+	if attr.NodeValue() != "somevalue" {
+		t.Errorf("expected '%s', was '%s'", "somevalue", attr.NodeValue())
+	}
+
+	if attr.GetValue() != "somevalue" {
+		t.Errorf("expected '%s', was '%s'", "somevalue", attr.GetValue())
+	}
+}
+
 // Tests the setting of attributes and that whole crapload.
-func TestAttributes(t *testing.T) {
+func TestElementSetAttributes(t *testing.T) {
 	doc := NewDocument()
 	root, _ := doc.CreateElement("root")
 	root.SetAttribute("first", "first value")
@@ -49,6 +73,7 @@ func TestAttributes(t *testing.T) {
 	root.SetAttribute("fourth", "fourth value")
 
 	nnm := root.GetAttributes()
+
 	if nnm.Length() != 4 {
 		t.Errorf("expected 4 attributes, got ", root.GetAttributes().Length())
 	}

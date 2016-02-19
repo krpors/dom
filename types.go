@@ -51,10 +51,9 @@ func (n NodeType) String() string {
 
 // NamedNodeMap represent collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
-	Node
-
 	GetNamedItem(string) Node
 	SetNamedItem(Node)
+	GetItems() map[string]Node
 	Length() int
 }
 
@@ -101,6 +100,8 @@ type Attr interface {
 	GetValue() string
 	SetValue(string)
 	GetOwnerElement() Element
+
+	setOwnerElement(Element)
 }
 
 // Element represents an element in an HTML or XML document.

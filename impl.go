@@ -19,8 +19,6 @@ var (
 )
 
 type domNamedNodeMap struct {
-	Node
-
 	Attrs map[string]Node
 }
 
@@ -35,8 +33,15 @@ func (dn *domNamedNodeMap) GetNamedItem(s string) Node {
 }
 
 func (dn *domNamedNodeMap) SetNamedItem(node Node) {
-	// assert that node must be an Attr
+	// TODO: assert that node must be an Attr
+	if node.NodeType() != AttributeNode {
+		panic("cannot only set named item Nodes of type AttributeNode")
+	}
 	dn.Attrs[node.NodeName()] = node
+}
+
+func (dn *domNamedNodeMap) GetItems() map[string]Node {
+	return dn.Attrs
 }
 
 func (dn *domNamedNodeMap) Length() int {
@@ -77,8 +82,13 @@ func (dn *domNode) NodeName() string {
 	return dn.nodeType.String()
 }
 
+// NodeValue returns an empty string. A Node by itself does not have a value,
+// unless implemented/embedded by other DOM objects, such as Element. The
+// specification mention for instance that Document, Element, Entity - and more -
+// should return null on a call to  NodeValue(). Go doesn't allow nils like this,
+// so we return an empty string for now.
 func (dn *domNode) NodeValue() string {
-	return "TODO: what?"
+	return ""
 }
 
 func (dn *domNode) NodeType() NodeType {
@@ -125,6 +135,10 @@ func (dn *domNode) NamespaceURI() string {
 
 func (dn *domNode) setParentNode(node Node) {
 	dn.parentNode = node
+}
+
+func (dn *domNode) setNodeValue(s string) {
+	dn.nodeValue = s
 }
 
 func (dn *domNode) setNodeType(t NodeType) {
@@ -180,15 +194,15 @@ func NewDocument() Document {
 	return d
 }
 
-func (de *domDocument) CreateElement(tagName string) (Element, error) {
+func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 	elem := newElement()
 	elem.SetTagName(tagName)
-	elem.setOwnerDocument(de)
+	elem.setOwnerDocument(dd)
 	return elem, nil
 }
 
-func (de *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, error) {
-	elem, err := de.CreateElement(tagName)
+func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, error) {
+	elem, err := dd.CreateElement(tagName)
 	if err != nil {
 		return nil, err
 	}
@@ -196,9 +210,9 @@ func (de *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, e
 	return elem, nil
 }
 
-func (de *domDocument) CreateTextNode(t string) Text {
+func (dd *domDocument) CreateTextNode(t string) Text {
 	text := newText()
-	text.setOwnerDocument(de)
+	text.setOwnerDocument(dd)
 	text.SetData(t)
 	return text
 }
@@ -211,17 +225,17 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 // 'Override' the AppendChild() function from the Node interface. One child can
 // be appended when the node list is empty. The first child of the document will
 // be the document element. Subsequent calls will result in an error.
-func (de *domDocument) AppendChild(n Node) error {
-	if len(de.NodeList()) <= 0 {
-		de.Node.AppendChild(n)
+func (dd *domDocument) AppendChild(n Node) error {
+	if len(dd.NodeList()) <= 0 {
+		dd.Node.AppendChild(n)
 		return nil
 	}
 	return ErrorHierarchyRequest
 }
 
-func (de *domDocument) GetDocumentElement() Element {
-	if len(de.NodeList()) == 1 {
-		node := de.FirstChild()
+func (dd *domDocument) GetDocumentElement() Element {
+	if len(dd.NodeList()) == 1 {
+		node := dd.FirstChild()
 		if node.NodeType() == ElementNode {
 			elem := node.(Element)
 			return elem
@@ -230,8 +244,8 @@ func (de *domDocument) GetDocumentElement() Element {
 	return nil
 }
 
-func (de *domDocument) String() string {
-	return fmt.Sprintf("%s", de.NodeType())
+func (dd *domDocument) String() string {
+	return fmt.Sprintf("%s", dd.NodeType())
 }
 
 //================================================================================
@@ -292,11 +306,13 @@ func newAttr(name string) Attr {
 	return a
 }
 
-// NodeName is an override from Node.
+// NodeName is an override from Node. As per the spec, the NodeName() function
+// should return the same thing as GetName().
 func (da *domAttr) NodeName() string {
 	return da.Name
 }
 
+// Identical to NodeName().
 func (da *domAttr) GetName() string {
 	return da.Name
 }
@@ -306,10 +322,12 @@ func (da *domAttr) NodeValue() string {
 	return da.Value
 }
 
+// Identical to NodeValue()
 func (da *domAttr) GetValue() string {
 	return da.Value
 }
 func (da *domAttr) SetValue(val string) {
+	da.Specified = true
 	da.Value = val
 }
 
@@ -319,6 +337,10 @@ func (da *domAttr) IsSpecified() bool {
 
 func (da *domAttr) GetOwnerElement() Element {
 	return da.OwnerElement
+}
+
+func (da *domAttr) setOwnerElement(e Element) {
+	da.OwnerElement = e
 }
 
 //================================================================================
@@ -340,10 +362,17 @@ func (dt *domText) NodeName() string {
 	return "#text"
 }
 
+// NodeValue is an override from the embedded Node. It returns the character
+// data, identical to the GetData() function.
+func (dt *domText) NodeValue() string {
+	return dt.Data
+}
+
 func (dt *domText) SetData(s string) {
 	dt.Data = s
 }
 
+// GetData return the character data. Identical to NodeValue().
 func (dt *domText) GetData() string {
 	return dt.Data
 }
