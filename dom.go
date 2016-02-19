@@ -2,6 +2,7 @@ package dom
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
@@ -76,6 +77,8 @@ type Node interface {
 	// 'Setters':
 	setNodeType(NodeType)
 	setParentNode(Node)
+	setOwnerDocument(Document)
+	setNamespaceUri(string)
 }
 
 type Element interface {
@@ -94,6 +97,11 @@ type Text interface {
 
 type Document interface {
 	Node
+
+	CreateElement(tagName string) (Element, error)
+	CreateElementNS(namespaceUri, tagName string) (Element, error)
+	CreateTextNode(string) Text
+	GetDocumentElement() Element
 }
 
 //================================================================================
@@ -193,10 +201,48 @@ func (dn *domNode) setNodeType(t NodeType) {
 	dn.nodeType = t
 }
 
+func (dn *domNode) setOwnerDocument(d Document) {
+	dn.ownerDocument = d
+}
+
+func (dn *domNode) setNamespaceUri(namespaceUri string) {
+	dn.namespaceUri = namespaceUri
+}
+
 //================================================================================
 
 type domDocument struct {
 	Node
+}
+
+func NewDocument() Document {
+	d := &domDocument{}
+	d.Node = &domNode{}
+	d.setNodeType(DocumentNode)
+	return d
+}
+
+func (de *domDocument) CreateElement(tagName string) (Element, error) {
+	elem := newElement()
+	elem.SetTagName(tagName)
+	elem.setOwnerDocument(de)
+	return elem, nil
+}
+
+func (de *domDocument) CreateElementNS(namespaceUri, tagName string) (Element, error) {
+	elem, err := de.CreateElement(tagName)
+	if err != nil {
+		return nil, err
+	}
+	elem.setNamespaceUri(namespaceUri)
+	return elem, nil
+}
+
+func (de *domDocument) CreateTextNode(t string) Text {
+	text := newText()
+	text.setOwnerDocument(de)
+	text.SetData(t)
+	return text
 }
 
 // 'Override' the AppendChild() function from the Node interface. One child can
@@ -210,11 +256,19 @@ func (de *domDocument) AppendChild(n Node) error {
 	return ErrorHierarchyRequest
 }
 
-func NewDocument() Document {
-	d := &domDocument{}
-	d.Node = &domNode{}
-	d.setNodeType(DocumentNode)
-	return d
+func (de *domDocument) GetDocumentElement() Element {
+	if len(de.NodeList()) == 1 {
+		node := de.FirstChild()
+		if node.NodeType() == ElementNode {
+			elem := node.(Element)
+			return elem
+		}
+	}
+	return nil
+}
+
+func (de *domDocument) String() string {
+	return fmt.Sprintf("%s", de.NodeType())
 }
 
 //================================================================================
@@ -225,6 +279,13 @@ type domElement struct {
 	TagName string
 }
 
+func newElement() Element {
+	e := &domElement{}
+	e.Node = &domNode{}
+	e.setNodeType(ElementNode)
+	return e
+}
+
 func (de *domElement) SetTagName(name string) {
 	de.TagName = name
 }
@@ -233,11 +294,8 @@ func (de *domElement) GetTagName() string {
 	return de.TagName
 }
 
-func NewElement() Element {
-	e := &domElement{}
-	e.Node = &domNode{}
-	e.setNodeType(ElementNode)
-	return e
+func (de *domElement) String() string {
+	return fmt.Sprintf("%s, <%s>", de.NodeType(), de.GetTagName())
 }
 
 //================================================================================
@@ -248,7 +306,7 @@ type domText struct {
 	Data string
 }
 
-func NewText() Text {
+func newText() Text {
 	t := &domText{}
 	t.Node = &domNode{}
 	t.setNodeType(TextNode)
@@ -261,4 +319,8 @@ func (dt *domText) SetData(s string) {
 
 func (dt *domText) GetData() string {
 	return dt.Data
+}
+
+func (dt *domText) String() string {
+	return fmt.Sprintf("%s, %s", dt.NodeType(), dt.GetData())
 }
