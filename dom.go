@@ -1,10 +1,17 @@
 package dom
 
+import (
+	"errors"
+)
+
+var (
+	ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
+)
+
 type NodeType uint8
 
 const (
-	UndefinedNode NodeType = iota
-	ElementNode
+	ElementNode NodeType = iota
 	AttributeNode
 	TextNode
 	CDATASectionNode
@@ -16,6 +23,35 @@ const (
 	DocumentTypeNode
 	DocumentFragmentNode
 )
+
+func (n NodeType) String() string {
+	switch n {
+	case ElementNode:
+		return "ELEMENT_NODE"
+	case AttributeNode:
+		return "ATTRIBUTE_NODE"
+	case TextNode:
+		return "TEXT_NODE"
+	case CDATASectionNode:
+		return "CDATA_SECTION_NODE"
+	case EntityReferenceNode:
+		return "ENTITY_REFERENCE_NODE"
+	case EntityNode:
+		return "ENTITY_NODE"
+	case ProcessingInstructionNode:
+		return "PROCESSING_INSTRUCTION_NODE"
+	case CommentNode:
+		return "COMMENT_NODE"
+	case DocumentNode:
+		return "DOCUMENT_NODE"
+	case DocumentTypeNode:
+		return "DOCUMENT_TYPE_NODE"
+	case DocumentFragmentNode:
+		return "DOCUMENT_FRAGMENT_NODE"
+	default:
+		return "???"
+	}
+}
 
 type NamedNodeMap interface {
 	GetNamedItem(string) Node
@@ -33,7 +69,7 @@ type Node interface {
 	FirstChild() Node
 	Attributes() NamedNodeMap
 	OwnerDocument() Document
-	AppendChild(Node)
+	AppendChild(Node) error
 	HasChildNodes() bool
 	NamespaceUri() string
 
@@ -44,6 +80,16 @@ type Node interface {
 
 type Element interface {
 	Node
+
+	SetTagName(tagname string)
+	GetTagName() string
+}
+
+type Text interface {
+	Node
+
+	GetData() string
+	SetData(s string)
 }
 
 type Document interface {
@@ -89,13 +135,6 @@ type domNode struct {
 	namespaceUri  string
 }
 
-func NewNode(name string) Node {
-	dn := &domNode{}
-	dn.nodeType = UndefinedNode
-	dn.nodeName = name
-	return dn
-}
-
 func (dn *domNode) NodeName() string {
 	return dn.nodeName
 }
@@ -121,7 +160,7 @@ func (dn *domNode) ParentNode() Node {
 }
 
 func (dn *domNode) FirstChild() Node {
-	return dn.firstChild
+	return dn.NodeList()[0]
 }
 
 func (dn *domNode) Attributes() NamedNodeMap {
@@ -132,9 +171,10 @@ func (dn *domNode) OwnerDocument() Document {
 	return dn.ownerDocument
 }
 
-func (dn *domNode) AppendChild(node Node) {
+func (dn *domNode) AppendChild(node Node) error {
 	dn.nodes = append(dn.nodes, node)
 	node.setParentNode(dn)
+	return nil
 }
 
 func (dn *domNode) HasChildNodes() bool {
@@ -155,15 +195,70 @@ func (dn *domNode) setNodeType(t NodeType) {
 
 //================================================================================
 
-type domElement struct {
+type domDocument struct {
 	Node
 }
 
-func NewElement() Element {
-	n := &domNode{}
-	de := &domElement{n}
-	de.setNodeType(ElementNode)
-	de.HasChildNodes()
-	return de
+// 'Override' the AppendChild() function from the Node interface. One child can
+// be appended when the node list is empty. The first child of the document will
+// be the document element. Subsequent calls will result in an error.
+func (de *domDocument) AppendChild(n Node) error {
+	if len(de.NodeList()) <= 0 {
+		de.Node.AppendChild(n)
+		return nil
+	}
+	return ErrorHierarchyRequest
+}
 
+func NewDocument() Document {
+	d := &domDocument{}
+	d.Node = &domNode{}
+	d.setNodeType(DocumentNode)
+	return d
+}
+
+//================================================================================
+
+type domElement struct {
+	Node
+
+	TagName string
+}
+
+func (de *domElement) SetTagName(name string) {
+	de.TagName = name
+}
+
+func (de *domElement) GetTagName() string {
+	return de.TagName
+}
+
+func NewElement() Element {
+	e := &domElement{}
+	e.Node = &domNode{}
+	e.setNodeType(ElementNode)
+	return e
+}
+
+//================================================================================
+
+type domText struct {
+	Node
+
+	Data string
+}
+
+func NewText() Text {
+	t := &domText{}
+	t.Node = &domNode{}
+	t.setNodeType(TextNode)
+	return t
+}
+
+func (dt *domText) SetData(s string) {
+	dt.Data = s
+}
+
+func (dt *domText) GetData() string {
+	return dt.Data
 }
