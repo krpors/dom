@@ -22,6 +22,43 @@ var (
 	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
 )
 
+/*
+TODO: as I suspected, making an attempt at inheritance by embedding interfaces
+in other interfaces works out poorly. Especially when setting parent nodes when
+appending children to nodes. The pointers are not done correctly. One BIG fix
+should be the overhaul of the types.
+
+Define all the necessary interfaces (interface embedding can be done though),
+but all the concrete types must manually implement ALL interface methods. This
+will lead to copy/pasting, but it gets the job done.
+
+Example:
+
+type Node interface {
+	// Node is abstract is it can get, so there will be no implementation of it.
+	// ... All functions of Node
+}
+
+type Element interface {
+	Node // <-- embedded interface
+	// ... All other functions of Element
+}
+
+Concrete types:
+
+type domElement struct {
+	// All members which are necessary, such as attributes, child nodes,
+	// parent node, owner document, etc. etc.
+}
+// Add all functions of Node and Element here.
+
+type domDocument struct {
+	// All member vars, such as child, processing instructions...
+}
+// Add all functions of Node and Document here
+
+*/
+
 type domNamedNodeMap struct {
 	Attrs map[string]Node
 }
