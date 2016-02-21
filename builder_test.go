@@ -1,5 +1,6 @@
 package dom
 
+/*
 import (
 	"strings"
 	"testing"
@@ -30,3 +31,4 @@ func TestWut(t *testing.T) {
 	builder := NewBuilder(reader)
 	builder.CreateDocument()
 }
+*/

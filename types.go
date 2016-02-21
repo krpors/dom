@@ -1,5 +1,27 @@
 package dom
 
+import (
+	"errors"
+)
+
+// Error definitions:
+var (
+	// ErrorHierarchyRequest is the error which can be returned when the node
+	// is of a type that does not allow children, if the node to append to is
+	// one of this node's ancestors or this node itself, or if this node is of
+	// type Document and the DOM application attempts to append a second
+	// DocumentType or Element node.
+	ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
+
+	// ErrorInvalidCharacter is returned when an invalid character is used for
+	// for example an element or attribute name.
+	ErrorInvalidCharacter = errors.New("INVALID_CHARACTER_ERR: an invalid or illegal XML character is specified")
+
+	// ErrorNotSupported is returned when this implementation does not support
+	// the requested operation or object.
+	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
+)
+
 // NodeType defines the types of nodes which exist in the DOM.
 type NodeType uint8
 
@@ -62,9 +84,14 @@ type NamedNodeMap interface {
 // interface expose methods for dealing with children, not all objects implementing
 // the Node interface may have children.
 type Node interface {
+	// Gets the node name. Depending on the type (Attr, CDATASection, Element etc.)
+	// the result of this call differs.
 	NodeName() string
+	// Gets the type of node.
 	NodeType() NodeType
+	// Gets the node value. Like NodeName(), the output differs depending on the type.
 	NodeValue() string
+	// Returns the local part of the qualified name of this node.
 	LocalName() string
 	// Gets the list of child nodes.
 	NodeList() []Node
@@ -85,7 +112,7 @@ type Node interface {
 	// Returns the namespace URI of this node.
 	NamespaceURI() string
 
-	setNodeType(NodeType)
+	// Private functions
 	setParentNode(Node)
 	setOwnerDocument(Document)
 	setNamespaceURI(string)
