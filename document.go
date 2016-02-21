@@ -141,8 +141,8 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 
 func (dd *domDocument) GetDocumentElement() Element {
 	firstNode := dd.NodeList()[0]
-	_ = firstNode
-	return nil
+	bleh := firstNode.(Element)
+	return bleh
 }
 
 func (dd *domDocument) String() string {

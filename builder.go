@@ -1,6 +1,5 @@
 package dom
 
-/*
 import (
 	"encoding/xml"
 	"fmt"
@@ -46,4 +45,3 @@ func (b *Builder) CreateDocument() (Document, error) {
 func (b *Builder) derp(node Node) Node {
 	return node
 }
-*/
