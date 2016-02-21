@@ -16,6 +16,10 @@ var (
 	// ErrorInvalidCharacter is returned when an invalid character is used for
 	// for example an element or attribute name.
 	ErrorInvalidCharacter = errors.New("INVALID_CHARACTER_ERR: an invalid or illegal XML character is specified")
+
+	// ErrorNotSupported is returned when this implementation does not support
+	// the requested operation or object.
+	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
 )
 
 type domNamedNodeMap struct {
@@ -32,12 +36,13 @@ func (dn *domNamedNodeMap) GetNamedItem(s string) Node {
 	return dn.Attrs[s]
 }
 
-func (dn *domNamedNodeMap) SetNamedItem(node Node) {
-	// TODO: assert that node must be an Attr
+func (dn *domNamedNodeMap) SetNamedItem(node Node) error {
+	// Node must be an AttributeNode, or else it will return a hierarchy error.
 	if node.NodeType() != AttributeNode {
-		panic("cannot only set named item Nodes of type AttributeNode")
+		return ErrorHierarchyRequest
 	}
 	dn.Attrs[node.NodeName()] = node
+	return nil
 }
 
 func (dn *domNamedNodeMap) GetItems() map[string]Node {
@@ -120,8 +125,8 @@ func (dn *domNode) OwnerDocument() Document {
 }
 
 func (dn *domNode) AppendChild(node Node) error {
-	dn.nodes = append(dn.nodes, node)
 	node.setParentNode(dn)
+	dn.nodes = append(dn.nodes, node)
 	return nil
 }
 
@@ -197,6 +202,7 @@ func NewDocument() Document {
 func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 	elem := newElement()
 	elem.SetTagName(tagName)
+	elem.setParentNode(dd)
 	elem.setOwnerDocument(dd)
 	return elem, nil
 }
@@ -219,6 +225,7 @@ func (dd *domDocument) CreateTextNode(t string) Text {
 
 func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 	attr := newAttr(name)
+	attr.setOwnerDocument(dd)
 	return attr, nil
 }
 
@@ -227,6 +234,7 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 // be the document element. Subsequent calls will result in an error.
 func (dd *domDocument) AppendChild(n Node) error {
 	if len(dd.NodeList()) <= 0 {
+		n.setParentNode(dd)
 		dd.Node.AppendChild(n)
 		return nil
 	}

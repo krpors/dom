@@ -52,7 +52,7 @@ func (n NodeType) String() string {
 // NamedNodeMap represent collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
 	GetNamedItem(string) Node
-	SetNamedItem(Node)
+	SetNamedItem(Node) error
 	GetItems() map[string]Node
 	Length() int
 }
