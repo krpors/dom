@@ -196,7 +196,17 @@ type Document interface {
 	CreateTextNode(string) Text
 	// Creates an Attr of the given name and returns it.
 	CreateAttribute(name string) (Attr, error)
+	// CreateComment creates a Comment node with the given comment content. If
+	// the comment contains a double hyphen (--), this should generate an error.
+	CreateComment(comment string) (Comment, error)
 	// Gets the document element, which should be the first (and only) child Node
 	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
+}
+
+type Comment interface {
+	Node
+
+	GetComment() string
+	SetComment(comment string)
 }

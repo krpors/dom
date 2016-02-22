@@ -21,6 +21,7 @@ func TestToXML(t *testing.T) {
 	doc := NewDocument()
 
 	root, _ := doc.CreateElement("root")
+	comment, _ := doc.CreateComment("rox your sox")
 	first, _ := doc.CreateElement("first")
 	text := doc.CreateTextNode("< & > are entities!")
 	second, _ := doc.CreateElement("second")
@@ -29,6 +30,7 @@ func TestToXML(t *testing.T) {
 	doc.AppendChild(root)
 
 	root.AppendChild(first)
+	root.AppendChild(comment)
 	first.AppendChild(text)
 
 	root.AppendChild(second)
@@ -37,7 +39,7 @@ func TestToXML(t *testing.T) {
 	var buf bytes.Buffer
 	ToXML(doc, false, &buf)
 
-	expected := `<?xml version="1.0" encoding="UTF-8"?><root><first>&lt; &amp; &gt; are entities!</first><second><nochildren/></second></root>`
+	expected := `<?xml version="1.0" encoding="UTF-8"?><root><first>&lt; &amp; &gt; are entities!</first><!-- rox your sox --><second><nochildren/></second></root>`
 
 	if buf.String() != expected {
 		t.Logf("actual:   %v", buf.String())

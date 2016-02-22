@@ -2,6 +2,7 @@ package dom
 
 import (
 	"fmt"
+	"strings"
 )
 
 type domDocument struct {
@@ -131,6 +132,17 @@ func (dd *domDocument) CreateTextNode(text string) Text {
 	t.setOwnerDocument(dd)
 	t.SetData(text)
 	return t
+}
+
+func (dd *domDocument) CreateComment(comment string) (Comment, error) {
+	if strings.ContainsAny(comment, "--") {
+		return nil, fmt.Errorf("%v: comments may not contain a double hyphen (--)", ErrorInvalidCharacter)
+	}
+
+	c := newComment()
+	c.setOwnerDocument(dd)
+	c.SetComment(comment)
+	return c, nil
 }
 
 func (dd *domDocument) CreateAttribute(name string) (Attr, error) {

@@ -35,6 +35,8 @@ func ToXML(node Node, omitXmlDecl bool, w io.Writer) {
 			}
 		case Text:
 			fmt.Fprintf(w, "%s", escape(t.GetData()))
+		case Comment:
+			fmt.Fprintf(w, "<!-- %s -->", t.GetComment())
 		}
 
 		// For each child node, call traverse() again.
