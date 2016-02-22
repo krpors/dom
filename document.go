@@ -123,7 +123,7 @@ func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, e
 		return nil, err
 	}
 	e.setNamespaceURI(namespaceURI)
-	return nil, nil
+	return e, nil
 }
 
 func (dd *domDocument) CreateTextNode(text string) Text {
@@ -145,4 +145,36 @@ func (dd *domDocument) GetDocumentElement() Element {
 
 func (dd *domDocument) String() string {
 	return fmt.Sprintf("%s", dd.NodeType())
+}
+
+// ===
+
+func ToXML(node Node) string {
+	var xml string
+
+	var xtree func(n Node, padding string)
+
+	xtree = func(n Node, padding string) {
+		switch t := n.(type) {
+		case Element:
+			xml += fmt.Sprintf("<%s>", t.GetTagName())
+		//case Comment: // TODO!!
+		case Text:
+			xml += t.GetData()
+		}
+
+		for _, node := range n.NodeList() {
+			xtree(node, padding+"  ")
+		}
+
+		switch t := n.(type) {
+		case Element:
+			xml += fmt.Sprintf("</%s>", t.GetTagName())
+		}
+	}
+
+	xtree(node, "")
+
+	return xml
+
 }

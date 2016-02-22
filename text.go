@@ -2,6 +2,7 @@ package dom
 
 import (
 	"fmt"
+	"strings"
 )
 
 // domText. We don't 'inherit' from CharacterData, that's a bit too convoluted...
@@ -93,5 +94,5 @@ func (dt *domText) SetData(data string) {
 }
 
 func (dt *domText) String() string {
-	return fmt.Sprintf("%s", dt.NodeType())
+	return fmt.Sprintf("%s: '%s'", dt.NodeType(), strings.TrimSpace(dt.data))
 }

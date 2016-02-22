@@ -100,6 +100,9 @@ type Node interface {
 	// Gets the first child Node of this Node. May return nil if no child nodes
 	// exist.
 	FirstChild() Node
+	// GetAttributes will return the attributes belonging to this node. In the current
+	// spec, only Element nodes will return something sensible (i.e. non nil) when this
+	// function is called.
 	GetAttributes() NamedNodeMap
 	// Gets the owner document (the Document instance which was used to create
 	// the Node).

@@ -88,10 +88,15 @@ func (de *domElement) GetTagName() string {
 }
 
 func (de *domElement) SetAttribute(name, value string) {
-	//attr := newAttr(name)
-	//attr.setParentNode(de)
-	//attr.SetValue(value)
-	//de.Node.GetAttributes().SetNamedItem(attr)
+	if de.attributes == nil {
+		de.attributes = newNamedNodeMap()
+	}
+
+	attr := newAttr()
+	attr.SetName(name)
+	attr.SetValue(value)
+	attr.setOwnerElement(de)
+	de.attributes.SetNamedItem(attr)
 }
 
 func (de *domElement) GetAttribute(name string) string {
