@@ -1,8 +1,6 @@
 package dom
 
 import (
-	"fmt"
-	"os"
 	"strings"
 	"testing"
 )
@@ -31,13 +29,5 @@ func TestWut(t *testing.T) {
 	reader := strings.NewReader(exampleDoc)
 	builder := NewBuilder(reader)
 	doc, _ := builder.CreateDocument()
-
-	fmt.Println("===========")
-	builder.PrintTree(os.Stdout)
-	fmt.Println("===========")
-	fmt.Println(ToXML(doc))
-
-	t.Fail()
-
-	// asd
+	_ = doc
 }

@@ -85,10 +85,14 @@ func (dt *domText) setNamespaceURI(uri string) {
 }
 
 // Text specifics:
+
+// GetData returns the character data of this text node, unescaped.
 func (dt *domText) GetData() string {
 	return dt.data
 }
 
+// SetData sets the character data of the XML node. The data can be unescaped
+// XML, since GetData() will take care of conversion.
 func (dt *domText) SetData(data string) {
 	dt.data = data
 }

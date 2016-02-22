@@ -22,6 +22,14 @@ var (
 	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
 )
 
+var (
+	// XmlDeclaration is the usually default XML processing instruction at the
+	// start of XML documents. This is merely added as a convenience. It's the
+	// same declaration which the encoding/xml package has, except it does not
+	// have a trailing newline.
+	XmlDeclaration = `<?xml version="1.0" encoding="UTF-8"?>`
+)
+
 // NodeType defines the types of nodes which exist in the DOM.
 type NodeType uint8
 
