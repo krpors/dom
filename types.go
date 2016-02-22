@@ -23,11 +23,11 @@ var (
 )
 
 var (
-	// XmlDeclaration is the usually default XML processing instruction at the
+	// XMLDeclaration is the usually default XML processing instruction at the
 	// start of XML documents. This is merely added as a convenience. It's the
 	// same declaration which the encoding/xml package has, except it does not
 	// have a trailing newline.
-	XmlDeclaration = `<?xml version="1.0" encoding="UTF-8"?>`
+	XMLDeclaration = `<?xml version="1.0" encoding="UTF-8"?>`
 )
 
 // NodeType defines the types of nodes which exist in the DOM.
@@ -204,6 +204,7 @@ type Document interface {
 	GetDocumentElement() Element
 }
 
+// Comment represents a comment node in an XML tree (e.g. <!-- ... -->).
 type Comment interface {
 	Node
 

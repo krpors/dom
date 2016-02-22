@@ -16,6 +16,8 @@ type domDocument struct {
 	tagName string
 }
 
+// NewDocument creates a new Document which can be used to create
+// custom documents using the methods supplied.
 func NewDocument() Document {
 	d := &domDocument{}
 	return d

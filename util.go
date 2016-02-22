@@ -18,11 +18,11 @@ func escape(s string) string {
 // ToXML is a utility function to serialize a Node and its children to the
 // given writer 'w'. The whole tree is traversed using recursion, which is
 // pretty much eligible for a refactor for optimalization reasons.
-func ToXML(node Node, omitXmlDecl bool, w io.Writer) {
+func ToXML(node Node, omitXMLDecl bool, w io.Writer) {
 	var traverse func(n Node)
 
-	if !omitXmlDecl {
-		fmt.Fprintf(w, "%s", XmlDeclaration)
+	if !omitXMLDecl {
+		fmt.Fprintf(w, "%s", XMLDeclaration)
 	}
 
 	traverse = func(n Node) {

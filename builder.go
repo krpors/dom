@@ -6,12 +6,16 @@ import (
 	"io"
 )
 
+// Builder is the entrypoint of the dom package to parse an XML tree from the given
+// reader, into the doc attribute, using the decoder from encoding/xml.
 type Builder struct {
 	reader  io.Reader
 	doc     Document
 	decoder *xml.Decoder
 }
 
+// NewBuilder constructs a new Builder using the given reader. The reader is expected
+// to contain the (...valid) XML tree.
 func NewBuilder(reader io.Reader) *Builder {
 	b := &Builder{}
 	b.reader = reader
@@ -19,6 +23,8 @@ func NewBuilder(reader io.Reader) *Builder {
 	return b
 }
 
+// PrintTree is a utility function to print the parsed document to an internal
+// representation of the complete hierarchy. Needs work.
 func (b *Builder) PrintTree(w io.Writer) {
 
 	var xtree func(n Node, padding string)
@@ -32,6 +38,9 @@ func (b *Builder) PrintTree(w io.Writer) {
 	xtree(b.doc, "")
 }
 
+// CreateDocument creates a Document object using the constructed decoder.
+// Will return the Document if everything went a-okay, or a non-nil error
+// if something has failed during the parsing of the tokens.
 func (b *Builder) CreateDocument() (Document, error) {
 	b.doc = NewDocument()
 	var curNode Node = b.doc
