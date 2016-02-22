@@ -8,7 +8,6 @@ import (
 // Maybe we'll implement that some other time.
 type domText struct {
 	localName     string
-	nodeType      NodeType
 	parentNode    Node
 	ownerDocument Document
 
@@ -18,7 +17,6 @@ type domText struct {
 
 func newText() Text {
 	t := &domText{}
-	t.nodeType = TextNode
 	return t
 }
 
@@ -27,7 +25,7 @@ func (dt *domText) NodeName() string {
 }
 
 func (dt *domText) NodeType() NodeType {
-	return dt.nodeType
+	return TextNode
 }
 
 // NodeValue returns the same as GetData, the content of the text node.
@@ -95,5 +93,5 @@ func (dt *domText) SetData(data string) {
 }
 
 func (dt *domText) String() string {
-	return fmt.Sprintf("%s", dt.nodeType)
+	return fmt.Sprintf("%s", dt.NodeType())
 }

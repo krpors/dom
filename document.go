@@ -6,7 +6,6 @@ import (
 
 type domDocument struct {
 	localName    string
-	nodeType     NodeType
 	nodes        []Node
 	firstChild   Node
 	attributes   NamedNodeMap
@@ -18,7 +17,6 @@ type domDocument struct {
 
 func NewDocument() Document {
 	d := &domDocument{}
-	d.nodeType = DocumentNode
 	return d
 }
 
@@ -29,7 +27,7 @@ func (dd *domDocument) NodeName() string {
 }
 
 func (dd *domDocument) NodeType() NodeType {
-	return dd.nodeType
+	return DocumentNode
 }
 
 // NodeValue should return null/nil for Document types like the spec says,
@@ -146,5 +144,5 @@ func (dd *domDocument) GetDocumentElement() Element {
 }
 
 func (dd *domDocument) String() string {
-	return fmt.Sprintf("%s", dd.nodeType)
+	return fmt.Sprintf("%s", dd.NodeType())
 }

@@ -123,6 +123,7 @@ type Attr interface {
 	Node
 
 	GetName() string
+	SetName(string)
 	IsSpecified() bool
 	GetValue() string
 	SetValue(string)

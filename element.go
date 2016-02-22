@@ -6,7 +6,6 @@ import (
 
 type domElement struct {
 	localName     string
-	nodeType      NodeType
 	nodes         []Node
 	parentNode    Node
 	firstChild    Node
@@ -20,7 +19,6 @@ type domElement struct {
 
 func newElement() Element {
 	e := &domElement{}
-	e.nodeType = ElementNode
 	return e
 }
 
@@ -29,7 +27,7 @@ func (de *domElement) NodeName() string {
 }
 
 func (de *domElement) NodeType() NodeType {
-	return de.nodeType
+	return ElementNode
 }
 
 // NodeValue should return null/nil for Element types like the spec says,
@@ -115,5 +113,5 @@ func (de *domElement) setNamespaceURI(uri string) {
 
 func (de *domElement) String() string {
 	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
-		de.nodeType, de.tagName, de.namespaceURI, de.attributes)
+		de.NodeType(), de.tagName, de.namespaceURI, de.attributes)
 }
