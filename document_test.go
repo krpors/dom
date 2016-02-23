@@ -61,3 +61,11 @@ func TestDocumentHasChildNodes(t *testing.T) {
 		t.Errorf("expected HasChildNodes to be true")
 	}
 }
+
+func TestDocumentCreateElementInvalid(t *testing.T) {
+	doc := NewDocument()
+	elem, err := doc.CreateElement("in valid tag")
+	if err == nil && elem != nil {
+		t.Errorf("expected error due to invalid tag name")
+	}
+}
