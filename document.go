@@ -114,6 +114,10 @@ func (dd *domDocument) setNamespaceURI(uri string) {
 
 // DOCUMENT SPECIFIC FUNCTIONS
 func (dd *domDocument) CreateElement(tagName string) (Element, error) {
+	if !isNameString(tagName) {
+		return nil, fmt.Errorf("%v", ErrorInvalidCharacter)
+	}
+
 	e := newElement()
 	e.setOwnerDocument(dd)
 	e.SetTagName(tagName)

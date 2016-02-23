@@ -22,12 +22,17 @@ var exampleDoc = `<?xml version="1.0" encoding="UTF-8"?>
 		<ns:other>Character data.</ns:other>
 		<ns:balls ns:derp="woot">More chardata</ns:balls>
 	</ns:cruft>
+	<Grøups>asd</Grøups>
 </directory>
 `
 
 func TestWut(t *testing.T) {
 	reader := strings.NewReader(exampleDoc)
 	builder := NewBuilder(reader)
-	doc, _ := builder.CreateDocument()
+	doc, err := builder.CreateDocument()
+	if err != nil {
+		t.Errorf("Wat... %v", err)
+	}
+
 	_ = doc
 }

@@ -62,10 +62,39 @@ func TestDocumentHasChildNodes(t *testing.T) {
 	}
 }
 
-func TestDocumentCreateElementInvalid(t *testing.T) {
+// TestDocumentCreateelement tests the creation of elements using valid and
+// invalid names. TODO: needs work. The isNameString() I borrowed fails with
+// start characters which are supposed to be correct according to the spec.
+// Or I am screwing things up?
+func TestDocumentCreateElement(t *testing.T) {
+	var tests = []struct {
+		element        string
+		expectedToBeOK bool
+	}{
+		{"valid", true},
+		{"cruft_a", true},
+		{"in val id", false},
+		{"hi", true},
+		{"  test", false},
+		{":cruft", true},
+		{"_ALAKAZAM", true},
+		{":_something0123Darkside", true},
+		{"øøøølmo", true},
+		{"Grøups", true},
+		{"\xc3\xb8stuff", true},
+		{"...element", false},
+		{"element...", true},
+	}
+
 	doc := NewDocument()
-	elem, err := doc.CreateElement("in valid tag")
-	if err == nil && elem != nil {
-		t.Errorf("expected error due to invalid tag name")
+	for _, test := range tests {
+		_, err := doc.CreateElement(test.element)
+		if test.expectedToBeOK && err != nil {
+			t.Errorf("XML name '%v' should be valid, but returned an error", test.element)
+		} else if !test.expectedToBeOK && err == nil {
+			t.Errorf("XML name '%v' should return an error, but was valid", test.element)
+		}
 	}
 }
+
+// ø
