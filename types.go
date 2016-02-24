@@ -129,7 +129,7 @@ type Node interface {
 	setNamespaceURI(string)
 }
 
-// Attr represents an attribute in an Element.
+// Attr represents an attribute in an Element. It implements the Node interface.
 type Attr interface {
 	Node
 
@@ -143,7 +143,7 @@ type Attr interface {
 	setOwnerElement(Element)
 }
 
-// Element represents an element in an HTML or XML document.
+// Element represents an element in an HTML or XML document. It implements the Node interface.
 type Element interface {
 	Node
 
@@ -151,12 +151,13 @@ type Element interface {
 	SetTagName(tagname string)
 	// Gets the tag name of this element.
 	GetTagName() string
-
+	// Convenience function to add an attribute.
 	SetAttribute(name, value string)
+	// Convenience function to get an attribute value.
 	GetAttribute(name string) string
 }
 
-// Text is a Node that represents character data.
+// Text represents character data within an element. It implements the Node interface.
 type Text interface {
 	Node
 
@@ -180,7 +181,7 @@ type DocumentType interface {
 	GetSystemID() string
 }
 
-// Document is the root of the Document Object Model.
+// Document is the root of the Document Object Model. It implements the Node interface.
 type Document interface {
 	Node
 
@@ -204,7 +205,8 @@ type Document interface {
 	GetDocumentElement() Element
 }
 
-// Comment represents a comment node in an XML tree (e.g. <!-- ... -->).
+// Comment represents a comment node in an XML tree (e.g. <!-- ... -->). It implements
+// the Node interface.
 type Comment interface {
 	Node
 
