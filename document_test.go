@@ -84,6 +84,8 @@ func TestDocumentCreateElement(t *testing.T) {
 		{"\xc3\xb8stuff", true},
 		{"...element", false},
 		{"element...", true},
+		{"Ållerskåléèöí", true},
+		{"_More.Stuff.InXML.", true},
 	}
 
 	doc := NewDocument()
