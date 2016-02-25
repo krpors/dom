@@ -18,6 +18,7 @@ func TestDocumentNodeType(t *testing.T) {
 	}
 }
 
+// Tests appending doc to itself, and appending two document elements.
 func TestDocumentAppendChild(t *testing.T) {
 	doc := NewDocument()
 
@@ -42,6 +43,62 @@ func TestDocumentAppendChild(t *testing.T) {
 	err = doc.AppendChild(elem2)
 	if err == nil {
 		t.Errorf("expected error due to adding two root nodes")
+	}
+}
+
+// Tests the appending of invalid children to a Document.
+func TestDocumentAppendInvalidChildren(t *testing.T) {
+	doc := NewDocument()
+	text := doc.CreateTextNode("should fail")
+	if doc.AppendChild(text) == nil {
+		t.Error("appending a text node to a document should fail")
+	}
+	attr, err := doc.CreateAttribute("hi")
+	if err != nil {
+		t.Error("??")
+	}
+	if doc.AppendChild(attr) == nil {
+		t.Error("appending an attr to a document should fail")
+	}
+}
+
+// Tests whether inserting processing instructions just works. They
+// can appear anywhere in the document, before or after the root node.
+func TestDocumentAppendChildProcInst(t *testing.T) {
+	doc := NewDocument()
+
+	elemRoot, _ := doc.CreateElement("root")
+	procInst, _ := doc.CreateProcessingInstruction("lom", "lobon")
+	procInst2, _ := doc.CreateProcessingInstruction("dowan", "duvessa")
+
+	// Append it before anything else:
+	err := doc.AppendChild(procInst)
+	if err != nil {
+		t.Error("unexpected error while adding process instruction")
+	}
+
+	if len(doc.GetChildNodes()) != 1 {
+		t.Error("expected 1 child node at this point")
+	}
+
+	// Append the root node.
+	err = doc.AppendChild(elemRoot)
+	if err != nil {
+		t.Error("unexpected error while adding element")
+	}
+
+	if len(doc.GetChildNodes()) != 2 {
+		t.Error("expected 2 child nodes at this point")
+	}
+
+	// Append another processing instruction.
+	err = doc.AppendChild(procInst2)
+	if err != nil {
+		t.Error("unexpected error while adding process instruction")
+	}
+
+	if len(doc.GetChildNodes()) != 3 {
+		t.Error("expected 3 child nodes at this point")
 	}
 }
 

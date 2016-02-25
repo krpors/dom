@@ -1,7 +1,6 @@
 package dom
 
 import (
-	"os"
 	"strings"
 	"testing"
 )
@@ -48,7 +47,4 @@ func TestBuilderCreateDocument(t *testing.T) {
 	if cmt.GetNodeType() != CommentNode {
 		t.Errorf("expecting a comment node, but was %v", cmt.GetNodeType())
 	}
-	t.Logf("Document has %d child nodes", len(doc.GetChildNodes()))
-
-	builder.PrintTree(os.Stdout)
 }

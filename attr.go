@@ -6,9 +6,6 @@ import (
 
 type domAttr struct {
 	localName     string
-	nodes         []Node
-	parentNode    Node
-	firstChild    Node
 	attributes    NamedNodeMap
 	ownerDocument Document
 	namespaceURI  string
@@ -86,7 +83,7 @@ func (da *domAttr) GetNamespaceURI() string {
 
 // Private functions:
 func (da *domAttr) setParentNode(parent Node) {
-	da.parentNode = parent
+	// no-op
 }
 
 func (da *domAttr) setOwnerDocument(d Document) {
@@ -99,12 +96,12 @@ func (da *domAttr) setNamespaceURI(uri string) {
 
 // Attr specific functions:
 
-func (da *domAttr) GetName() string {
-	return da.attrName
+func (da *domAttr) setName(name string) {
+	da.attrName = name
 }
 
-func (da *domAttr) SetName(name string) {
-	da.attrName = name
+func (da *domAttr) GetName() string {
+	return da.attrName
 }
 
 func (da *domAttr) IsSpecified() bool {

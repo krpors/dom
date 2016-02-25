@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 )
 
 // Builder is the entrypoint of the dom package to parse an XML tree from the given
@@ -65,11 +66,16 @@ func (b *Builder) CreateDocument() (Document, error) {
 			}
 			curNode.AppendChild(cmt)
 		case xml.ProcInst:
-			pi, err := b.doc.CreateProcessingInstruction(typ.Target, string(typ.Inst))
-			if err != nil {
-				return nil, err
+			// Note: the Go default decoder regards the XML declaration as a processing
+			// instruction, even though it is not. Therefore, we handle this edge case
+			// to NOT include this as a valid child node.
+			if strings.ToLower(typ.Target) != "xml" {
+				pi, err := b.doc.CreateProcessingInstruction(typ.Target, string(typ.Inst))
+				if err != nil {
+					return nil, err
+				}
+				b.doc.AppendChild(pi)
 			}
-			b.doc.AppendChild(pi)
 		case xml.StartElement:
 			elem, err := b.doc.CreateElementNS(typ.Name.Space, typ.Name.Local)
 			if err != nil {

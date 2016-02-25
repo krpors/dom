@@ -6,7 +6,7 @@ import (
 
 func TestAttrNodeName(t *testing.T) {
 	attr := newAttr()
-	attr.SetName("cruft")
+	attr.setName("cruft")
 	if attr.GetName() != "cruft" {
 		t.Errorf("incorrect node name")
 	}
@@ -40,7 +40,7 @@ func TestAttrParentNode(t *testing.T) {
 	elem.SetTagName("root")
 
 	attr := newAttr()
-	attr.SetName("attrname")
+	attr.setName("attrname")
 	attr.SetValue("attrvalue")
 
 	attr.setParentNode(elem)

@@ -65,6 +65,9 @@ func (dd *domDocument) GetOwnerDocument() Document {
 	return nil
 }
 
+// AppendChild handles the appending of nodes to the document, and fails accordingly.
+// Only 1 Element may be appended, but comments and processing instructions may appear
+// in abundance.
 func (dd *domDocument) AppendChild(child Node) error {
 	if child == nil {
 		return nil
@@ -77,19 +80,24 @@ func (dd *domDocument) AppendChild(child Node) error {
 	// Only allow elements to be append as a child... for now!
 	switch typ := child.(type) {
 	case Element:
-		if len(dd.GetChildNodes()) <= 0 {
+		// Check if a Document element is already appended.
+		docelem := dd.GetDocumentElement()
+		if docelem == nil {
 			child.setParentNode(dd)
 			dd.nodes = append(dd.nodes, child)
 			return nil
+		} else {
+			return fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, docelem)
 		}
 	case ProcessingInstruction:
 		// Processing instructions are legal children of a DOM Document and can appear
 		// anywhere, even before the Document element.
-		// TODO processing instructions in their own node list?
-		// child.setParentNode(dd)
-		// dd.nodes = append(dd.nodes, child)
-		// fmt.Println(dd.nodes)
-		// fmt.Println(child.GetNodeName(), child.GetNodeValue())
+		child.setParentNode(dd)
+		dd.nodes = append(dd.nodes, child)
+		return nil
+	case Comment:
+		child.setParentNode(dd)
+		dd.nodes = append(dd.nodes, child)
 		return nil
 	default:
 		return fmt.Errorf("only nodes of type (%v | %v) can be added (tried '%v')",
@@ -163,7 +171,15 @@ func (dd *domDocument) CreateComment(comment string) (Comment, error) {
 }
 
 func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
-	return nil, nil
+	xmlname := XMLName(name)
+	if !xmlname.IsValid() {
+		return nil, fmt.Errorf("%v: '%v'", ErrorInvalidCharacter, xmlname)
+	}
+
+	attr := newAttr()
+	attr.setName(name)
+	attr.setOwnerDocument(dd)
+	return attr, nil
 }
 
 func (dd *domDocument) CreateProcessingInstruction(target, data string) (ProcessingInstruction, error) {
@@ -175,10 +191,22 @@ func (dd *domDocument) CreateProcessingInstruction(target, data string) (Process
 	return pi, nil
 }
 
+// GetDocumentElement traverses through the child nodes and finds the first Element.
+// That one will be returned as the Document element. The AppendChild function must
+// take care that no two root nodes can be added to this Document.
 func (dd *domDocument) GetDocumentElement() Element {
-	firstNode := dd.GetChildNodes()[0]
-	bleh := firstNode.(Element)
-	return bleh
+	// No nodes, so return nil.
+	if len(dd.nodes) <= 0 {
+		return nil
+	}
+
+	for _, node := range dd.nodes {
+		if e, ok := node.(Element); ok {
+			return e
+		}
+	}
+
+	return nil
 }
 
 func (dd *domDocument) String() string {

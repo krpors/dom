@@ -93,7 +93,7 @@ func (de *domElement) SetAttribute(name, value string) {
 	}
 
 	attr := newAttr()
-	attr.SetName(name)
+	attr.setName(name)
 	attr.SetValue(value)
 	attr.setOwnerElement(de)
 	de.attributes.SetNamedItem(attr)
