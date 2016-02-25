@@ -4,6 +4,9 @@ import (
 	"errors"
 )
 
+// This file contains the definitions of errors, interfaces and other constants
+// of the DOM Level 3 spec.
+
 // Error definitions:
 var (
 	// ErrorHierarchyRequest is the error which can be returned when the node

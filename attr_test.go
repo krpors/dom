@@ -45,3 +45,12 @@ func TestAttrParentNode(t *testing.T) {
 
 	attr.setParentNode(elem)
 }
+
+func TestAttrAppendChild(t *testing.T) {
+	attr := newAttr()
+	comment := newComment()
+	comment.SetComment("hi thar")
+	if err := attr.AppendChild(comment); err == nil {
+		t.Errorf("expected error during appending of node to attr")
+	}
+}
