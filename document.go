@@ -82,8 +82,18 @@ func (dd *domDocument) AppendChild(child Node) error {
 			dd.nodes = append(dd.nodes, child)
 			return nil
 		}
+	case ProcessingInstruction:
+		// Processing instructions are legal children of a DOM Document and can appear
+		// anywhere, even before the Document element.
+		// TODO processing instructions in their own node list?
+		// child.setParentNode(dd)
+		// dd.nodes = append(dd.nodes, child)
+		// fmt.Println(dd.nodes)
+		// fmt.Println(child.GetNodeName(), child.GetNodeValue())
+		return nil
 	default:
-		return fmt.Errorf("only nodes of type %v can be added (tried '%v')", ElementNode, typ.GetNodeType())
+		return fmt.Errorf("only nodes of type (%v | %v) can be added (tried '%v')",
+			ElementNode, ProcessingInstructionNode, typ.GetNodeType())
 	}
 
 	return fmt.Errorf("%v: document can only have one child, which must be of type Element", ErrorHierarchyRequest)
@@ -154,6 +164,15 @@ func (dd *domDocument) CreateComment(comment string) (Comment, error) {
 
 func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 	return nil, nil
+}
+
+func (dd *domDocument) CreateProcessingInstruction(target, data string) (ProcessingInstruction, error) {
+	pi := &domProcInst{}
+	pi.setOwnerDocument(dd)
+	pi.setParentNode(dd)
+	pi.data = data
+	pi.target = target
+	return pi, nil
 }
 
 func (dd *domDocument) GetDocumentElement() Element {

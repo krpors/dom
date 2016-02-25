@@ -29,7 +29,7 @@ func (b *Builder) PrintTree(w io.Writer) {
 
 	var xtree func(n Node, padding string)
 	xtree = func(n Node, padding string) {
-		w.Write([]byte(fmt.Sprintf("%s%s\n", padding, n)))
+		w.Write([]byte(fmt.Sprintf("%s%v\n", padding, n)))
 		for _, node := range n.GetChildNodes() {
 			xtree(node, padding+"  ")
 		}
@@ -43,7 +43,7 @@ func (b *Builder) PrintTree(w io.Writer) {
 // if something has failed during the parsing of the tokens.
 func (b *Builder) CreateDocument() (Document, error) {
 	b.doc = NewDocument()
-	var curNode Node = b.doc
+	var curNode = Node(b.doc)
 
 	for {
 		token, err := b.decoder.Token()
@@ -57,9 +57,19 @@ func (b *Builder) CreateDocument() (Document, error) {
 		}
 
 		switch typ := token.(type) {
+		// TODO: attributes
+		case xml.Comment:
+			cmt, err := b.doc.CreateComment(string(typ))
+			if err != nil {
+				return nil, err
+			}
+			curNode.AppendChild(cmt)
 		case xml.ProcInst:
-			//fmt.Println(string(typ.Target))// TODO: processing instruction type.
-			//fmt.Println(string(typ.Inst))
+			pi, err := b.doc.CreateProcessingInstruction(typ.Target, string(typ.Inst))
+			if err != nil {
+				return nil, err
+			}
+			b.doc.AppendChild(pi)
 		case xml.StartElement:
 			elem, err := b.doc.CreateElementNS(typ.Name.Space, typ.Name.Local)
 			if err != nil {
@@ -70,12 +80,12 @@ func (b *Builder) CreateDocument() (Document, error) {
 		case xml.EndElement:
 			curNode = curNode.GetParentNode()
 		case xml.CharData:
+			// FIXME: character data is still read by the xml.Decoder even AFTER the document element.
+			// This isn't good. Return an error then.
 			text := b.doc.CreateTextNode(string(typ))
 			curNode.AppendChild(text)
 		}
 	}
-
-	return b.doc, nil
 }
 
 func (b *Builder) attrsToBleh(a []xml.Attr) Attr {

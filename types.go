@@ -87,6 +87,19 @@ type NamedNodeMap interface {
 	Length() int
 }
 
+// ProcessingInstruction interface represents a "processing instruction", used
+// in XML as a way to keep processor-specific information in the text of the document.
+type ProcessingInstruction interface {
+	Node
+
+	// The content of this processing instruction. This is from the first non white
+	// space character after the target to the character immediately preceding the ?>.
+	GetTarget() string
+	// The target of this processing instruction. XML defines this as being the first
+	// token following the markup that begins the processing instruction.
+	GetData() string
+}
+
 // Node is the primary interface for the entire Document Object Model. It represents
 // a single node in the document tree. While all objects implementing the Node
 // interface expose methods for dealing with children, not all objects implementing
@@ -200,6 +213,9 @@ type Document interface {
 	// CreateComment creates a Comment node with the given comment content. If
 	// the comment contains a double hyphen (--), this should generate an error.
 	CreateComment(comment string) (Comment, error)
+	// CreateProcessingInstruction creates a processing instruction and returns it.
+	CreateProcessingInstruction(target, data string) (ProcessingInstruction, error)
+
 	// Gets the document element, which should be the first (and only) child Node
 	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
