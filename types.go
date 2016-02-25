@@ -94,34 +94,34 @@ type NamedNodeMap interface {
 type Node interface {
 	// Gets the node name. Depending on the type (Attr, CDATASection, Element etc.)
 	// the result of this call differs.
-	NodeName() string
+	GetNodeName() string
 	// Gets the type of node.
-	NodeType() NodeType
-	// Gets the node value. Like NodeName(), the output differs depending on the type.
-	NodeValue() string
+	GetNodeType() NodeType
+	// Gets the node value. Like GetNodeName(), the output differs depending on the type.
+	GetNodeValue() string
 	// Returns the local part of the qualified name of this node.
-	LocalName() string
+	GetLocalName() string
 	// Gets the list of child nodes.
-	NodeList() []Node
+	GetChildNodes() []Node
 	// Gets the parent node. May be nil if none was assigned.
-	ParentNode() Node
+	GetParentNode() Node
 	// Gets the first child Node of this Node. May return nil if no child nodes
 	// exist.
-	FirstChild() Node
+	GetFirstChild() Node
 	// GetAttributes will return the attributes belonging to this node. In the current
 	// spec, only Element nodes will return something sensible (i.e. non nil) when this
 	// function is called.
 	GetAttributes() NamedNodeMap
 	// Gets the owner document (the Document instance which was used to create
 	// the Node).
-	OwnerDocument() Document
+	GetOwnerDocument() Document
 	// Appends a child to this Node. Will return an error when this Node is not
 	// able to have any (more) children, like Text nodes.
 	AppendChild(Node) error
 	// Returns true when the Node has one or more children.
 	HasChildNodes() bool
 	// Returns the namespace URI of this node.
-	NamespaceURI() string
+	GetNamespaceURI() string
 
 	// Private functions
 	setParentNode(Node)

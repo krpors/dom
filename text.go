@@ -21,33 +21,33 @@ func newText() Text {
 	return t
 }
 
-func (dt *domText) NodeName() string {
+func (dt *domText) GetNodeName() string {
 	return "#text"
 }
 
-func (dt *domText) NodeType() NodeType {
+func (dt *domText) GetNodeType() NodeType {
 	return TextNode
 }
 
 // NodeValue returns the same as GetData, the content of the text node.
-func (dt *domText) NodeValue() string {
+func (dt *domText) GetNodeValue() string {
 	return dt.GetData()
 }
 
-func (dt *domText) LocalName() string {
+func (dt *domText) GetLocalName() string {
 	// TODO: huh? for text?
 	return ""
 }
 
-func (dt *domText) NodeList() []Node {
+func (dt *domText) GetChildNodes() []Node {
 	return nil
 }
 
-func (dt *domText) ParentNode() Node {
+func (dt *domText) GetParentNode() Node {
 	return dt.parentNode
 }
 
-func (dt *domText) FirstChild() Node {
+func (dt *domText) GetFirstChild() Node {
 	return nil
 }
 
@@ -55,19 +55,19 @@ func (dt *domText) GetAttributes() NamedNodeMap {
 	return nil
 }
 
-func (dt *domText) OwnerDocument() Document {
+func (dt *domText) GetOwnerDocument() Document {
 	return dt.ownerDocument
 }
 
 func (dt *domText) AppendChild(child Node) error {
-	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dt.NodeType())
+	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dt.GetNodeType())
 }
 
 func (dt *domText) HasChildNodes() bool {
 	return false
 }
 
-func (dt *domText) NamespaceURI() string {
+func (dt *domText) GetNamespaceURI() string {
 	return ""
 }
 
@@ -98,5 +98,5 @@ func (dt *domText) SetData(data string) {
 }
 
 func (dt *domText) String() string {
-	return fmt.Sprintf("%s: '%s'", dt.NodeType(), strings.TrimSpace(dt.data))
+	return fmt.Sprintf("%s: '%s'", dt.GetNodeType(), strings.TrimSpace(dt.data))
 }

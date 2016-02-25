@@ -31,7 +31,7 @@ import (
 
 func tree(n dom.Node, padding string) {
 	fmt.Printf("%s%v\n", padding, n)
-	for _, child := range n.NodeList() {
+	for _, child := range n.GetChildNodes() {
 		tree(child, padding+"    ")
 	}
 }
@@ -49,7 +49,7 @@ func main() {
 
 	nnm := sub1.GetAttributes()
 	fmt.Println(nnm.Length())
-	fmt.Println(nnm.GetNamedItem("cruft").NodeValue())
+	fmt.Println(nnm.GetNamedItem("cruft").GetNodeValue())
 
 	sub2, _ := doc.CreateElement("two")
 	txt2 := doc.CreateTextNode("sample text 2")

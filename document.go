@@ -25,35 +25,35 @@ func NewDocument() Document {
 
 // NODE SPECIFIC FUNCTIONS
 
-func (dd *domDocument) NodeName() string {
+func (dd *domDocument) GetNodeName() string {
 	return "#document"
 }
 
-func (dd *domDocument) NodeType() NodeType {
+func (dd *domDocument) GetNodeType() NodeType {
 	return DocumentNode
 }
 
 // NodeValue should return null/nil for Document types like the spec says,
 // but Go does not permit nil strings which are not pointers. So for now we
 // just return an empty string at all times.
-func (dd *domDocument) NodeValue() string {
+func (dd *domDocument) GetNodeValue() string {
 	return ""
 }
 
-func (dd *domDocument) LocalName() string {
+func (dd *domDocument) GetLocalName() string {
 	// TODO: what?
 	return dd.tagName
 }
 
-func (dd *domDocument) NodeList() []Node {
+func (dd *domDocument) GetChildNodes() []Node {
 	return dd.nodes
 }
 
-func (dd *domDocument) ParentNode() Node {
+func (dd *domDocument) GetParentNode() Node {
 	return nil
 }
 
-func (dd *domDocument) FirstChild() Node {
+func (dd *domDocument) GetFirstChild() Node {
 	return dd.nodes[0]
 }
 
@@ -61,7 +61,7 @@ func (dd *domDocument) GetAttributes() NamedNodeMap {
 	return nil
 }
 
-func (dd *domDocument) OwnerDocument() Document {
+func (dd *domDocument) GetOwnerDocument() Document {
 	return nil
 }
 
@@ -77,13 +77,13 @@ func (dd *domDocument) AppendChild(child Node) error {
 	// Only allow elements to be append as a child... for now!
 	switch typ := child.(type) {
 	case Element:
-		if len(dd.NodeList()) <= 0 {
+		if len(dd.GetChildNodes()) <= 0 {
 			child.setParentNode(dd)
 			dd.nodes = append(dd.nodes, child)
 			return nil
 		}
 	default:
-		return fmt.Errorf("only nodes of type %v can be added (tried '%v')", ElementNode, typ.NodeType())
+		return fmt.Errorf("only nodes of type %v can be added (tried '%v')", ElementNode, typ.GetNodeType())
 	}
 
 	return fmt.Errorf("%v: document can only have one child, which must be of type Element", ErrorHierarchyRequest)
@@ -95,7 +95,7 @@ func (dd *domDocument) HasChildNodes() bool {
 
 // NamespaceURI should return nil as per the spec, but Go doesn't allow that for
 // non-pointer types, so return an empty string instead.
-func (dd *domDocument) NamespaceURI() string {
+func (dd *domDocument) GetNamespaceURI() string {
 	return ""
 }
 
@@ -157,11 +157,11 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 }
 
 func (dd *domDocument) GetDocumentElement() Element {
-	firstNode := dd.NodeList()[0]
+	firstNode := dd.GetChildNodes()[0]
 	bleh := firstNode.(Element)
 	return bleh
 }
 
 func (dd *domDocument) String() string {
-	return fmt.Sprintf("%s", dd.NodeType())
+	return fmt.Sprintf("%s", dd.GetNodeType())
 }

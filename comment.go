@@ -21,33 +21,33 @@ func newComment() Comment {
 	return t
 }
 
-func (dc *domComment) NodeName() string {
+func (dc *domComment) GetNodeName() string {
 	return "#comment"
 }
 
-func (dc *domComment) NodeType() NodeType {
+func (dc *domComment) GetNodeType() NodeType {
 	return CommentNode
 }
 
 // NodeValue returns the same as GetData, the content of the text node.
-func (dc *domComment) NodeValue() string {
+func (dc *domComment) GetNodeValue() string {
 	return dc.GetComment()
 }
 
-func (dc *domComment) LocalName() string {
+func (dc *domComment) GetLocalName() string {
 	// TODO: huh? for text?
 	return ""
 }
 
-func (dc *domComment) NodeList() []Node {
+func (dc *domComment) GetChildNodes() []Node {
 	return nil
 }
 
-func (dc *domComment) ParentNode() Node {
+func (dc *domComment) GetParentNode() Node {
 	return dc.parentNode
 }
 
-func (dc *domComment) FirstChild() Node {
+func (dc *domComment) GetFirstChild() Node {
 	return nil
 }
 
@@ -55,19 +55,19 @@ func (dc *domComment) GetAttributes() NamedNodeMap {
 	return nil
 }
 
-func (dc *domComment) OwnerDocument() Document {
+func (dc *domComment) GetOwnerDocument() Document {
 	return dc.ownerDocument
 }
 
 func (dc *domComment) AppendChild(child Node) error {
-	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dc.NodeType())
+	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dc.GetNodeType())
 }
 
 func (dc *domComment) HasChildNodes() bool {
 	return false
 }
 
-func (dc *domComment) NamespaceURI() string {
+func (dc *domComment) GetNamespaceURI() string {
 	return ""
 }
 
@@ -97,5 +97,5 @@ func (dc *domComment) SetComment(comment string) {
 }
 
 func (dc *domComment) String() string {
-	return fmt.Sprintf("%s: '%s'", dc.NodeType(), strings.TrimSpace(dc.comment))
+	return fmt.Sprintf("%s: '%s'", dc.GetNodeType(), strings.TrimSpace(dc.comment))
 }

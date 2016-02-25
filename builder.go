@@ -30,7 +30,7 @@ func (b *Builder) PrintTree(w io.Writer) {
 	var xtree func(n Node, padding string)
 	xtree = func(n Node, padding string) {
 		w.Write([]byte(fmt.Sprintf("%s%s\n", padding, n)))
-		for _, node := range n.NodeList() {
+		for _, node := range n.GetChildNodes() {
 			xtree(node, padding+"  ")
 		}
 	}
@@ -68,7 +68,7 @@ func (b *Builder) CreateDocument() (Document, error) {
 			curNode.AppendChild(elem)
 			curNode = elem
 		case xml.EndElement:
-			curNode = curNode.ParentNode()
+			curNode = curNode.GetParentNode()
 		case xml.CharData:
 			text := b.doc.CreateTextNode(string(typ))
 			curNode.AppendChild(text)

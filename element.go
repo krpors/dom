@@ -22,35 +22,35 @@ func newElement() Element {
 	return e
 }
 
-func (de *domElement) NodeName() string {
+func (de *domElement) GetNodeName() string {
 	return de.tagName
 }
 
-func (de *domElement) NodeType() NodeType {
+func (de *domElement) GetNodeType() NodeType {
 	return ElementNode
 }
 
 // NodeValue should return null/nil for Element types like the spec says,
 // but Go does not permit nil strings which are not pointers. So for now we
 // just return an empty string at all times.
-func (de *domElement) NodeValue() string {
+func (de *domElement) GetNodeValue() string {
 	return ""
 }
 
-func (de *domElement) LocalName() string {
+func (de *domElement) GetLocalName() string {
 	// TODO: what?
 	return de.tagName
 }
 
-func (de *domElement) NodeList() []Node {
+func (de *domElement) GetChildNodes() []Node {
 	return de.nodes
 }
 
-func (de *domElement) ParentNode() Node {
+func (de *domElement) GetParentNode() Node {
 	return de.parentNode
 }
 
-func (de *domElement) FirstChild() Node {
+func (de *domElement) GetFirstChild() Node {
 	return de.nodes[0]
 }
 
@@ -58,7 +58,7 @@ func (de *domElement) GetAttributes() NamedNodeMap {
 	return de.attributes
 }
 
-func (de *domElement) OwnerDocument() Document {
+func (de *domElement) GetOwnerDocument() Document {
 	return de.ownerDocument
 }
 
@@ -75,7 +75,7 @@ func (de *domElement) HasChildNodes() bool {
 	return len(de.nodes) > 0
 }
 
-func (de *domElement) NamespaceURI() string {
+func (de *domElement) GetNamespaceURI() string {
 	return de.namespaceURI
 }
 
@@ -118,5 +118,5 @@ func (de *domElement) setNamespaceURI(uri string) {
 
 func (de *domElement) String() string {
 	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
-		de.NodeType(), de.tagName, de.namespaceURI, de.attributes)
+		de.GetNodeType(), de.tagName, de.namespaceURI, de.attributes)
 }

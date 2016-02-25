@@ -11,14 +11,14 @@ func TestAttrNodeName(t *testing.T) {
 		t.Errorf("incorrect node name")
 	}
 
-	if attr.NodeName() != "cruft" {
+	if attr.GetNodeName() != "cruft" {
 		t.Errorf("incorrect node name")
 	}
 }
 
 func TestAttrNodeType(t *testing.T) {
 	attr := newAttr()
-	if attr.NodeType() != AttributeNode {
+	if attr.GetNodeType() != AttributeNode {
 		t.Errorf("incorrect node type for attribute")
 	}
 }
@@ -26,8 +26,8 @@ func TestAttrNodeType(t *testing.T) {
 func TestAttrNodeValue(t *testing.T) {
 	attr := newAttr()
 	attr.SetValue("valval")
-	if attr.NodeValue() != "valval" {
-		t.Errorf("incorrect node value: '%v'", attr.NodeValue())
+	if attr.GetNodeValue() != "valval" {
+		t.Errorf("incorrect node value: '%v'", attr.GetNodeValue())
 	}
 
 	if attr.GetValue() != "valval" {

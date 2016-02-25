@@ -24,38 +24,38 @@ func newAttr() Attr {
 	return a
 }
 
-func (da *domAttr) NodeName() string {
+func (da *domAttr) GetNodeName() string {
 	return da.attrName
 }
 
-func (da *domAttr) NodeType() NodeType {
+func (da *domAttr) GetNodeType() NodeType {
 	return AttributeNode
 }
 
 // NodeValue should return null/nil for Element types like the spec says,
 // but Go does not permit nil strings which are not pointers. So for now we
 // just return an empty string at all times.
-func (da *domAttr) NodeValue() string {
+func (da *domAttr) GetNodeValue() string {
 	return da.attrValue
 }
 
-func (da *domAttr) LocalName() string {
+func (da *domAttr) GetLocalName() string {
 	// TODO: what?
 	return ""
 }
 
-// NodeList() returns an empty list of nodes for the Attr type.
-func (da *domAttr) NodeList() []Node {
+// GetChildNodes() returns an empty list of nodes for the Attr type.
+func (da *domAttr) GetChildNodes() []Node {
 	return []Node{}
 }
 
 // ParentNode returns nil, since the spec says Attr objects cannot have parents.
-func (da *domAttr) ParentNode() Node {
+func (da *domAttr) GetParentNode() Node {
 	return nil
 }
 
 // FirstChild will return nil, since Attr objects cannot contain children.
-func (da *domAttr) FirstChild() Node {
+func (da *domAttr) GetFirstChild() Node {
 	return nil
 }
 
@@ -66,7 +66,7 @@ func (da *domAttr) GetAttributes() NamedNodeMap {
 }
 
 // OwnerDocument returns the owner document of this Attr.
-func (da *domAttr) OwnerDocument() Document {
+func (da *domAttr) GetOwnerDocument() Document {
 	return da.ownerDocument
 }
 
@@ -80,7 +80,7 @@ func (da *domAttr) HasChildNodes() bool {
 	return false
 }
 
-func (da *domAttr) NamespaceURI() string {
+func (da *domAttr) GetNamespaceURI() string {
 	return da.namespaceURI
 }
 
@@ -132,5 +132,5 @@ func (da *domAttr) setOwnerElement(owner Element) {
 
 func (da *domAttr) String() string {
 	// TODO: this
-	return fmt.Sprintf("%v, %v=%v", da.NodeType(), da.attrName, da.attrValue)
+	return fmt.Sprintf("%v, %v=%v", da.GetNodeType(), da.attrName, da.attrValue)
 }

@@ -6,14 +6,14 @@ import (
 
 func TestDocumentNodeName(t *testing.T) {
 	doc := NewDocument()
-	if doc.NodeName() != "#document" {
+	if doc.GetNodeName() != "#document" {
 		t.Errorf("node name of document must be '#document'")
 	}
 }
 
 func TestDocumentNodeType(t *testing.T) {
 	doc := NewDocument()
-	if doc.NodeType() != DocumentNode {
+	if doc.GetNodeType() != DocumentNode {
 		t.Errorf("node type of document must be %v", DocumentNode)
 	}
 }

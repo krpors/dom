@@ -34,7 +34,7 @@ func ToXML(node Node, omitXMLDecl bool, w io.Writer) {
 		}
 
 		// For each child node, call traverse() again.
-		for _, node := range n.NodeList() {
+		for _, node := range n.GetChildNodes() {
 			traverse(node)
 		}
 

@@ -8,21 +8,21 @@ func TestElementNodeName(t *testing.T) {
 	root := newElement()
 	root.SetTagName("rewt")
 
-	if root.NodeName() != "rewt" {
+	if root.GetNodeName() != "rewt" {
 		t.Errorf("node name is expected to be the same as the tag name, which is '%v'", root.GetTagName())
 	}
 }
 
 func TestElementNodeType(t *testing.T) {
 	root := newElement()
-	if root.NodeType() != ElementNode {
+	if root.GetNodeType() != ElementNode {
 		t.Errorf("elements are supposed to be of type '%v'", ElementNode)
 	}
 }
 
 func TestElementNodeValue(t *testing.T) {
 	root := newElement()
-	if root.NodeValue() != "" {
+	if root.GetNodeValue() != "" {
 		t.Errorf("node value of elements are not applicable and should therefore be empty")
 	}
 }
@@ -33,7 +33,7 @@ func TestElementLocalName(t *testing.T) {
 
 func TestElementNodeList(t *testing.T) {
 	root := newElement()
-	if len(root.NodeList()) != 0 {
+	if len(root.GetChildNodes()) != 0 {
 		t.Errorf("uninitialized node list should be zero length")
 	}
 
@@ -44,8 +44,8 @@ func TestElementNodeList(t *testing.T) {
 		root.AppendChild(e)
 	}
 
-	if len(root.NodeList()) != 10 {
-		t.Errorf("node list length should be 10, but was ", len(root.NodeList()))
+	if len(root.GetChildNodes()) != 10 {
+		t.Errorf("node list length should be 10, but was ", len(root.GetChildNodes()))
 	}
 
 }
@@ -56,7 +56,7 @@ func TestElementOwnerDocument(t *testing.T) {
 	if err != nil {
 		t.Errorf("no error expected!!")
 	}
-	if elem.OwnerDocument() != doc {
+	if elem.GetOwnerDocument() != doc {
 		t.Errorf("incorrect owner document")
 	}
 }
@@ -68,8 +68,8 @@ func TestElementAppendChild(t *testing.T) {
 	child := newElement()
 	child.SetTagName("child")
 
-	if len(root.NodeList()) != 0 {
-		t.Errorf("length of node list should be 0, but was %v", len(root.NodeList()))
+	if len(root.GetChildNodes()) != 0 {
+		t.Errorf("length of node list should be 0, but was %v", len(root.GetChildNodes()))
 	}
 
 	err := root.AppendChild(child)
@@ -77,17 +77,17 @@ func TestElementAppendChild(t *testing.T) {
 		t.Errorf("did not expect error at this point: '%v'", err)
 	}
 
-	if child.ParentNode() != root {
-		t.Logf("child.parent = %v, root = %v", child.ParentNode(), root)
+	if child.GetParentNode() != root {
+		t.Logf("child.parent = %v, root = %v", child.GetParentNode(), root)
 		t.Errorf("parent node of 'child' should be 'root'")
 	}
 
-	if len(root.NodeList()) != 1 {
-		t.Errorf("length of node list should be 1, but was %v", len(root.NodeList()))
+	if len(root.GetChildNodes()) != 1 {
+		t.Errorf("length of node list should be 1, but was %v", len(root.GetChildNodes()))
 	}
 
-	if root.NodeList()[0] != child {
-		t.Errorf("first element is expected to be 'child', but was %v", root.NodeList()[0])
+	if root.GetChildNodes()[0] != child {
+		t.Errorf("first element is expected to be 'child', but was %v", root.GetChildNodes()[0])
 	}
 
 	err = root.AppendChild(root)
