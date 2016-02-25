@@ -31,6 +31,10 @@ func ToXML(node Node, omitXMLDecl bool, w io.Writer) {
 			fmt.Fprintf(w, "%s", escape(t.GetData()))
 		case Comment:
 			fmt.Fprintf(w, "<!-- %s -->", t.GetComment())
+		case ProcessingInstruction:
+			// TODO: proper serialization of target/data. Must include valid chars etc.
+			// Also, if target/data contains '?>', generate a fatal error.
+			fmt.Fprintf(w, "<?%v %v?>", t.GetTarget(), t.GetData())
 		}
 
 		// For each child node, call traverse() again.
