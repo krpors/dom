@@ -86,6 +86,13 @@ func (b *Builder) CreateDocument() (Document, error) {
 		case xml.EndElement:
 			curNode = curNode.GetParentNode()
 		case xml.CharData:
+			// If there is no document element yet, and the character data is found which is NOT whitespace,
+			// generate an error (no character data allowed before document element).
+			if b.doc.GetDocumentElement() == nil {
+				if strings.TrimSpace(string(typ)) != "" {
+					return nil, fmt.Errorf("%v: character data not allowed before document element", ErrorHierarchyRequest)
+				}
+			}
 			// FIXME: character data is still read by the xml.Decoder even AFTER the document element.
 			// This isn't good. Return an error then.
 			text := b.doc.CreateTextNode(string(typ))

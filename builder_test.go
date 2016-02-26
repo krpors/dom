@@ -5,7 +5,22 @@ import (
 	"testing"
 )
 
+// exampleErrDoc1 contains an invalid XML document, because character data exists
+// between the XML declaration and the document element.
+var exampleErrDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
+
+
+invalid content.
+
+<directory>
+	Character data can exist here.
+</directory>`
+
+// exampleDoc contains an XML valid document.
 var exampleDoc = `<?xml version="1.0" encoding="UTF-8"?>
+
+
+
 <directory>
 	<people>
 		<person name="Foo" lastname="Quux">
@@ -46,5 +61,14 @@ func TestBuilderCreateDocument(t *testing.T) {
 
 	if cmt.GetNodeType() != CommentNode {
 		t.Errorf("expecting a comment node, but was %v", cmt.GetNodeType())
+	}
+}
+
+func TestBuilderCreateDocumentInvalidContent(t *testing.T) {
+	reader := strings.NewReader(exampleErrDoc1)
+	builder := NewBuilder(reader)
+	_, err := builder.CreateDocument()
+	if err == nil {
+		t.Errorf("expected error after building document from string, but got none")
 	}
 }

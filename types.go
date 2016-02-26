@@ -177,7 +177,10 @@ type Element interface {
 type Text interface {
 	Node
 
+	// GetData gets the character data of this Text node.
 	GetData() string
+
+	// SetData sets the character data of this Text node.
 	SetData(s string)
 }
 
@@ -189,11 +192,11 @@ type Text interface {
 type DocumentType interface {
 	Node
 
-	// Gets the name of the DTD; i.e.  the name immediately following the DOCTYPE keyword.
+	// GetName gets the name of the DTD; i.e.  the name immediately following the DOCTYPE keyword.
 	GetName() string
-	// The public identifier of the external subset.
+	// GetPublicID returns public identifier of the external subset.
 	GetPublicID() string
-	// The system identifier of the external subset. This may be an absolute URI or not.
+	// GetSystemID returns the system identifier of the external subset. This may be an absolute URI or not.
 	GetSystemID() string
 }
 
@@ -205,17 +208,22 @@ type Document interface {
 	// an ErrorInvalidCharacter if the specified name is not an XML name according
 	// to the XML version in use, specified in the XMLVersion attribute.
 	CreateElement(tagName string) (Element, error)
+
 	// Creates an element of the givens qualified name and namespace URI, and
 	// returns it. Use an empty string if no namespace is necessary. See
 	// CreateElement(string).
 	CreateElementNS(namespaceURI, tagName string) (Element, error)
+
 	// Creates a Text node given the specified string and returns it.
 	CreateTextNode(string) Text
+
 	// Creates an Attr of the given name and returns it.
 	CreateAttribute(name string) (Attr, error)
+
 	// CreateComment creates a Comment node with the given comment content. If
 	// the comment contains a double hyphen (--), this should generate an error.
 	CreateComment(comment string) (Comment, error)
+
 	// CreateProcessingInstruction creates a processing instruction and returns it.
 	CreateProcessingInstruction(target, data string) (ProcessingInstruction, error)
 
@@ -229,6 +237,9 @@ type Document interface {
 type Comment interface {
 	Node
 
+	// GetComment gets the comment text of this node.
 	GetComment() string
+
+	// SetComment gets the comment text of this node.
 	SetComment(comment string)
 }
