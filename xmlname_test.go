@@ -11,6 +11,8 @@ func TestXMLNameIsValid(t *testing.T) {
 		element string
 		actual  bool
 	}{
+		{"", false},
+		{"\xff\xfdand_the_rest", false},
 		{"valid", true},
 		{" with_leading_space", false},
 		{"with space", false},
@@ -29,6 +31,7 @@ func TestXMLNameIsValid(t *testing.T) {
 		{"ALLCAPSSHOULDWORKASWELL", true},
 		{"_______", true},
 		{"\x00\x0A", false},
+		{"ok\xff\xfd", false},
 	}
 
 	for _, test := range tests {
