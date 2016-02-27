@@ -64,7 +64,9 @@ func (b *Builder) CreateDocument() (Document, error) {
 			if err != nil {
 				return nil, err
 			}
-			curNode.AppendChild(cmt)
+			if err = curNode.AppendChild(cmt); err != nil {
+				return nil, err
+			}
 		case xml.ProcInst:
 			// Note: the Go default decoder regards the XML declaration as a processing
 			// instruction, even though it is not. Therefore, we handle this edge case
@@ -74,14 +76,18 @@ func (b *Builder) CreateDocument() (Document, error) {
 				if err != nil {
 					return nil, err
 				}
-				b.doc.AppendChild(pi)
+				if err = b.doc.AppendChild(pi); err != nil {
+					return nil, err
+				}
 			}
 		case xml.StartElement:
 			elem, err := b.doc.CreateElementNS(typ.Name.Space, typ.Name.Local)
 			if err != nil {
 				return nil, err
 			}
-			curNode.AppendChild(elem)
+			if err = curNode.AppendChild(elem); err != nil {
+				return nil, err
+			}
 			curNode = elem
 		case xml.EndElement:
 			curNode = curNode.GetParentNode()
@@ -105,10 +111,15 @@ func (b *Builder) CreateDocument() (Document, error) {
 					// We cannot append text/chardata to the document itself.
 					return nil, fmt.Errorf("%v: content is not allowed in trailing section", ErrorHierarchyRequest)
 				}
+				// We got whitespace. Don't add it as a child, merely continue the next token
+				// parsing in the stream. Same behaviour as above.
+				continue
 			}
 			// In all other cases, create a text node and add it to the current node as a child.
 			text := b.doc.CreateTextNode(string(typ))
-			curNode.AppendChild(text)
+			if err := curNode.AppendChild(text); err != nil {
+				return nil, err
+			}
 		}
 	}
 }

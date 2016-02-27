@@ -93,6 +93,7 @@ func TestBuilderCreateDocumentWhitespaces(t *testing.T) {
 	doc, err := builder.CreateDocument()
 	if err != nil {
 		t.Errorf("unexpected error: '%v'", err)
+		t.FailNow()
 	}
 
 	// Check the correct amount of children. Make sure no three children are added,
