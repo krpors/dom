@@ -4,17 +4,35 @@ import (
 	"testing"
 )
 
-func TestDocumentNodeName(t *testing.T) {
+// Test the plain getters of the Document. Also some no-op setters.
+func TestDocumentGetters(t *testing.T) {
 	doc := NewDocument()
+
+	// Set some no-op setters, to increase coverage reports as well.
+	doc.setParentNode(doc.CreateTextNode("no-op"))
+	doc.setOwnerDocument(NewDocument())
+	doc.setNamespaceURI("no-op")
+
 	if doc.GetNodeName() != "#document" {
 		t.Errorf("node name of document must be '#document'")
 	}
-}
-
-func TestDocumentNodeType(t *testing.T) {
-	doc := NewDocument()
+	if doc.GetLocalName() != "" {
+		t.Error("local name must be an empty string")
+	}
 	if doc.GetNodeType() != DocumentNode {
 		t.Errorf("node type of document must be %v", DocumentNode)
+	}
+	if doc.GetNodeValue() != "" {
+		t.Error("node value must be an empty string")
+	}
+	if doc.GetAttributes() != nil {
+		t.Error("attributes must be nil")
+	}
+	if doc.GetOwnerDocument() != nil {
+		t.Error("owner document must be nil")
+	}
+	if doc.GetParentNode() != nil {
+		t.Error("document can't have a parent node")
 	}
 }
 
@@ -22,7 +40,12 @@ func TestDocumentNodeType(t *testing.T) {
 func TestDocumentAppendChild(t *testing.T) {
 	doc := NewDocument()
 
-	err := doc.AppendChild(doc)
+	err := doc.AppendChild(nil)
+	if err != nil {
+		t.Error("appending a nil child should not generate an error")
+	}
+
+	err = doc.AppendChild(doc)
 	if err == nil {
 		t.Errorf("expected hierarchy error")
 	}
@@ -156,4 +179,26 @@ func TestDocumentCreateElement(t *testing.T) {
 	}
 }
 
-// ø
+func TestDocumentCreateElementNS(t *testing.T) {
+	doc := NewDocument()
+	_, err := doc.CreateElementNS("http://example.org/uri", ".in valid")
+	if err == nil {
+		t.Error("expected error due to incorrect tagname")
+	}
+}
+
+func TestDocumentCreateComment(t *testing.T) {
+	doc := NewDocument()
+	c, err := doc.CreateComment("<anything goes in comments>")
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if c.GetComment() != "<anything goes in comments>" {
+		t.Error("incorrect comment content")
+	}
+
+	_, err = doc.CreateComment("except -- in comments")
+	if err == nil {
+		t.Error("expected an error during comment creation but got none")
+	}
+}

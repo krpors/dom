@@ -25,3 +25,7 @@ _testmain.go
 
 # Vim session
 Session.vim
+
+# Coverage output files:
+coverage.out
+coverage.html

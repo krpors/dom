@@ -98,9 +98,17 @@ type ProcessingInstruction interface {
 	// The content of this processing instruction. This is from the first non white
 	// space character after the target to the character immediately preceding the ?>.
 	GetTarget() string
+
 	// The target of this processing instruction. XML defines this as being the first
 	// token following the markup that begins the processing instruction.
 	GetData() string
+
+	// setData sets the data part of the processing instruction.
+	setData(string)
+
+	// setTarget sets the target part of the processing instruction, which may be
+	// anything but [XxMmLl].
+	setTarget(string)
 }
 
 // Node is the primary interface for the entire Document Object Model. It represents

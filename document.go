@@ -101,11 +101,9 @@ func (dd *domDocument) AppendChild(child Node) error {
 		dd.nodes = append(dd.nodes, child)
 		return nil
 	default:
-		return fmt.Errorf("only nodes of type (%v | %v) can be added (tried '%v')",
-			ElementNode, ProcessingInstructionNode, typ.GetNodeType())
+		return fmt.Errorf("only nodes of type (%v | %v | %v) can be added to a Document (tried '%v')",
+			ElementNode, ProcessingInstructionNode, CommentNode, typ.GetNodeType())
 	}
-
-	return fmt.Errorf("%v: document can only have one child, which must be of type Element", ErrorHierarchyRequest)
 }
 
 func (dd *domDocument) HasChildNodes() bool {
@@ -160,6 +158,18 @@ func (dd *domDocument) CreateTextNode(text string) Text {
 	return t
 }
 
+// CreateComment creates a comment node and returns it. When the comment string contains
+// a double-hyphen (--) it will return an error and the Comment will be nil. The spec
+// says something differently though:
+//
+// No lexical check is done on the content of a comment and it is therefore possible to
+// have the character sequence "--" (double-hyphen) in the content, which is illegal in
+//a comment per section 2.5 of [XML 1.0]. The presence of this character sequence must
+//generate a fatal error **during serialization**.
+//
+// E.g. this implementation doesn't fail during serialization, but way before. This may
+// be subject to change to get conform the spec. The Xerces implementation in Java 8
+// doesn't fail serialization, for example , but simply replaces the '--' with '- -'.
 func (dd *domDocument) CreateComment(comment string) (Comment, error) {
 	if strings.ContainsAny(comment, "--") {
 		return nil, fmt.Errorf("%v: comments may not contain a double hyphen (--)", ErrorInvalidCharacter)
@@ -184,11 +194,11 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 }
 
 func (dd *domDocument) CreateProcessingInstruction(target, data string) (ProcessingInstruction, error) {
-	pi := &domProcInst{}
+	pi := newProcInst()
 	pi.setOwnerDocument(dd)
 	pi.setParentNode(dd)
-	pi.data = data
-	pi.target = target
+	pi.setData(data)
+	pi.setTarget(target)
 	return pi, nil
 }
 

@@ -63,12 +63,21 @@ func (pi *domProcInst) GetNamespaceURI() string {
 	return ""
 }
 
+// ProcessingInstruction methods
 func (pi *domProcInst) GetData() string {
 	return pi.data
 }
 
 func (pi *domProcInst) GetTarget() string {
 	return pi.target
+}
+
+func (pi *domProcInst) setData(data string) {
+	pi.data = data
+}
+
+func (pi *domProcInst) setTarget(target string) {
+	pi.target = target
 }
 
 // Private functions of Node:

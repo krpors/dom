@@ -20,6 +20,7 @@ func TestUtilEscape(t *testing.T) {
 func TestToXML(t *testing.T) {
 	doc := NewDocument()
 
+	procinst, _ := doc.CreateProcessingInstruction("violin", "tdavis")
 	root, _ := doc.CreateElement("root")
 	comment, _ := doc.CreateComment("rox your sox")
 	first, _ := doc.CreateElement("first")
@@ -27,6 +28,7 @@ func TestToXML(t *testing.T) {
 	second, _ := doc.CreateElement("second")
 	nonchildren, _ := doc.CreateElement("nochildren")
 
+	doc.AppendChild(procinst)
 	doc.AppendChild(root)
 
 	root.AppendChild(first)
@@ -39,7 +41,7 @@ func TestToXML(t *testing.T) {
 	var buf bytes.Buffer
 	ToXML(doc, false, &buf)
 
-	expected := `<?xml version="1.0" encoding="UTF-8"?><root><first>&lt; &amp; &gt; are entities!</first><!-- rox your sox --><second><nochildren/></second></root>`
+	expected := `<?xml version="1.0" encoding="UTF-8"?><?violin tdavis?><root><first>&lt; &amp; &gt; are entities!</first><!-- rox your sox --><second><nochildren/></second></root>`
 
 	if buf.String() != expected {
 		t.Logf("actual:   %v", buf.String())
