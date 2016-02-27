@@ -53,6 +53,8 @@ func (dd *domDocument) GetParentNode() Node {
 	return nil
 }
 
+// GetFirstChild returns the first child in the document. Possible nodes are
+// Comment, ProcessingInstruction, or Element.
 func (dd *domDocument) GetFirstChild() Node {
 	return dd.nodes[0]
 }
@@ -86,9 +88,8 @@ func (dd *domDocument) AppendChild(child Node) error {
 			child.setParentNode(dd)
 			dd.nodes = append(dd.nodes, child)
 			return nil
-		} else {
-			return fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, docelem)
 		}
+		return fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, docelem)
 	case ProcessingInstruction:
 		// Processing instructions are legal children of a DOM Document and can appear
 		// anywhere, even before the Document element.

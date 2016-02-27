@@ -87,14 +87,26 @@ func (b *Builder) CreateDocument() (Document, error) {
 			curNode = curNode.GetParentNode()
 		case xml.CharData:
 			// If there is no document element yet, and the character data is found which is NOT whitespace,
-			// generate an error (no character data allowed before document element).
+			// generate an error. No character data allowed before document element, but whitespaces
+			// are okay to parse. Don't add it as a child element though.
 			if b.doc.GetDocumentElement() == nil {
 				if strings.TrimSpace(string(typ)) != "" {
-					return nil, fmt.Errorf("%v: character data not allowed before document element", ErrorHierarchyRequest)
+					return nil, fmt.Errorf("%v: content is not allowed in prolog", ErrorHierarchyRequest)
+				}
+				// We got whitespace. Don't add it as a child, merely continue the next token
+				// parsing in the stream.
+				continue
+			}
+			// Likewise, character data may not occur after the document element in the trailing
+			// section, so check that as well. The Go decoder doesn't care so we handle this edge
+			// case as well.
+			if curNode == b.doc {
+				if strings.TrimSpace(string(typ)) != "" {
+					// We cannot append text/chardata to the document itself.
+					return nil, fmt.Errorf("%v: content is not allowed in trailing section", ErrorHierarchyRequest)
 				}
 			}
-			// FIXME: character data is still read by the xml.Decoder even AFTER the document element.
-			// This isn't good. Return an error then.
+			// In all other cases, create a text node and add it to the current node as a child.
 			text := b.doc.CreateTextNode(string(typ))
 			curNode.AppendChild(text)
 		}
