@@ -9,7 +9,7 @@ func TestDocumentGetters(t *testing.T) {
 	doc := NewDocument()
 
 	// Set some no-op setters, to increase coverage reports as well.
-	doc.setParentNode(doc.CreateTextNode("no-op"))
+	doc.setParentNode(doc.CreateText("no-op"))
 	doc.setOwnerDocument(NewDocument())
 	doc.setNamespaceURI("no-op")
 
@@ -50,7 +50,7 @@ func TestDocumentAppendChild(t *testing.T) {
 		t.Errorf("expected hierarchy error")
 	}
 
-	text := doc.CreateTextNode("HAI!")
+	text := doc.CreateText("HAI!")
 	err = doc.AppendChild(text)
 	if err == nil {
 		t.Errorf("expected error at this point")
@@ -72,7 +72,7 @@ func TestDocumentAppendChild(t *testing.T) {
 // Tests the appending of invalid children to a Document.
 func TestDocumentAppendInvalidChildren(t *testing.T) {
 	doc := NewDocument()
-	text := doc.CreateTextNode("should fail")
+	text := doc.CreateText("should fail")
 	if doc.AppendChild(text) == nil {
 		t.Error("appending a text node to a document should fail")
 	}

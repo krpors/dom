@@ -24,7 +24,7 @@ func TestToXML(t *testing.T) {
 	root, _ := doc.CreateElement("root")
 	comment, _ := doc.CreateComment("rox your sox")
 	first, _ := doc.CreateElement("first")
-	text := doc.CreateTextNode("< & > are entities!")
+	text := doc.CreateText("< & > are entities!")
 	second, _ := doc.CreateElement("second")
 	nonchildren, _ := doc.CreateElement("nochildren")
 

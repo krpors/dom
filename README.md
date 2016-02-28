@@ -42,7 +42,7 @@ func main() {
 	root, _ := doc.CreateElement("root")
 
 	sub1, _ := doc.CreateElement("one")
-	txt1 := doc.CreateTextNode("sample text 1")
+	txt1 := doc.CreateText("sample text 1")
 	sub1.AppendChild(txt1)
 	sub1.SetAttribute("cruft", "twelve")
 	sub1.SetAttribute("once", "twice")
@@ -52,7 +52,7 @@ func main() {
 	fmt.Println(nnm.GetNamedItem("cruft").GetNodeValue())
 
 	sub2, _ := doc.CreateElement("two")
-	txt2 := doc.CreateTextNode("sample text 2")
+	txt2 := doc.CreateText("sample text 2")
 	sub2.AppendChild(txt2)
 
 	root.AppendChild(sub1)

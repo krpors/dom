@@ -151,7 +151,7 @@ func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, e
 	return e, nil
 }
 
-func (dd *domDocument) CreateTextNode(text string) Text {
+func (dd *domDocument) CreateText(text string) Text {
 	t := newText()
 	t.setOwnerDocument(dd)
 	t.SetData(text)

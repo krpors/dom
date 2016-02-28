@@ -116,7 +116,7 @@ func (b *Builder) CreateDocument() (Document, error) {
 				continue
 			}
 			// In all other cases, create a text node and add it to the current node as a child.
-			text := b.doc.CreateTextNode(string(typ))
+			text := b.doc.CreateText(string(typ))
 			if err := curNode.AppendChild(text); err != nil {
 				return nil, err
 			}

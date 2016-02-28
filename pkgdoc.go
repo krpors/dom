@@ -18,7 +18,7 @@
 	func main() {
 		doc := dom.NewDocument()
 		root, _ := doc.CreateElement("rootNode")
-		text := doc.CreateTextNode("some arbitrary text")
+		text := doc.CreateText("some arbitrary text")
 		root.AppendChild(text)
 		doc.AppendChild(root)
 

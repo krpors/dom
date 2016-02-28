@@ -223,7 +223,7 @@ type Document interface {
 	CreateElementNS(namespaceURI, tagName string) (Element, error)
 
 	// Creates a Text node given the specified string and returns it.
-	CreateTextNode(string) Text
+	CreateText(string) Text
 
 	// Creates an Attr of the given name and returns it.
 	CreateAttribute(name string) (Attr, error)
