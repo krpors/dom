@@ -4,53 +4,54 @@ import (
 	"testing"
 )
 
-func TestAttrNodeName(t *testing.T) {
-	attr := newAttr()
-	attr.setName("cruft")
-	if attr.GetName() != "cruft" {
+// Tests basic getters etc.
+func TestAttrGetters(t *testing.T) {
+	doc := NewDocument()
+	elem, _ := doc.CreateElement("tag")
+	a := newAttr()
+	a.setOwnerElement(elem)
+	a.setOwnerDocument(doc)
+	a.setParentNode(newElement())
+	a.setName("cruft")
+	a.SetValue("valval")
+	a.setNamespaceURI("http://example.org/lol")
+	if a.GetName() != "cruft" {
 		t.Errorf("incorrect node name")
 	}
-
-	if attr.GetNodeName() != "cruft" {
+	if a.GetNodeName() != "cruft" {
 		t.Errorf("incorrect node name")
 	}
-}
-
-func TestAttrNodeType(t *testing.T) {
-	attr := newAttr()
-	if attr.GetNodeType() != AttributeNode {
+	if a.GetParentNode() != nil {
+		t.Error("attr cannot have a parent (must be nil)")
+	}
+	if err := a.AppendChild(newElement()); err == nil {
+		t.Error("expected an error at this point")
+	}
+	if len(a.GetChildNodes()) != 0 {
+		t.Error("len of child nodes must be zero at all times")
+	}
+	if a.GetFirstChild() != nil {
+		t.Error("first child must always be nil")
+	}
+	if a.GetAttributes() != nil {
+		t.Error("attributes must always be nil")
+	}
+	if a.GetOwnerDocument() != doc {
+		t.Error("incorrect owner document")
+	}
+	if a.HasChildNodes() != false {
+		t.Error("must always return false, but was true")
+	}
+	if a.GetOwnerElement() != elem {
+		t.Error("incorrect owner element")
+	}
+	if a.GetNodeType() != AttributeNode {
 		t.Errorf("incorrect node type for attribute")
 	}
-}
-
-func TestAttrNodeValue(t *testing.T) {
-	attr := newAttr()
-	attr.SetValue("valval")
-	if attr.GetNodeValue() != "valval" {
-		t.Errorf("incorrect node value: '%v'", attr.GetNodeValue())
+	if a.GetNodeValue() != "valval" {
+		t.Errorf("incorrect node value: '%v'", a.GetNodeValue())
 	}
-
-	if attr.GetValue() != "valval" {
-		t.Errorf("incorrect node value: '%v'", attr.GetValue())
-	}
-}
-
-func TestAttrParentNode(t *testing.T) {
-	elem := newElement()
-	elem.SetTagName("root")
-
-	attr := newAttr()
-	attr.setName("attrname")
-	attr.SetValue("attrvalue")
-
-	attr.setParentNode(elem)
-}
-
-func TestAttrAppendChild(t *testing.T) {
-	attr := newAttr()
-	comment := newComment()
-	comment.SetComment("hi thar")
-	if err := attr.AppendChild(comment); err == nil {
-		t.Errorf("expected error during appending of node to attr")
+	if a.GetValue() != "valval" {
+		t.Errorf("incorrect node value: '%v'", a.GetValue())
 	}
 }

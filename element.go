@@ -99,6 +99,20 @@ func (de *domElement) SetAttribute(name, value string) {
 	de.attributes.SetNamedItem(attr)
 }
 
+// SetAttributeNode adds a new attribute node. If an attribute with that name (nodeName) is
+// already present in the element, it is replaced by the new one. Replacing an attribute node
+// by itself has no effect. To add a new attribute node with a qualified name and namespace
+// URI, use the setAttributeNodeNS method.
+// TODO: implement above
+func (de *domElement) SetAttributeNode(a Attr) {
+	if de.attributes == nil {
+		de.attributes = newNamedNodeMap()
+	}
+
+	a.setOwnerElement(de)
+	de.attributes.SetNamedItem(a)
+}
+
 func (de *domElement) GetAttribute(name string) string {
 	return ""
 }

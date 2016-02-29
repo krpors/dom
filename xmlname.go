@@ -5,6 +5,8 @@ import (
 	"unicode/utf8"
 )
 
+// TODO: XMLName as struct, with local part and namespace?
+
 // XMLName represents an XML Name according to the specification at https://www.w3.org/TR/xml/#NT-Name.
 // The name can be validated using the IsValid() function.
 type XMLName string

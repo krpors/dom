@@ -179,6 +179,8 @@ type Element interface {
 	SetAttribute(name, value string)
 	// Convenience function to get an attribute value.
 	GetAttribute(name string) string
+	// Sets an attribute based on the Attr type.
+	SetAttributeNode(a Attr)
 }
 
 // Text represents character data within an element. It implements the Node interface.
@@ -187,7 +189,6 @@ type Text interface {
 
 	// GetData gets the character data of this Text node.
 	GetData() string
-
 	// SetData sets the character data of this Text node.
 	SetData(s string)
 }
@@ -216,25 +217,19 @@ type Document interface {
 	// an ErrorInvalidCharacter if the specified name is not an XML name according
 	// to the XML version in use, specified in the XMLVersion attribute.
 	CreateElement(tagName string) (Element, error)
-
 	// Creates an element of the givens qualified name and namespace URI, and
 	// returns it. Use an empty string if no namespace is necessary. See
 	// CreateElement(string).
 	CreateElementNS(namespaceURI, tagName string) (Element, error)
-
 	// Creates a Text node given the specified string and returns it.
 	CreateText(string) Text
-
 	// Creates an Attr of the given name and returns it.
 	CreateAttribute(name string) (Attr, error)
-
 	// CreateComment creates a Comment node with the given comment content. If
 	// the comment contains a double hyphen (--), this should generate an error.
 	CreateComment(comment string) (Comment, error)
-
 	// CreateProcessingInstruction creates a processing instruction and returns it.
 	CreateProcessingInstruction(target, data string) (ProcessingInstruction, error)
-
 	// Gets the document element, which should be the first (and only) child Node
 	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
@@ -247,7 +242,6 @@ type Comment interface {
 
 	// GetComment gets the comment text of this node.
 	GetComment() string
-
 	// SetComment gets the comment text of this node.
 	SetComment(comment string)
 }

@@ -34,6 +34,9 @@ func TestDocumentGetters(t *testing.T) {
 	if doc.GetParentNode() != nil {
 		t.Error("document can't have a parent node")
 	}
+	if doc.GetNamespaceURI() != "" {
+		t.Error("document namespace uri should always be an empty string")
+	}
 }
 
 // Tests appending doc to itself, and appending two document elements.

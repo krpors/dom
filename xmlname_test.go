@@ -29,6 +29,7 @@ func TestXMLNameIsValid(t *testing.T) {
 		{"¾¾", false},
 		{"Éomër-From-lord-ÖF.THERINGS", true},
 		{"ALLCAPSSHOULDWORKASWELL", true},
+		{"namepaceprefix:someelement", true},
 		{"_______", true},
 		{"\x00\x0A", false},
 		{"ok\xff\xfd", false},
