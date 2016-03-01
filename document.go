@@ -116,6 +116,12 @@ func (dd *domDocument) GetNamespaceURI() string {
 	return ""
 }
 
+// GetNamespacePrefix returns... ?
+func (dd *domDocument) GetNamespacePrefix() string {
+	// TODO: namespace prefix
+	return ""
+}
+
 // Private functions:
 func (dd *domDocument) setParentNode(parent Node) {
 	// no-op
@@ -142,6 +148,10 @@ func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 	return e, nil
 }
 
+// CreateelementNS creates an element with the given namespace URI and tagname. If I recall correctly,
+// the DOM spec mentions something about not caring about namespace URIs. As long as they are escaped,
+// it's okay. Even the Xerces implementation in Java doesn't care about the namespace URI, and will be
+// serialized just fine.
 func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, error) {
 	e, err := dd.CreateElement(tagName)
 	if err != nil {
@@ -164,8 +174,8 @@ func (dd *domDocument) CreateText(text string) Text {
 //
 // No lexical check is done on the content of a comment and it is therefore possible to
 // have the character sequence "--" (double-hyphen) in the content, which is illegal in
-//a comment per section 2.5 of [XML 1.0]. The presence of this character sequence must
-//generate a fatal error **during serialization**.
+// a comment per section 2.5 of [XML 1.0]. The presence of this character sequence must
+// generate a fatal error **during serialization**.
 //
 // E.g. this implementation doesn't fail during serialization, but way before. This may
 // be subject to change to get conform the spec. The Xerces implementation in Java 8

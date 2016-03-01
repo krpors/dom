@@ -63,6 +63,10 @@ func (pi *domProcInst) GetNamespaceURI() string {
 	return ""
 }
 
+func (pi *domProcInst) GetNamespacePrefix() string {
+	return ""
+}
+
 // ProcessingInstruction methods
 func (pi *domProcInst) GetData() string {
 	return pi.data

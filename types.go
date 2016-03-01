@@ -146,6 +146,9 @@ type Node interface {
 	HasChildNodes() bool
 	// Returns the namespace URI of this node.
 	GetNamespaceURI() string
+	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
+	// does not have a prefix.
+	GetNamespacePrefix() string
 
 	// Private functions
 	setParentNode(Node)

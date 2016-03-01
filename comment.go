@@ -71,6 +71,11 @@ func (dc *domComment) GetNamespaceURI() string {
 	return ""
 }
 
+// GetNamespacePrefix returns an empty string for comments.
+func (dc *domComment) GetNamespacePrefix() string {
+	return ""
+}
+
 // Private functions:
 func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent

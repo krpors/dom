@@ -5,24 +5,6 @@ import (
 	"testing"
 )
 
-// exampleErrDoc1 contains an invalid XML document, because character data exists
-// between the XML declaration and the document element.
-var exampleErrDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
-
-
-invalid content.
-
-<directory>
-	Character data can exist here.
-</directory>`
-
-// exampleErroDoc2 contains trailing character data after the document, which
-// should result in an error.
-var exampleErrDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
-<stuff>
-</stuff>
-chardata content in trailing section`
-
 // exampleDoc1 contains an XML valid document.
 var exampleDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Comment may occur here. -->
@@ -44,16 +26,6 @@ var exampleDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
 	</ns:cruft>
 	<Grøups>asd</Grøups>
 </directory>`
-
-// exampleDoc2 contains a valid XML document with leading and trailing whitespaces
-// before and after the root node (the document element).
-var exampleDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
-
-
-<whitespaces/>
-
-
-`
 
 // Tests a completely valid document and checks whether everything is in place.
 func TestBuilderCreateDocument(t *testing.T) {
@@ -85,6 +57,18 @@ func TestBuilderCreateDocument(t *testing.T) {
 	}
 }
 
+//=============================================================================
+
+// exampleDoc2 contains a valid XML document with leading and trailing whitespaces
+// before and after the root node (the document element).
+var exampleDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
+
+
+<whitespaces/>
+
+
+`
+
 // Tests whether whitespaces before and after the document element don't generate
 // an error.
 func TestBuilderCreateDocumentWhitespaces(t *testing.T) {
@@ -107,6 +91,19 @@ func TestBuilderCreateDocumentWhitespaces(t *testing.T) {
 	}
 }
 
+//=============================================================================
+
+// exampleErrDoc1 contains an invalid XML document, because character data exists
+// between the XML declaration and the document element.
+var exampleErrDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
+
+
+invalid content.
+
+<directory>
+	Character data can exist here.
+</directory>`
+
 func TestBuilderCreateDocumentContentInProlog(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc1)
 	builder := NewBuilder(reader)
@@ -116,11 +113,54 @@ func TestBuilderCreateDocumentContentInProlog(t *testing.T) {
 	}
 }
 
+//=============================================================================
+
+// exampleErroDoc2 contains trailing character data after the document, which
+// should result in an error.
+var exampleErrDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
+<stuff>
+</stuff>
+chardata content in trailing section`
+
 func TestBuilderCreateDocumentTrailingChars(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc2)
 	builder := NewBuilder(reader)
 	_, err := builder.CreateDocument()
 	if err == nil {
 		t.Errorf("expected error due to trailing character data after root node")
+	}
+}
+
+//=============================================================================
+
+// exampleDoc3 contains elaborate namespaces for testing that.
+var exampleDoc3 = `<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns="http://example.org/rooturi">
+	<pfx:child1 xmlns:pfx="urn:narf:zoit">
+		<pfx:subchild>This element should be of namespace urn:narf:zoit.</pfx:subchild>
+	</pfx:child1>
+	<same_root_namespace/>
+</root>
+`
+
+func TestBuilderCreateDocumentNamespaces(t *testing.T) {
+	reader := strings.NewReader(exampleDoc3)
+	builder := NewBuilder(reader)
+	doc, err := builder.CreateDocument()
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+	docelem := doc.GetDocumentElement()
+	if docelem.GetNamespaceURI() != "http://example.org/rooturi" {
+		t.Errorf("namespace URI of root node was '%v', expected 'http://example.org/rooturi'", docelem.GetNamespaceURI())
+	}
+
+	child1 := docelem.GetChildNodes()[1].(Element)
+	if child1.GetNamespaceURI() != "urn:narf:zoit" {
+		t.Errorf("namespace URI of first element should be 'urn:narf:zoit', but was '%v'", child1.GetNamespaceURI())
+	}
+	if child1.GetNamespacePrefix() != "pfx" {
+		t.Errorf("namespace prefix should be 'pfx', but was '%v'", child1.GetNamespacePrefix())
 	}
 }

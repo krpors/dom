@@ -67,7 +67,13 @@ func (dt *domText) HasChildNodes() bool {
 	return false
 }
 
+// GetNamespaceURI returns an empty string for Text nodes.
 func (dt *domText) GetNamespaceURI() string {
+	return ""
+}
+
+// GetNamespacePrefix returns an empty string for Text nodes.
+func (dt *domText) GetNamespacePrefix() string {
 	return ""
 }
 

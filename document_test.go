@@ -182,11 +182,29 @@ func TestDocumentCreateElement(t *testing.T) {
 	}
 }
 
+// Tests the creation of elements with namespaces uris.
 func TestDocumentCreateElementNS(t *testing.T) {
 	doc := NewDocument()
-	_, err := doc.CreateElementNS("http://example.org/uri", ".in valid")
-	if err == nil {
-		t.Error("expected error due to incorrect tagname")
+	var tests = []struct {
+		element        string
+		namespace      string
+		expectedToBeOK bool
+	}{
+		{"valid", "http://example.org/uri", true},
+		{"valid", "uri:urn:bleh", true},
+		{"cruft:valid", "anything can be put in this namespace", true},
+		{"cruft:valid", "even w³ird, chøract€r$", true},
+		{":zoit", "the XML spec doesn't care", true},
+		{"¼ofanelement", "gopher://meh", false},
+	}
+
+	for _, test := range tests {
+		_, err := doc.CreateElementNS(test.namespace, test.element)
+		if test.expectedToBeOK && err != nil {
+			t.Errorf("XML Name '%v' with namespace '%v' should be valid, but returned an error", test.element, test.namespace)
+		} else if !test.expectedToBeOK && err == nil {
+			t.Errorf("XML Name '%v' with namespace '%v' should return an error, but was valid", test.element, test.namespace)
+		}
 	}
 }
 

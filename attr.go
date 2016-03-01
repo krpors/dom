@@ -81,6 +81,11 @@ func (da *domAttr) GetNamespaceURI() string {
 	return da.namespaceURI
 }
 
+func (da *domAttr) GetNamespacePrefix() string {
+	// TODO: namespace prefix of an attr.
+	return ""
+}
+
 // Private functions:
 func (da *domAttr) setParentNode(parent Node) {
 	// no-op

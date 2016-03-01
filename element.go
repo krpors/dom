@@ -79,6 +79,11 @@ func (de *domElement) GetNamespaceURI() string {
 	return de.namespaceURI
 }
 
+func (de *domElement) GetNamespacePrefix() string {
+	// TODO: namespace prefix
+	return ""
+}
+
 func (de *domElement) SetTagName(name string) {
 	de.tagName = name
 }
