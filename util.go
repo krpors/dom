@@ -7,6 +7,9 @@ import (
 	"io"
 )
 
+// TODO: namespaces for prefixes must be predeclared somehow before serializing
+// or else it must generate an error.
+
 // ToXML is a utility function to serialize a Node and its children to the
 // given writer 'w'. The whole tree is traversed using recursion, which is
 // pretty much eligible for a refactor for optimalization reasons.
@@ -22,10 +25,18 @@ func ToXML(node Node, omitXMLDecl bool, w io.Writer) {
 	traverse = func(n Node) {
 		switch t := n.(type) {
 		case Element:
+			fmt.Fprintf(w, "<%s", t.GetTagName())
+			// Add any attributes
+			if t.GetAttributes() != nil {
+				for _, val := range t.GetAttributes().GetItems() {
+					attr := val.(Attr)
+					fmt.Fprintf(w, " %s=\"%s\"", attr.GetNodeName(), attr.GetNodeValue())
+				}
+			}
 			if t.HasChildNodes() {
-				fmt.Fprintf(w, "<%s>", t.GetTagName())
+				fmt.Fprintf(w, ">")
 			} else {
-				fmt.Fprintf(w, "<%s/>", t.GetTagName())
+				fmt.Fprintf(w, "/>")
 			}
 		case Text:
 			fmt.Fprintf(w, "%s", escape(t.GetData()))

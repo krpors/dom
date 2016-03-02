@@ -49,3 +49,21 @@ func TestToXML(t *testing.T) {
 		t.Errorf("unexpected output")
 	}
 }
+
+func TestUtilToXML2(t *testing.T) {
+	doc := NewDocument()
+
+	contacts, _ := doc.CreateElementNS("urn:contacts:contacts", "contacts")
+	contact, _ := doc.CreateElementNS("urn:contacts:contact", "contact")
+	person, _ := doc.CreateElementNS("urn:contacts:person", "person")
+	name, _ := doc.CreateElement("name")
+	text := doc.CreateText("some text.")
+
+	doc.AppendChild(contacts)
+	contacts.AppendChild(contact)
+	contact.AppendChild(person)
+	person.AppendChild(name)
+	name.AppendChild(text)
+
+	//	ToXML(doc, false, os.Stdout)
+}

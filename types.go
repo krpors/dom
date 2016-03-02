@@ -149,6 +149,12 @@ type Node interface {
 	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
 	// does not have a prefix.
 	GetNamespacePrefix() string
+	// TODO: SetTextContent(string) implementation.
+	// SetTextContent sets the text content of the current node. On setting, any
+	// possible children this node may have are removed and, if the new string
+	// is not empty, replaced by a single Text node containing the string this
+	// attribute is set to.
+	// SetTextContent(string)
 
 	// Private functions
 	setParentNode(Node)
@@ -228,6 +234,8 @@ type Document interface {
 	CreateText(string) Text
 	// Creates an Attr of the given name and returns it.
 	CreateAttribute(name string) (Attr, error)
+	// Creates an Attr using the given namespace URI and name.
+	CreateAttributeNS(namespaceURI, name string) (Attr, error)
 	// CreateComment creates a Comment node with the given comment content. If
 	// the comment contains a double hyphen (--), this should generate an error.
 	CreateComment(comment string) (Comment, error)

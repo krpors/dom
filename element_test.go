@@ -119,3 +119,23 @@ func TestElementHasChildNodes(t *testing.T) {
 		t.Errorf("expected child nodes")
 	}
 }
+
+func TestElementAttributes(t *testing.T) {
+	root := newElement()
+	root.SetAttribute("cruft", "value")
+
+	if root.GetAttribute("cruft") != "value" {
+		t.Errorf("expected 'value', got '%v'", root.GetAttribute("cruft"))
+	}
+
+	attr := newAttr()
+	attr.setName("pfx:anything")
+	attr.setNamespaceURI("urn:any:namespace")
+	attr.SetValue("harpy")
+
+	root.SetAttributeNode(attr)
+
+	if root.GetAttribute("pfx:anything") != "harpy" {
+		t.Errorf("expected 'harpy' but was '%v'", root.GetAttribute("pfx:anything"))
+	}
+}

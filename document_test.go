@@ -1,8 +1,6 @@
 package dom
 
-import (
-	"testing"
-)
+import "testing"
 
 // Test the plain getters of the Document. Also some no-op setters.
 func TestDocumentGetters(t *testing.T) {
@@ -146,9 +144,7 @@ func TestDocumentHasChildNodes(t *testing.T) {
 }
 
 // TestDocumentCreateelement tests the creation of elements using valid and
-// invalid names. TODO: needs work. The isNameString() I borrowed fails with
-// start characters which are supposed to be correct according to the spec.
-// Or I am screwing things up?
+// invalid names, according to the XML spec.
 func TestDocumentCreateElement(t *testing.T) {
 	var tests = []struct {
 		element        string
@@ -222,4 +218,20 @@ func TestDocumentCreateComment(t *testing.T) {
 	if err == nil {
 		t.Error("expected an error during comment creation but got none")
 	}
+}
+
+func TestDocumentCreateAttributeNS(t *testing.T) {
+	doc := NewDocument()
+	root, err := doc.CreateElementNS("http://example.org/uri", "root")
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	attr, err := doc.CreateAttributeNS("http://example.org/uri", "uri:name")
+	attr.SetValue("zelda")
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+	doc.AppendChild(root)
+	root.SetAttributeNode(attr)
 }

@@ -5,21 +5,27 @@ import (
 	"strings"
 )
 
-type domDocument struct {
-	localName    string
-	nodes        []Node
-	firstChild   Node
-	attributes   NamedNodeMap
-	namespaceURI string
+// TODO: implement name list, which is just a map of namespaces + prefixes
+// known to the Document. The key should be a prefix, and the namespace URI
+// is a value for the given prefix. The namespace is actually unique, but
+// that means one namespace can only have one prefix, but that's not something
+// XML forces. E.g. xmlns:pfx="urn" and xmlns:bleh="urn" is the same.
+//
+// After creating a node, find its prefix + namespace, and add it to this map.
+// OR: just add namespaces in a map, use some clever thing to create a prefix
+// from it? Meh.
 
-	// Element specific things:
-	tagName string
+type domDocument struct {
+	nodes []Node
+
+	nameList map[string]string // map of namespace + prefix
 }
 
 // NewDocument creates a new Document which can be used to create
 // custom documents using the methods supplied.
 func NewDocument() Document {
 	d := &domDocument{}
+	d.nameList = make(map[string]string)
 	return d
 }
 
@@ -41,8 +47,7 @@ func (dd *domDocument) GetNodeValue() string {
 }
 
 func (dd *domDocument) GetLocalName() string {
-	// TODO: what?
-	return dd.tagName
+	return ""
 }
 
 func (dd *domDocument) GetChildNodes() []Node {
@@ -116,9 +121,7 @@ func (dd *domDocument) GetNamespaceURI() string {
 	return ""
 }
 
-// GetNamespacePrefix returns... ?
 func (dd *domDocument) GetNamespacePrefix() string {
-	// TODO: namespace prefix
 	return ""
 }
 
@@ -200,6 +203,16 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 	attr := newAttr()
 	attr.setName(name)
 	attr.setOwnerDocument(dd)
+	return attr, nil
+}
+
+func (dd *domDocument) CreateAttributeNS(namespaceURI, name string) (Attr, error) {
+	attr, err := dd.CreateAttribute(name)
+	if err != nil {
+		return nil, err
+	}
+
+	attr.setNamespaceURI(namespaceURI)
 	return attr, nil
 }
 

@@ -128,6 +128,15 @@ func (de *domElement) SetAttributeNode(a Attr) {
 }
 
 func (de *domElement) GetAttribute(name string) string {
+	if de.attributes == nil {
+		// TODO: no attributes, return empty string??
+		return ""
+	}
+	if theAttr := de.attributes.GetNamedItem(name); theAttr != nil {
+		return theAttr.GetNodeValue()
+	}
+
+	// Not found, can return an empty string as per spec.
 	return ""
 }
 
