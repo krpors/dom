@@ -2,19 +2,19 @@ package dom
 
 import (
 	"fmt"
+	"strings"
 )
 
 type domElement struct {
-	localName     string
-	nodes         []Node
-	parentNode    Node
-	firstChild    Node
-	attributes    NamedNodeMap
-	ownerDocument Document
-	namespaceURI  string
+	localName     string       // The local part, without the (optional) namespace prefix.
+	nodes         []Node       // Child nodes.
+	parentNode    Node         // Parent node
+	attributes    NamedNodeMap // Attributes on this element.
+	ownerDocument Document     // Owner document.
+	namespaceURI  string       // Namespace uri.
 
 	// Element specific things:
-	tagName string
+	tagName string // The complete tagname given, with prefix.
 }
 
 func newElement() Element {
@@ -39,6 +39,9 @@ func (de *domElement) GetNodeValue() string {
 
 func (de *domElement) GetLocalName() string {
 	// TODO: what?
+	if index := strings.Index(de.tagName, ":"); index >= 0 {
+		return de.tagName[index+1:]
+	}
 	return de.tagName
 }
 
@@ -51,7 +54,10 @@ func (de *domElement) GetParentNode() Node {
 }
 
 func (de *domElement) GetFirstChild() Node {
-	return de.nodes[0]
+	if de.HasChildNodes() {
+		return de.nodes[0]
+	}
+	return nil
 }
 
 func (de *domElement) GetAttributes() NamedNodeMap {
@@ -81,6 +87,9 @@ func (de *domElement) GetNamespaceURI() string {
 
 func (de *domElement) GetNamespacePrefix() string {
 	// TODO: namespace prefix
+	if index := strings.Index(de.tagName, ":"); index >= 0 {
+		return de.tagName[0:index]
+	}
 	return ""
 }
 

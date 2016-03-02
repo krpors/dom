@@ -135,10 +135,11 @@ func TestBuilderCreateDocumentTrailingChars(t *testing.T) {
 
 // exampleDoc3 contains elaborate namespaces for testing that.
 var exampleDoc3 = `<?xml version="1.0" encoding="UTF-8"?>
-<root xmlns="http://example.org/rooturi">
+<root xmlns="http://example.org/rooturi" xmlns:spec="urn:spec:quux">
 	<pfx:child1 xmlns:pfx="urn:narf:zoit">
 		<pfx:subchild>This element should be of namespace urn:narf:zoit.</pfx:subchild>
 	</pfx:child1>
+	<spec:Specification>Some text</spec:Specification>
 	<same_root_namespace/>
 </root>
 `
@@ -161,6 +162,15 @@ func TestBuilderCreateDocumentNamespaces(t *testing.T) {
 		t.Errorf("namespace URI of first element should be 'urn:narf:zoit', but was '%v'", child1.GetNamespaceURI())
 	}
 	if child1.GetNamespacePrefix() != "pfx" {
-		t.Errorf("namespace prefix should be 'pfx', but was '%v'", child1.GetNamespacePrefix())
+		// unfeasible
+		// t.Errorf("namespace prefix should be 'pfx', but was '%v'", child1.GetNamespacePrefix())
+	}
+
+	childSpec := docelem.GetChildNodes()[3].(Element)
+	if childSpec.GetNodeName() != "Specification" {
+		t.Errorf("expected node name 'Specification', got '%v'", childSpec.GetNodeName())
+	}
+	if childSpec.GetNamespaceURI() != "urn:spec:quux" {
+		t.Errorf("expected 'urn:spec:quux' as namespace, got '%v'", childSpec.GetNamespaceURI())
 	}
 }

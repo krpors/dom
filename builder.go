@@ -58,7 +58,8 @@ func (b *Builder) CreateDocument() (Document, error) {
 		}
 
 		switch typ := token.(type) {
-		// TODO: attributes
+		case xml.Attr:
+			// attr, err := b.doc.CreateAttribute()
 		case xml.Comment:
 			cmt, err := b.doc.CreateComment(string(typ))
 			if err != nil {
@@ -81,6 +82,9 @@ func (b *Builder) CreateDocument() (Document, error) {
 				}
 			}
 		case xml.StartElement:
+			//  FIXME: The default encoding/xml.Decoder does fuck all about prefixes.
+			// That's not all: https://github.com/golang/go/issues/11735
+			// Therefore, we don't set any kind of prefix ourselves.
 			elem, err := b.doc.CreateElementNS(typ.Name.Space, typ.Name.Local)
 			if err != nil {
 				return nil, err

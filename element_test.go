@@ -4,50 +4,47 @@ import (
 	"testing"
 )
 
-func TestElementNodeName(t *testing.T) {
+func TestElementGetters(t *testing.T) {
 	root := newElement()
-	root.SetTagName("rewt")
+	root.SetTagName("pfx:rewt")
 
-	if root.GetNodeName() != "rewt" {
-		t.Errorf("node name is expected to be the same as the tag name, which is '%v'", root.GetTagName())
+	if root.GetNodeName() != "pfx:rewt" {
+		t.Errorf("node name is expected to be 'pfx:rewt', but was '%v'", root.GetNodeName())
 	}
-}
-
-func TestElementNodeType(t *testing.T) {
-	root := newElement()
 	if root.GetNodeType() != ElementNode {
 		t.Errorf("elements are supposed to be of type '%v'", ElementNode)
 	}
-}
-
-func TestElementNodeValue(t *testing.T) {
-	root := newElement()
 	if root.GetNodeValue() != "" {
 		t.Errorf("node value of elements are not applicable and should therefore be empty")
 	}
-}
-
-func TestElementLocalName(t *testing.T) {
-	// TODO: check out the local name
-}
-
-func TestElementNodeList(t *testing.T) {
-	root := newElement()
 	if len(root.GetChildNodes()) != 0 {
-		t.Errorf("uninitialized node list should be zero length")
+		t.Errorf("initialized node list should be zero length")
 	}
-
+	if root.GetNodeName() != root.GetTagName() {
+		t.Errorf("GetNodeName() should equal GetTagName(): %v != %v", root.GetNodeName(), root.GetTagName())
+	}
+	if root.GetLocalName() != "rewt" {
+		t.Errorf("local name should be 'rewt', but was '%v'", root.GetLocalName())
+	}
+	if root.GetNamespacePrefix() != "pfx" {
+		t.Errorf("namespace prefix should be 'pfx', but was '%v'", root.GetNamespacePrefix())
+	}
 	// add some children
 	for i := 0; i < 10; i++ {
 		e := newElement()
 		e.SetTagName("element" + string(i))
 		root.AppendChild(e)
 	}
-
 	if len(root.GetChildNodes()) != 10 {
-		t.Errorf("node list length should be 10, but was ", len(root.GetChildNodes()))
+		t.Errorf("node list length should be 10, but was %v", len(root.GetChildNodes()))
 	}
 
+	// element without prefix:
+	root = newElement()
+	root.SetTagName("rewt")
+	if root.GetLocalName() != "rewt" {
+		t.Errorf("local name should be 'rewt', was '%v'", root.GetLocalName())
+	}
 }
 
 func TestElementOwnerDocument(t *testing.T) {
@@ -72,9 +69,17 @@ func TestElementAppendChild(t *testing.T) {
 		t.Errorf("length of node list should be 0, but was %v", len(root.GetChildNodes()))
 	}
 
+	if root.GetFirstChild() != nil {
+		t.Error("first child should be nil")
+	}
+
 	err := root.AppendChild(child)
 	if err != nil {
 		t.Errorf("did not expect error at this point: '%v'", err)
+	}
+
+	if root.GetFirstChild() != child {
+		t.Error("invalid first child")
 	}
 
 	if child.GetParentNode() != root {
