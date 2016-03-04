@@ -135,15 +135,20 @@ func TestBuilderCreateDocumentTrailingChars(t *testing.T) {
 
 // exampleDoc3 contains elaborate namespaces for testing that.
 var exampleDoc3 = `<?xml version="1.0" encoding="UTF-8"?>
-<root xmlns="http://example.org/rooturi" xmlns:spec="urn:spec:quux">
-	<pfx:child1 xmlns:pfx="urn:narf:zoit">
-		<pfx:subchild>This element should be of namespace urn:narf:zoit.</pfx:subchild>
-	</pfx:child1>
-	<spec:Specification>Some text</spec:Specification>
-	<same_root_namespace/>
-</root>
-`
+<!-- rootNode has the default namespace with some declarations of namespaces -->
+<rootNode xmlns:pfx="urn:ns:pfx" xmlns="urn:rootnode">
+    <!-- This element's namespace should match "urn:ns:pfx:childelement": -->
+    <pfx:childElement xmlns:pfx="urn:ns:pfx:childelement">
+        <!-- This element's namespace should match "urn:ns:pfx:sameprefix": -->
+        <pfx:samePrefix xmlns:pfx="urn:ns:pfx:sameprefix"/>
+    </pfx:childElement>
+    <pfx:childElement>
+        <!-- This element's namespace should match "urn:ns:pfx" -->
+    </pfx:childElement>
+</rootNode>`
 
+// Tests whether embedding the same prefixes (pfx) within a document results
+// in the correct associated namespaces.
 func TestBuilderCreateDocumentNamespaces(t *testing.T) {
 	reader := strings.NewReader(exampleDoc3)
 	builder := NewBuilder(reader)
@@ -153,24 +158,33 @@ func TestBuilderCreateDocumentNamespaces(t *testing.T) {
 	}
 
 	docelem := doc.GetDocumentElement()
-	if docelem.GetNamespaceURI() != "http://example.org/rooturi" {
-		t.Errorf("namespace URI of root node was '%v', expected 'http://example.org/rooturi'", docelem.GetNamespaceURI())
+	if docelem.GetNamespaceURI() != "urn:rootnode" {
+		t.Errorf("namespace URI of root node should be 'urn:rootnode', but was '%v'", docelem.GetNamespaceURI())
 	}
 
-	child1 := docelem.GetChildNodes()[1].(Element)
-	if child1.GetNamespaceURI() != "urn:narf:zoit" {
-		t.Errorf("namespace URI of first element should be 'urn:narf:zoit', but was '%v'", child1.GetNamespaceURI())
+	childElement1 := docelem.GetChildNodes()[3]
+	if childElement1.GetNodeName() != "childElement" {
+		t.Errorf("expected 'childElement', got '%v'", childElement1.GetNodeName())
 	}
-	if child1.GetNamespacePrefix() != "pfx" {
-		// unfeasible
-		// t.Errorf("namespace prefix should be 'pfx', but was '%v'", child1.GetNamespacePrefix())
+	if childElement1.GetNamespaceURI() != "urn:ns:pfx:childelement" {
+		t.Errorf("expected 'urn:ns:pfx:childelement', got '%v'", childElement1.GetNamespaceURI())
 	}
 
-	childSpec := docelem.GetChildNodes()[3].(Element)
-	if childSpec.GetNodeName() != "Specification" {
-		t.Errorf("expected node name 'Specification', got '%v'", childSpec.GetNodeName())
+	samePrefix := childElement1.GetChildNodes()[3]
+	if samePrefix.GetNodeName() != "samePrefix" {
+		t.Errorf("expected 'samePrefix', got '%v'", samePrefix.GetNodeName())
 	}
-	if childSpec.GetNamespaceURI() != "urn:spec:quux" {
-		t.Errorf("expected 'urn:spec:quux' as namespace, got '%v'", childSpec.GetNamespaceURI())
+
+	if samePrefix.GetNamespaceURI() != "urn:ns:pfx:sameprefix" {
+		t.Errorf("expected 'urn:ns:pfx:sameprefix', got '%v'", samePrefix.GetNamespaceURI())
+	}
+
+	childElement2 := docelem.GetChildNodes()[5]
+	if childElement2.GetNodeName() != "childElement" {
+		t.Errorf("expected 'childElement', got '%v'", childElement1.GetNodeName())
+	}
+
+	if childElement2.GetNamespaceURI() != "urn:ns:pfx" {
+		t.Errorf("expected 'urn:ns:pfx', got '%v'", childElement2.GetNamespaceURI())
 	}
 }

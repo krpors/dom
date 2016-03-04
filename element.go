@@ -38,7 +38,6 @@ func (de *domElement) GetNodeValue() string {
 }
 
 func (de *domElement) GetLocalName() string {
-	// TODO: what?
 	if index := strings.Index(de.tagName, ":"); index >= 0 {
 		return de.tagName[index+1:]
 	}
@@ -138,6 +137,29 @@ func (de *domElement) GetAttribute(name string) string {
 
 	// Not found, can return an empty string as per spec.
 	return ""
+}
+
+// GetElementsByTagName finds all descendant element with the given tagname.
+// This implementation does a recursive search.
+func (de *domElement) GetElementsByTagName(tagname string) []Element {
+	var elements []Element
+
+	var traverse func(n Node)
+	traverse = func(n Node) {
+		for _, child := range n.GetChildNodes() {
+			// only check elements:
+			if elem, ok := child.(Element); ok {
+				if elem.GetNodeName() == tagname {
+					elements = append(elements, elem)
+				}
+			}
+
+			traverse(child)
+		}
+	}
+	traverse(de)
+
+	return elements
 }
 
 // Private functions:

@@ -139,3 +139,46 @@ func TestElementAttributes(t *testing.T) {
 		t.Errorf("expected 'harpy' but was '%v'", root.GetAttribute("pfx:anything"))
 	}
 }
+
+func TestElementGetElementsByTagName(t *testing.T) {
+	root := newElement()
+	root.SetTagName("root")
+
+	child1 := newElement()
+	child1.SetTagName("child")
+	child1.SetAttribute("name", "a")
+
+	child2 := newElement()
+	child2.SetTagName("child")
+	child2.SetAttribute("name", "b")
+
+	child3 := newElement()
+	child3.SetTagName("child")
+	child3.SetAttribute("name", "ac")
+
+	root.AppendChild(child1)
+	child1.AppendChild(child3)
+	root.AppendChild(child2)
+
+	n1 := root.GetElementsByTagName("child")
+	if len(n1) != 3 {
+		t.Errorf("expected 3, got '%d'", len(n1))
+		t.FailNow()
+	}
+
+	if n1[0].GetAttribute("name") != "a" {
+		t.Errorf("expected 'a', got '%v'", n1[0].GetAttribute("name"))
+	}
+	if n1[1].GetAttribute("name") != "ac" {
+		t.Errorf("expected 'ac', got '%v'", n1[1].GetAttribute("name"))
+	}
+	if n1[2].GetAttribute("name") != "b" {
+		t.Errorf("expected 'b', got '%v'", n1[2].GetAttribute("name"))
+	}
+
+	n2 := child1.GetElementsByTagName("child")
+	if len(n2) != 1 {
+		t.Errorf("expected 1, got '%d'", len(n2))
+	}
+
+}
