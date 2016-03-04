@@ -162,6 +162,28 @@ func (de *domElement) GetElementsByTagName(tagname string) []Element {
 	return elements
 }
 
+func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Element {
+	var elements []Element
+
+	var traverse func(n Node)
+	traverse = func(n Node) {
+		for _, child := range n.GetChildNodes() {
+			// only check elements:
+			if elem, ok := child.(Element); ok {
+				if elem.GetNodeName() == tagname &&
+					elem.GetNamespaceURI() == namespaceURI {
+					elements = append(elements, elem)
+				}
+			}
+
+			traverse(child)
+		}
+	}
+	traverse(de)
+
+	return elements
+}
+
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent

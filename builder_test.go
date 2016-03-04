@@ -187,4 +187,23 @@ func TestBuilderCreateDocumentNamespaces(t *testing.T) {
 	if childElement2.GetNamespaceURI() != "urn:ns:pfx" {
 		t.Errorf("expected 'urn:ns:pfx', got '%v'", childElement2.GetNamespaceURI())
 	}
+
+	// Try to find some elements using GetElementsByTagName[NS].
+	// TODO: use doc instead of the doc element
+	gebtn := docelem.GetElementsByTagName("childElement")
+	if len(gebtn) != 2 {
+		t.Errorf("expected 2, got %d", len(gebtn))
+	}
+	meh := gebtn[0].GetElementsByTagNameNS("urn:ns:pfx:sameprefix", "samePrefix")
+	if len(meh) != 1 {
+		t.Errorf("expected 1, got %d", len(meh))
+	}
+	gebtn = docelem.GetElementsByTagNameNS("urn:ns:pfx:childelement", "childElement")
+	if len(gebtn) != 1 {
+		t.Errorf("expected 1, got %d", len(gebtn))
+	}
+	gebtn = docelem.GetElementsByTagNameNS("urn:ns:pfx", "childElement")
+	if len(gebtn) != 1 {
+		t.Errorf("expected 1, got %d", len(gebtn))
+	}
 }

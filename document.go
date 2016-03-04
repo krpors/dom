@@ -125,6 +125,8 @@ func (dd *domDocument) GetNamespacePrefix() string {
 	return ""
 }
 
+// TODO: spec requires GetElementsByTagName[NS] here too.
+
 // Private functions:
 func (dd *domDocument) setParentNode(parent Node) {
 	// no-op

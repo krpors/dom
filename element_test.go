@@ -181,4 +181,18 @@ func TestElementGetElementsByTagName(t *testing.T) {
 		t.Errorf("expected 1, got '%d'", len(n2))
 	}
 
+	// also, check equality of the pointers
+	if n1[0] != child1 {
+		t.Error("incorrect child node")
+	}
+	if n1[1] != child3 {
+		t.Error("incorrect child node")
+	}
+	if n1[2] != child2 {
+		t.Error("incorrect child node")
+	}
+}
+
+func TestElementGetElementsByTagNameNS(t *testing.T) {
+	// TODO
 }

@@ -190,9 +190,12 @@ type Element interface {
 	GetAttribute(name string) string
 	// Sets an attribute based on the Attr type.
 	SetAttributeNode(a Attr)
-	// GetElementsByTagName finds all descendant elements with the given tag
-	// name, in document order.
+	// GetElementsByTagName finds all descendant elements of the current element,
+	// with the given tag name, in document order.
 	GetElementsByTagName(string) []Element
+	// GetElementsByTagNameNS finds all descendant elements of the current element,
+	// with the given tag name and namespace URI, in document order.
+	GetElementsByTagNameNS(namespaceURI, tagname string) []Element
 }
 
 // Text represents character data within an element. It implements the Node interface.
