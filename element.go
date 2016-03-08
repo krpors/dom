@@ -142,41 +142,11 @@ func (de *domElement) GetAttribute(name string) string {
 // GetElementsByTagName finds all descendant element with the given tagname.
 // This implementation does a recursive search.
 func (de *domElement) GetElementsByTagName(tagname string) []Element {
-	return de.getElementsBy("", tagname, false)
+	return getElementsBy(de, "", tagname, false)
 }
 
 func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Element {
-	return de.getElementsBy(namespaceURI, tagname, true)
-}
-
-// getElementsBy finds descandant elements with the given (optional) namespaceURI and tagname.
-// When the 'includeNamespace' is set to true, the namespace URI is explicitly checked for
-// equality. If false, no namespace check will be done. The elements are returned as a 'live'
-// slice.
-func (de *domElement) getElementsBy(namespaceURI, tagname string, includeNamespace bool) []Element {
-	var elements []Element
-
-	var traverse func(n Node)
-	traverse = func(n Node) {
-		for _, child := range n.GetChildNodes() {
-			// only check elements:
-			if elem, ok := child.(Element); ok {
-				if includeNamespace && elem.GetNodeName() == tagname && elem.GetNamespaceURI() == namespaceURI {
-					// include namespace equality, if chosen.
-					elements = append(elements, elem)
-				} else if !includeNamespace && elem.GetNodeName() == tagname {
-					// do not include namespace equality, just the tagname
-					elements = append(elements, elem)
-				}
-
-			}
-
-			traverse(child)
-		}
-	}
-	traverse(de)
-
-	return elements
+	return getElementsBy(de, namespaceURI, tagname, true)
 }
 
 // Private functions:

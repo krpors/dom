@@ -245,6 +245,18 @@ func (dd *domDocument) GetDocumentElement() Element {
 	return nil
 }
 
+// GetElementsByTagName finds all descendant elements of the current element,
+// with the given tag name, in document order.
+func (dd *domDocument) GetElementsByTagName(tagname string) []Element {
+	return getElementsBy(dd, "", tagname, false)
+}
+
+// GetElementsByTagNameNS finds all descendant elements of the current element,
+// with the given tag name and namespace URI, in document order.
+func (dd *domDocument) GetElementsByTagNameNS(namespaceURI, tagname string) []Element {
+	return getElementsBy(dd, namespaceURI, tagname, true)
+}
+
 func (dd *domDocument) String() string {
 	return fmt.Sprintf("%s", dd.GetNodeType())
 }

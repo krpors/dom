@@ -149,6 +149,7 @@ type Node interface {
 	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
 	// does not have a prefix.
 	GetNamespacePrefix() string
+
 	// TODO: SetTextContent(string) implementation.
 	// SetTextContent sets the text content of the current node. On setting, any
 	// possible children this node may have are removed and, if the new string
@@ -250,6 +251,12 @@ type Document interface {
 	// Gets the document element, which should be the first (and only) child Node
 	// of the Document. Can be nil if none is set yet.
 	GetDocumentElement() Element
+	// GetElementsByTagName finds all descendant elements of the current element,
+	// with the given tag name, in document order.
+	GetElementsByTagName(string) []Element
+	// GetElementsByTagNameNS finds all descendant elements of the current element,
+	// with the given tag name and namespace URI, in document order.
+	GetElementsByTagNameNS(namespaceURI, tagname string) []Element
 }
 
 // Comment represents a comment node in an XML tree (e.g. <!-- ... -->). It implements

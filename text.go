@@ -104,5 +104,10 @@ func (dt *domText) SetData(data string) {
 }
 
 func (dt *domText) String() string {
-	return fmt.Sprintf("%s: '%s'", dt.GetNodeType(), strings.TrimSpace(dt.data))
+	maxlen := 30
+	var d string
+	if len(dt.data) > maxlen {
+		d = strings.TrimSpace(dt.data[0:maxlen] + " [...]")
+	}
+	return fmt.Sprintf("%s: '%s'", dt.GetNodeType(), d)
 }
