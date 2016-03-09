@@ -187,10 +187,11 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 		}
 	}
 
-	// Found no declarations in the attributes of this element, therefore we check the ancestor. This could be another
-	// Element, or a Document. In any case, it's a Node.
-	if de.GetParentNode() != nil {
-		return de.GetParentNode().LookupNamespaceURI(pfx)
+	// Found no declarations in the attributes of this element, therefore we check the ancestor. We must only check
+	// if the parent element is an Element itself. If we don't, we can get in an infinite loop when the parent node
+	// is a Document, since the Document will use the GetDocumentElement() to lookup the prefix.
+	if parentElement, ok := de.GetParentNode().(Element); ok {
+		return parentElement.LookupNamespaceURI(pfx)
 	}
 
 	// In the end, nothing is found.

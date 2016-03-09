@@ -256,7 +256,9 @@ func (dd *domDocument) GetElementsByTagNameNS(namespaceURI, tagname string) []El
 }
 
 func (dd *domDocument) LookupNamespaceURI(pfx string) string {
-	// TODO: LookupNamespaceURI
+	if dd.GetDocumentElement() != nil {
+		return dd.GetDocumentElement().LookupNamespaceURI(pfx)
+	}
 	return ""
 }
 
