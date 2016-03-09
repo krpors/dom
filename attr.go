@@ -37,7 +37,7 @@ func (da *domAttr) GetNodeValue() string {
 }
 
 func (da *domAttr) GetLocalName() string {
-	// TODO: what?
+	// TODO: implement GetLocalName() for Attr
 	return ""
 }
 
@@ -82,7 +82,14 @@ func (da *domAttr) GetNamespaceURI() string {
 }
 
 func (da *domAttr) GetNamespacePrefix() string {
-	// TODO: namespace prefix of an attr.
+	// TODO: Implements GetNamespacePrefix
+	return ""
+}
+
+func (da *domAttr) LookupNamespaceURI(pfx string) string {
+	if da.GetOwnerElement() != nil {
+		return da.GetOwnerElement().LookupNamespaceURI(pfx)
+	}
 	return ""
 }
 

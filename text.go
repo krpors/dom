@@ -77,6 +77,11 @@ func (dt *domText) GetNamespacePrefix() string {
 	return ""
 }
 
+func (dt *domText) LookupNamespaceURI(pfx string) string {
+	// TODO: LookupNamespaceURI
+	return ""
+}
+
 // Private functions:
 func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent

@@ -194,5 +194,46 @@ func TestElementGetElementsByTagName(t *testing.T) {
 }
 
 func TestElementGetElementsByTagNameNS(t *testing.T) {
-	// TODO
+	// TODO TestElementGetElementsByTagNameNS
+}
+
+// Tests the LookupNamespaceURI method on the Element type
+func TestElementLookupNamespaceURI(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElementNS("http://example.org/root", "pfx:root")
+	parent, _ := doc.CreateElementNS("http://example.org/parent", "ns1:parent")
+
+	child, _ := doc.CreateElement("child")
+	child.SetAttribute("xmlns", "http://example.org/child")
+
+	grandchild, _ := doc.CreateElement("ns1:grandchild")
+
+	doc.AppendChild(root)
+	root.AppendChild(parent)
+	parent.AppendChild(child)
+	child.AppendChild(grandchild)
+
+	ns := root.LookupNamespaceURI("pfx")
+	expected := "http://example.org/root"
+	if ns != expected {
+		t.Errorf("expected '%s', got '%s'", expected, ns)
+	}
+
+	ns = child.LookupNamespaceURI("")
+	expected = "http://example.org/child"
+	if ns != expected {
+		t.Errorf("expected '%s', got '%s'", expected, ns)
+	}
+
+	ns = grandchild.LookupNamespaceURI("ns1")
+	expected = "http://example.org/parent"
+	if ns != expected {
+		t.Errorf("expected '%s', got '%s'", expected, ns)
+	}
+
+	ns = grandchild.LookupNamespaceURI("pfx")
+	expected = "http://example.org/root"
+	if ns != expected {
+		t.Errorf("expected '%s', got '%s'", expected, ns)
+	}
 }

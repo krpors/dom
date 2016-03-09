@@ -67,6 +67,11 @@ func (pi *domProcInst) GetNamespacePrefix() string {
 	return ""
 }
 
+func (pi *domProcInst) LookupNamespaceURI(pfx string) string {
+	// TODO: LookupNamespaceURI
+	return ""
+}
+
 // ProcessingInstruction methods
 func (pi *domProcInst) GetData() string {
 	return pi.data

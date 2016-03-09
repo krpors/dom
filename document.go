@@ -125,8 +125,6 @@ func (dd *domDocument) GetNamespacePrefix() string {
 	return ""
 }
 
-// TODO: spec requires GetElementsByTagName[NS] here too.
-
 // Private functions:
 func (dd *domDocument) setParentNode(parent Node) {
 	// no-op
@@ -255,6 +253,11 @@ func (dd *domDocument) GetElementsByTagName(tagname string) []Element {
 // with the given tag name and namespace URI, in document order.
 func (dd *domDocument) GetElementsByTagNameNS(namespaceURI, tagname string) []Element {
 	return getElementsBy(dd, namespaceURI, tagname, true)
+}
+
+func (dd *domDocument) LookupNamespaceURI(pfx string) string {
+	// TODO: LookupNamespaceURI
+	return ""
 }
 
 func (dd *domDocument) String() string {

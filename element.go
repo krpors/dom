@@ -149,6 +149,54 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 	return getElementsBy(de, namespaceURI, tagname, true)
 }
 
+// LookupNamespaceURI looks up the namespace URI belonging to the prefix pfx. See
+// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
+// for more information on the implementation of this method.
+func (de *domElement) LookupNamespaceURI(pfx string) string {
+	if de.GetNamespaceURI() != "" && de.GetNamespacePrefix() == pfx {
+		return de.GetNamespaceURI()
+	}
+
+	// Check the element's xmlns declarations.
+	if de.GetAttributes() != nil {
+		attrs := de.GetAttributes().GetItems()
+		for _, node := range attrs {
+			a := node.(Attr)
+			// <elem xmlns="..." />, and prefix is empty:
+			if a.GetNodeName() == "xmlns" && pfx == "" {
+				return a.GetNodeValue()
+			}
+
+			// <elem xmlnsanycharacter="..." />, and prefix is empty:
+			//
+			// This seems to be according to spec. Anything starting with xmlns is just a namespace declaration.
+			// Xerces DOM also works like this.
+			if strings.HasPrefix(a.GetNodeName(), "xmlns") && !strings.Contains(a.GetNodeName(), ":") && pfx == "" {
+				return a.GetNodeValue()
+			}
+
+			// <pfx:elem xmlns:pfx="..." />, with a given prefix:
+			//
+			// First, get the last index of the 'xmlns:pfx' part. The node name can possibly contain multiple
+			// colon characters, like 'xmlns:bla:cruft:pfx'. In the Xerces implementation of the DOM, this will
+			// result in the local name 'pfx'.
+			s := strings.LastIndex(a.GetNodeName(), ":")
+			if strings.HasPrefix(a.GetNodeName(), "xmlns") && s >= 0 && a.GetNodeName()[s:] == pfx {
+				return a.GetNodeValue()
+			}
+		}
+	}
+
+	// Found no declarations in the attributes of this element, therefore we check the ancestor. This could be another
+	// Element, or a Document. In any case, it's a Node.
+	if de.GetParentNode() != nil {
+		return de.GetParentNode().LookupNamespaceURI(pfx)
+	}
+
+	// In the end, nothing is found.
+	return ""
+}
+
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent

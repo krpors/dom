@@ -34,7 +34,7 @@ func TestXMLNameIsValid(t *testing.T) {
 		{"\x00\x0A", false},
 		{"ok\xff\xfd", false},
 		{"pfx:some", true},
-		//{"ns1:ns1:ns1", false}, // TODO: fix
+		// {"ns1:double:colon", false}, //  TODO: fix this one
 		{"hi:erf\\asd", false},
 	}
 
