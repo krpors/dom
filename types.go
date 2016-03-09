@@ -82,35 +82,6 @@ func (n NodeType) String() string {
 	}
 }
 
-// NamedNodeMap represent collections of nodes that can be accessed by name.
-type NamedNodeMap interface {
-	GetNamedItem(string) Node
-	SetNamedItem(Node) error
-	GetItems() map[string]Node
-	Length() int
-}
-
-// ProcessingInstruction interface represents a "processing instruction", used
-// in XML as a way to keep processor-specific information in the text of the document.
-type ProcessingInstruction interface {
-	Node
-
-	// The content of this processing instruction. This is from the first non white
-	// space character after the target to the character immediately preceding the ?>.
-	GetTarget() string
-
-	// The target of this processing instruction. XML defines this as being the first
-	// token following the markup that begins the processing instruction.
-	GetData() string
-
-	// setData sets the data part of the processing instruction.
-	setData(string)
-
-	// setTarget sets the target part of the processing instruction, which may be
-	// anything but [XxMmLl].
-	setTarget(string)
-}
-
 // Node is the primary interface for the entire Document Object Model. It represents
 // a single node in the document tree. While all objects implementing the Node
 // interface expose methods for dealing with children, not all objects implementing
@@ -149,6 +120,10 @@ type Node interface {
 	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
 	// does not have a prefix.
 	GetNamespacePrefix() string
+	// LookupNamespaceURI looks up the namespace URI associated to the given prefix, starting
+	// from this node. See Namespace URI Lookup for details on the algorithm used by this method:
+	// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
+	LookupNamespaceURI(pfx string) string
 
 	// TODO: SetTextContent(string) implementation.
 	// SetTextContent sets the text content of the current node. On setting, any
@@ -161,6 +136,27 @@ type Node interface {
 	setParentNode(Node)
 	setOwnerDocument(Document)
 	setNamespaceURI(string)
+}
+
+// ProcessingInstruction interface represents a "processing instruction", used
+// in XML as a way to keep processor-specific information in the text of the document.
+type ProcessingInstruction interface {
+	Node
+
+	// The content of this processing instruction. This is from the first non white
+	// space character after the target to the character immediately preceding the ?>.
+	GetTarget() string
+
+	// The target of this processing instruction. XML defines this as being the first
+	// token following the markup that begins the processing instruction.
+	GetData() string
+
+	// setData sets the data part of the processing instruction.
+	setData(string)
+
+	// setTarget sets the target part of the processing instruction, which may be
+	// anything but [XxMmLl].
+	setTarget(string)
 }
 
 // Attr represents an attribute in an Element. It implements the Node interface.
@@ -268,4 +264,12 @@ type Comment interface {
 	GetComment() string
 	// SetComment gets the comment text of this node.
 	SetComment(comment string)
+}
+
+// NamedNodeMap represent collections of nodes that can be accessed by name.
+type NamedNodeMap interface {
+	GetNamedItem(string) Node
+	SetNamedItem(Node) error
+	GetItems() map[string]Node
+	Length() int
 }
