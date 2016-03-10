@@ -14,7 +14,7 @@ type domElement struct {
 	namespaceURI  string       // Namespace uri.
 
 	// Element specific things:
-	tagName string // The complete tagname given, with prefix.
+	tagName XMLName // The complete tagname given, with prefix.
 }
 
 func newElement() Element {
@@ -23,7 +23,7 @@ func newElement() Element {
 }
 
 func (de *domElement) GetNodeName() string {
-	return de.tagName
+	return string(de.tagName)
 }
 
 func (de *domElement) GetNodeType() NodeType {
@@ -38,10 +38,7 @@ func (de *domElement) GetNodeValue() string {
 }
 
 func (de *domElement) GetLocalName() string {
-	if index := strings.Index(de.tagName, ":"); index >= 0 {
-		return de.tagName[index+1:]
-	}
-	return de.tagName
+	return de.tagName.GetLocalPart()
 }
 
 func (de *domElement) GetChildNodes() []Node {
@@ -85,19 +82,15 @@ func (de *domElement) GetNamespaceURI() string {
 }
 
 func (de *domElement) GetNamespacePrefix() string {
-	// TODO: namespace prefix
-	if index := strings.Index(de.tagName, ":"); index >= 0 {
-		return de.tagName[0:index]
-	}
-	return ""
+	return de.tagName.GetPrefix()
 }
 
 func (de *domElement) SetTagName(name string) {
-	de.tagName = name
+	de.tagName = XMLName(name)
 }
 
 func (de *domElement) GetTagName() string {
-	return de.tagName
+	return string(de.tagName)
 }
 
 func (de *domElement) SetAttribute(name, value string) {
