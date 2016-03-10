@@ -76,6 +76,10 @@ func (dc *domComment) GetNamespacePrefix() string {
 	return ""
 }
 
+func (dc *domComment) LookupPrefix(namespace string) string {
+	return ""
+}
+
 func (dc *domComment) LookupNamespaceURI(pfx string) string {
 	// TODO: LookupNamespaceURI
 	return ""

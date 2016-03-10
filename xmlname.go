@@ -9,8 +9,8 @@ import (
 // TODO: XMLName as struct, with local part and namespace?
 
 // XMLName represents an XML Name according to the specification at https://www.w3.org/TR/xml/#NT-Name.
-// The name can be validated using the IsValid() function, which will return an
-// error if the name is invalid.
+// The name can be validated using the IsValid() function, which will return true if
+// the name is valid, or false if the name is invalid.
 type XMLName string
 
 // GetPrefix gets the prefix of the XMLName. For example, the following:

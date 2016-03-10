@@ -120,11 +120,15 @@ type Node interface {
 	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
 	// does not have a prefix.
 	GetNamespacePrefix() string
+	// LookupPrefix up the prefix associated to the given namespace URI, starting from this node.
+	// The default namespace declarations are ignored by this method. See Namespace Prefix Lookup
+	// for details on the algorithm used by this method:
+	//
+	LookupPrefix(namespace string) string
 	// LookupNamespaceURI looks up the namespace URI associated to the given prefix, starting
-	// from this node. See Namespace URI Lookup for details on the algorithm used by this method:
-	// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
+	// from this node. See Namespace Prefix Lookup for details on the algorithm used by this method:
+	// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
 	LookupNamespaceURI(pfx string) string
-
 	// TODO: SetTextContent(string) implementation.
 	// SetTextContent sets the text content of the current node. On setting, any
 	// possible children this node may have are removed and, if the new string

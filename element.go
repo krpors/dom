@@ -142,6 +142,45 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 	return getElementsBy(de, namespaceURI, tagname, true)
 }
 
+// LookupPrefix looks up the prefix associated to the given namespace URI, starting from this node.
+// The default namespace declarations are ignored by this method. See Namespace Prefix Lookup for
+// details on the algorithm used by this method:
+// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
+func (de *domElement) LookupPrefix(namespace string) string {
+	if namespace == "" {
+		return ""
+	}
+
+	// Check if the element has a namespace URI declared, and if there's a
+	// namespace.
+	pfx := de.GetNamespacePrefix()
+	if de.GetNamespaceURI() == namespace && pfx != "" {
+		return pfx
+	}
+
+	// Iterate over attributes with xmlns declarations.
+	if de.GetAttributes() != nil {
+		attrs := de.GetAttributes().GetItems()
+		for _, node := range attrs {
+			a := node.(Attr)
+			attrpfx := a.GetNamespacePrefix() // xmlns : ... = ,,,,,,,,,
+			attrloc := a.GetLocalName()       // ..... : pfx = .........
+			attrval := a.GetNodeValue()       // ..... : ... = namespace
+
+			if attrpfx == "xmlns" && attrval == namespace {
+				return attrloc
+			}
+		}
+	}
+
+	// Nothing found in this element, maybe something is declared up in the tree?
+	if parentElement, ok := de.GetParentNode().(Element); ok {
+		return parentElement.LookupPrefix(namespace)
+	}
+
+	return ""
+}
+
 // LookupNamespaceURI looks up the namespace URI belonging to the prefix pfx. See
 // https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
 // for more information on the implementation of this method.

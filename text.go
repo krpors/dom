@@ -77,8 +77,11 @@ func (dt *domText) GetNamespacePrefix() string {
 	return ""
 }
 
+func (dt *domText) LookupPrefix(namespace string) string {
+	return ""
+}
+
 func (dt *domText) LookupNamespaceURI(pfx string) string {
-	// TODO: LookupNamespaceURI
 	return ""
 }
 
