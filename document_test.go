@@ -253,14 +253,21 @@ func TestDocumentGetElementsBy(t *testing.T) {
 	child1, _ := doc.CreateElement("child")
 	child2, _ := doc.CreateElement("child")
 	child3, _ := doc.CreateElement("child")
+	child4, _ := doc.CreateElementNS("http://example.org/ns1", "ns1:child")
 
 	doc.AppendChild(root)
 	root.AppendChild(child1)
 	child1.AppendChild(child3)
 	root.AppendChild(child2)
+	root.AppendChild(child4)
 
 	elems := doc.GetElementsByTagName("child")
 	if len(elems) != 3 {
 		t.Errorf("expected 3 elements, but got '%v'", len(elems))
 	}
+
+	// elems = doc.GetElementsByTagNameNS("http://example.org/ns1", "child")
+	// if len(elems) != 1 {
+	// 	t.Errorf("expected 1 element, but got %d", len(elems))
+	// }
 }

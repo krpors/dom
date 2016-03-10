@@ -87,6 +87,8 @@ func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace b
 	traverse = func(n Node) {
 		for _, child := range n.GetChildNodes() {
 			// only check elements:
+			// TODO: fix the looking up of this thing in combination with namespace uri crap.
+			// You know: xmlns declarations, and the GetNamespaceURI()
 			if elem, ok := child.(Element); ok {
 				if includeNamespace && elem.GetNodeName() == tagname && elem.GetNamespaceURI() == namespaceURI {
 					// include namespace equality, if chosen.

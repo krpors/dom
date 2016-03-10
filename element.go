@@ -65,9 +65,16 @@ func (de *domElement) GetOwnerDocument() Document {
 }
 
 func (de *domElement) AppendChild(child Node) error {
+	// TODO: if an Attr is attempted to be appended, return error.
 	if de == child {
 		return fmt.Errorf("%v: adding a node to itself as a child", ErrorHierarchyRequest)
 	}
+
+	// Uh, we can do type assertion, or this.
+	if child.GetNodeType() == AttributeNode {
+		return fmt.Errorf("%v: an attempt was made to insert a node where it is not permitted", ErrorHierarchyRequest)
+	}
+
 	child.setParentNode(de)
 	de.nodes = append(de.nodes, child)
 	return nil
