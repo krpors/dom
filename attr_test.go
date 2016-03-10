@@ -12,14 +12,23 @@ func TestAttrGetters(t *testing.T) {
 	a.setOwnerElement(elem)
 	a.setOwnerDocument(doc)
 	a.setParentNode(newElement())
-	a.setName("cruft")
+	a.setName("pfx:cruft")
 	a.SetValue("valval")
 	a.setNamespaceURI("http://example.org/lol")
-	if a.GetName() != "cruft" {
-		t.Errorf("incorrect node name")
+	if a.GetName() != "pfx:cruft" {
+		t.Error("incorrect node name")
 	}
-	if a.GetNodeName() != "cruft" {
-		t.Errorf("incorrect node name")
+	if a.GetNodeName() != "pfx:cruft" {
+		t.Error("incorrect node name")
+	}
+	if a.GetLocalName() != "cruft" {
+		t.Error("incorrect node name")
+	}
+	if a.GetNamespacePrefix() != "pfx" {
+		t.Error("incorrect prefix")
+	}
+	if a.GetNamespaceURI() != "http://example.org/lol" {
+		t.Error("incorrect namespace URI")
 	}
 	if a.GetParentNode() != nil {
 		t.Error("attr cannot have a parent (must be nil)")
@@ -66,7 +75,13 @@ func TestAttrLookupNamespaceURI(t *testing.T) {
 	child.SetTagName("child")
 	child.SetAttribute("pfx:name", "Mimi")
 
-	attr := child.GetAttributes().GetNamedItem("pfx:name")
+	attr := child.GetAttributes().GetNamedItem("pfx:name").(Attr)
 
-	t.Logf("%s", attr.GetNodeName())
+	root.AppendChild(child)
+
+	ns := attr.LookupNamespaceURI("pfx")
+	exp := "http://example.org/pfx"
+	if ns != exp {
+		t.Errorf("expected '%v', got '%v'", exp, ns)
+	}
 }

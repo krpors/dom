@@ -135,6 +135,5 @@ func (da *domAttr) setOwnerElement(owner Element) {
 }
 
 func (da *domAttr) String() string {
-	// TODO: this
 	return fmt.Sprintf("%v, %v=%v", da.GetNodeType(), da.attrName, da.attrValue)
 }

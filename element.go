@@ -174,7 +174,7 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 			// colon characters, like 'xmlns:bla:cruft:pfx'. In the Xerces implementation of the DOM, this will
 			// result in the local name 'pfx'.
 			s := strings.LastIndex(a.GetNodeName(), ":")
-			if strings.HasPrefix(a.GetNodeName(), "xmlns") && s >= 0 && a.GetNodeName()[s:] == pfx {
+			if strings.HasPrefix(a.GetNodeName(), "xmlns") && s >= 0 && a.GetNodeName()[s+1:] == pfx {
 				return a.GetNodeValue()
 			}
 		}

@@ -220,6 +220,14 @@ func TestDocumentCreateComment(t *testing.T) {
 	}
 }
 
+func TestDocumentCreateAttributeInvalid(t *testing.T) {
+	doc := NewDocument()
+	_, err := doc.CreateAttributeNS("urn:whatevs", "")
+	if err == nil {
+		t.Error("expected error at this point, but got none")
+	}
+}
+
 func TestDocumentCreateAttributeNS(t *testing.T) {
 	doc := NewDocument()
 	root, err := doc.CreateElementNS("http://example.org/uri", "root")
@@ -234,4 +242,22 @@ func TestDocumentCreateAttributeNS(t *testing.T) {
 
 	doc.AppendChild(root)
 	root.SetAttributeNode(attr)
+}
+
+func TestDocumentGetElementsBy(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	child1, _ := doc.CreateElement("child")
+	child2, _ := doc.CreateElement("child")
+	child3, _ := doc.CreateElement("child")
+
+	doc.AppendChild(root)
+	root.AppendChild(child1)
+	child1.AppendChild(child3)
+	root.AppendChild(child2)
+
+	elems := doc.GetElementsByTagName("child")
+	if len(elems) != 3 {
+		t.Errorf("expected 3 elements, but got '%v'", len(elems))
+	}
 }
