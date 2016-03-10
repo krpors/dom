@@ -197,10 +197,12 @@ func TestElementGetElementsByTagNameNS(t *testing.T) {
 	// TODO TestElementGetElementsByTagNameNS
 }
 
-// Tests the LookupNamespaceURI method on the Element type
+// Tests the Lookup* methods on the Element type
 func TestElementLookupNamespaceURI(t *testing.T) {
 	doc := NewDocument()
 	root, _ := doc.CreateElementNS("http://example.org/root", "pfx:root")
+	root.SetAttribute("xmlns:abc", "http://example.org/cruft")
+
 	parent, _ := doc.CreateElementNS("http://example.org/parent", "ns1:parent")
 
 	child, _ := doc.CreateElement("child")
@@ -213,27 +215,64 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 	parent.AppendChild(child)
 	child.AppendChild(grandchild)
 
-	ns := root.LookupNamespaceURI("pfx")
+	// Test lookup namespace stuff by URI:
+
+	actual := root.LookupNamespaceURI("pfx")
 	expected := "http://example.org/root"
-	if ns != expected {
-		t.Errorf("expected '%s', got '%s'", expected, ns)
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
 	}
 
-	ns = child.LookupNamespaceURI("")
+	actual = child.LookupNamespaceURI("")
 	expected = "http://example.org/child"
-	if ns != expected {
-		t.Errorf("expected '%s', got '%s'", expected, ns)
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
 	}
 
-	ns = grandchild.LookupNamespaceURI("ns1")
+	actual = grandchild.LookupNamespaceURI("ns1")
 	expected = "http://example.org/parent"
-	if ns != expected {
-		t.Errorf("expected '%s', got '%s'", expected, ns)
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
 	}
 
-	ns = grandchild.LookupNamespaceURI("pfx")
+	actual = grandchild.LookupNamespaceURI("pfx")
 	expected = "http://example.org/root"
-	if ns != expected {
-		t.Errorf("expected '%s', got '%s'", expected, ns)
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
+	}
+
+	// Test lookup prefix stuff:
+
+	actual = root.LookupPrefix("http://example.org/root")
+	expected = "pfx"
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
+	}
+
+	// Same lookup, except different base element (parent instead of root)
+	actual = parent.LookupPrefix("http://example.org/root")
+	expected = "pfx"
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
+	}
+
+	// Again, same lookup, except this time from the grand child.
+	actual = grandchild.LookupPrefix("http://example.org/root")
+	expected = "pfx"
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
+	}
+
+	actual = parent.LookupPrefix("http://example.org/parent")
+	expected = "ns1"
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
+	}
+
+	// Make sure xmlns decls are found:
+	actual = grandchild.LookupPrefix("http://example.org/cruft")
+	expected = "abc"
+	if actual != expected {
+		t.Errorf("expected '%s', got '%s'", expected, actual)
 	}
 }
