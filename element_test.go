@@ -29,6 +29,15 @@ func TestElementGetters(t *testing.T) {
 	if root.GetNamespacePrefix() != "pfx" {
 		t.Errorf("namespace prefix should be 'pfx', but was '%v'", root.GetNamespacePrefix())
 	}
+	if root.GetAttribute("anything") != "" {
+		t.Errorf("no attributes set, expected empty string, but got '%s'", root.GetAttribute("anything"))
+	}
+	// set that attribute, but find a non existant one. Must return empty as well.
+	root.SetAttribute("anything", "goes")
+	if root.GetAttribute("nonexistent") != "" {
+		t.Error("expected empty string due to unfound attribute")
+	}
+
 	// add some children
 	for i := 0; i < 10; i++ {
 		e := newElement()
@@ -208,71 +217,54 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 	child, _ := doc.CreateElement("child")
 	child.SetAttribute("xmlns", "http://example.org/child")
 
-	grandchild, _ := doc.CreateElement("ns1:grandchild")
+	grandchild1, _ := doc.CreateElement("ns1:grandchild")
+
+	grandchild2, _ := doc.CreateElement("othergrandchild")
+	grandchild2.SetAttribute("xmlnsanythingafterthis", "http://example.org/grandchild2")
 
 	doc.AppendChild(root)
 	root.AppendChild(parent)
 	parent.AppendChild(child)
-	child.AppendChild(grandchild)
+	child.AppendChild(grandchild1)
+	child.AppendChild(grandchild2)
 
 	// Test lookup namespace stuff by URI:
-
-	actual := root.LookupNamespaceURI("pfx")
-	expected := "http://example.org/root"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
+	var tests = []struct {
+		expected string
+		actual   string
+	}{
+		{"http://example.org/root", root.LookupNamespaceURI("pfx")},
+		{"http://example.org/child", child.LookupNamespaceURI("")},
+		{"http://example.org/parent", grandchild1.LookupNamespaceURI("ns1")},
+		{"http://example.org/root", grandchild1.LookupNamespaceURI("pfx")},
+		{"http://example.org/grandchild2", grandchild2.LookupNamespaceURI("")},
+		{"", grandchild2.LookupNamespaceURI("none-this-prefix-not-registered")},
 	}
 
-	actual = child.LookupNamespaceURI("")
-	expected = "http://example.org/child"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
-	}
-
-	actual = grandchild.LookupNamespaceURI("ns1")
-	expected = "http://example.org/parent"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
-	}
-
-	actual = grandchild.LookupNamespaceURI("pfx")
-	expected = "http://example.org/root"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
+	for _, test := range tests {
+		if test.expected != test.actual {
+			t.Errorf("expected '%s', got '%s'", test.expected, test.actual)
+		}
 	}
 
 	// Test lookup prefix stuff:
-
-	actual = root.LookupPrefix("http://example.org/root")
-	expected = "pfx"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
+	tests = []struct {
+		expected string
+		actual   string
+	}{
+		{"pfx", root.LookupPrefix("http://example.org/root")},
+		{"pfx", parent.LookupPrefix("http://example.org/root")},
+		{"pfx", grandchild1.LookupPrefix("http://example.org/root")},
+		{"ns1", parent.LookupPrefix("http://example.org/parent")},
+		{"abc", grandchild1.LookupPrefix("http://example.org/cruft")},
+		{"", grandchild1.LookupPrefix("urn:nonexistant:namespace")},
+		{"", grandchild1.LookupPrefix("")},
 	}
 
-	// Same lookup, except different base element (parent instead of root)
-	actual = parent.LookupPrefix("http://example.org/root")
-	expected = "pfx"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
+	for _, test := range tests {
+		if test.expected != test.actual {
+			t.Errorf("expected '%s', got '%s'", test.expected, test.actual)
+		}
 	}
 
-	// Again, same lookup, except this time from the grand child.
-	actual = grandchild.LookupPrefix("http://example.org/root")
-	expected = "pfx"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
-	}
-
-	actual = parent.LookupPrefix("http://example.org/parent")
-	expected = "ns1"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
-	}
-
-	// Make sure xmlns decls are found:
-	actual = grandchild.LookupPrefix("http://example.org/cruft")
-	expected = "abc"
-	if actual != expected {
-		t.Errorf("expected '%s', got '%s'", expected, actual)
-	}
 }

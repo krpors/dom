@@ -35,6 +35,9 @@ func TestDocumentGetters(t *testing.T) {
 	if doc.GetNamespaceURI() != "" {
 		t.Error("document namespace uri should always be an empty string")
 	}
+	if doc.GetNamespacePrefix() != "" {
+		t.Error("document cannot have a namespace prefix")
+	}
 }
 
 // Tests appending doc to itself, and appending two document elements.

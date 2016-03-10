@@ -163,7 +163,7 @@ func (de *domElement) LookupPrefix(namespace string) string {
 		attrs := de.GetAttributes().GetItems()
 		for _, node := range attrs {
 			a := node.(Attr)
-			attrpfx := a.GetNamespacePrefix() // xmlns : ... = ,,,,,,,,,
+			attrpfx := a.GetNamespacePrefix() // xmlns : ... = .........
 			attrloc := a.GetLocalName()       // ..... : pfx = .........
 			attrval := a.GetNodeValue()       // ..... : ... = namespace
 
