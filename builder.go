@@ -127,7 +127,3 @@ func (b *Builder) CreateDocument() (Document, error) {
 		}
 	}
 }
-
-func (b *Builder) attrsToBleh(a []xml.Attr) Attr {
-	return nil
-}

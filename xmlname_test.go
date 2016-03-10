@@ -46,3 +46,28 @@ func TestXMLNameIsValid(t *testing.T) {
 		}
 	}
 }
+
+func TestXMLNameGetLocalNameAndPrefix(t *testing.T) {
+	var tests = []struct {
+		name              string
+		expectedPrefix    string
+		expectedLocalPart string
+	}{
+		{"elementName", "", "elementName"},
+		{"pfx:elementName", "pfx", "elementName"},
+		{"ns11111:abc", "ns11111", "abc"},
+	}
+
+	for _, test := range tests {
+		name := XMLName(test.name)
+		actualPrefix := name.GetPrefix()
+		actualLocalPart := name.GetLocalPart()
+
+		if actualPrefix != test.expectedPrefix {
+			t.Errorf("expected '%s', got '%s'", test.expectedPrefix, actualPrefix)
+		}
+		if actualLocalPart != test.expectedLocalPart {
+			t.Errorf("expected '%s', got '%s'", test.expectedLocalPart, actualLocalPart)
+		}
+	}
+}

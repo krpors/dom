@@ -55,3 +55,18 @@ func TestAttrGetters(t *testing.T) {
 		t.Errorf("incorrect node value: '%v'", a.GetValue())
 	}
 }
+
+func TestAttrLookupNamespaceURI(t *testing.T) {
+	root := newElement()
+	root.SetTagName("root")
+	root.SetAttribute("xmlns:pfx", "http://example.org/pfx")
+	root.SetAttribute("xmlns:xfb", "urn:xfbcft")
+
+	child := newElement()
+	child.SetTagName("child")
+	child.SetAttribute("pfx:name", "Mimi")
+
+	attr := child.GetAttributes().GetNamedItem("pfx:name")
+
+	t.Logf("%s", attr.GetNodeName())
+}

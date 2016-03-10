@@ -12,7 +12,7 @@ type domAttr struct {
 
 	// Attr specific things:
 	ownerElement Element
-	attrName     string
+	attrName     XMLName
 	attrValue    string
 }
 
@@ -22,23 +22,19 @@ func newAttr() Attr {
 }
 
 func (da *domAttr) GetNodeName() string {
-	return da.attrName
+	return string(da.attrName)
 }
 
 func (da *domAttr) GetNodeType() NodeType {
 	return AttributeNode
 }
 
-// NodeValue should return null/nil for Element types like the spec says,
-// but Go does not permit nil strings which are not pointers. So for now we
-// just return an empty string at all times.
 func (da *domAttr) GetNodeValue() string {
 	return da.attrValue
 }
 
 func (da *domAttr) GetLocalName() string {
-	// TODO: implement GetLocalName() for Attr
-	return ""
+	return da.attrName.GetLocalPart()
 }
 
 // GetChildNodes() returns an empty list of nodes for the Attr type.
@@ -82,8 +78,7 @@ func (da *domAttr) GetNamespaceURI() string {
 }
 
 func (da *domAttr) GetNamespacePrefix() string {
-	// TODO: Implements GetNamespacePrefix
-	return ""
+	return da.attrName.GetPrefix()
 }
 
 func (da *domAttr) LookupNamespaceURI(pfx string) string {
@@ -109,11 +104,11 @@ func (da *domAttr) setNamespaceURI(uri string) {
 // Attr specific functions:
 
 func (da *domAttr) setName(name string) {
-	da.attrName = name
+	da.attrName = XMLName(name)
 }
 
 func (da *domAttr) GetName() string {
-	return da.attrName
+	return da.GetNodeName()
 }
 
 func (da *domAttr) IsSpecified() bool {

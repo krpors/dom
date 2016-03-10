@@ -1,6 +1,7 @@
 package dom
 
 import (
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -8,8 +9,36 @@ import (
 // TODO: XMLName as struct, with local part and namespace?
 
 // XMLName represents an XML Name according to the specification at https://www.w3.org/TR/xml/#NT-Name.
-// The name can be validated using the IsValid() function.
+// The name can be validated using the IsValid() function, which will return an
+// error if the name is invalid.
 type XMLName string
+
+// GetPrefix gets the prefix of the XMLName. For example, the following:
+//	name := XMLName("pfx:element")
+//	fmt.Println(name.GetPrefix())
+// will output:
+//	pfx
+// XML names without a prefix will return an empty string.
+func (n XMLName) GetPrefix() string {
+	s := string(n)
+	if index := strings.Index(s, ":"); index >= 0 {
+		return s[0:index]
+	}
+	return ""
+}
+
+// GetLocalPart gets the local part of the XMLName. For example, the following:
+//	name := XMLName("pfx:element")
+//	fmt.Println(name)
+// will output:
+//	element
+func (n XMLName) GetLocalPart() string {
+	s := string(n)
+	if index := strings.Index(s, ":"); index >= 0 {
+		return s[index+1:]
+	}
+	return s
+}
 
 // IsValid returns true if the given XMLName is valid according to the XML specification.
 func (n XMLName) IsValid() bool {
