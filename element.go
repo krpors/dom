@@ -84,6 +84,14 @@ func (de *domElement) HasChildNodes() bool {
 	return len(de.nodes) > 0
 }
 
+func (de *domElement) GetPreviousSibling() Node {
+	return nil
+}
+
+func (de *domElement) GetNextSibling() Node {
+	return nil
+}
+
 func (de *domElement) GetNamespaceURI() string {
 	return de.namespaceURI
 }

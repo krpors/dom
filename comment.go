@@ -67,6 +67,14 @@ func (dc *domComment) HasChildNodes() bool {
 	return false
 }
 
+func (dc *domComment) GetPreviousSibling() Node {
+	return nil
+}
+
+func (dc *domComment) GetNextSibling() Node {
+	return nil
+}
+
 func (dc *domComment) GetNamespaceURI() string {
 	return ""
 }

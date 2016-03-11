@@ -115,6 +115,12 @@ type Node interface {
 	AppendChild(Node) error
 	// Returns true when the Node has one or more children.
 	HasChildNodes() bool
+	// GetPreviousSibling gets the Node immediately preceding this Node. If there is no such
+	// node, this method returns nil.
+	GetPreviousSibling() Node
+	// GetNextSibling gets the Node immediately following this Node. If there is no such node,
+	// this methods returns nil.
+	GetNextSibling() Node
 	// Returns the namespace URI of this node.
 	GetNamespaceURI() string
 	// GetNamespacePrefix returns the prefix of this node, or an empty string if it

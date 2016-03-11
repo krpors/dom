@@ -73,6 +73,14 @@ func (da *domAttr) HasChildNodes() bool {
 	return false
 }
 
+func (da *domAttr) GetPreviousSibling() Node {
+	return nil
+}
+
+func (da *domAttr) GetNextSibling() Node {
+	return nil
+}
+
 func (da *domAttr) GetNamespaceURI() string {
 	return da.namespaceURI
 }

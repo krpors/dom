@@ -115,6 +115,14 @@ func (dd *domDocument) HasChildNodes() bool {
 	return len(dd.nodes) > 0
 }
 
+func (dd *domDocument) GetPreviousSibling() Node {
+	return nil
+}
+
+func (dd *domDocument) GetNextSibling() Node {
+	return nil
+}
+
 // NamespaceURI should return nil as per the spec, but Go doesn't allow that for
 // non-pointer types, so return an empty string instead.
 func (dd *domDocument) GetNamespaceURI() string {

@@ -59,6 +59,13 @@ func (pi *domProcInst) HasChildNodes() bool {
 	return false
 }
 
+func (pi *domProcInst) GetPreviousSibling() Node {
+	return nil
+}
+func (pi *domProcInst) GetNextSibling() Node {
+	return nil
+}
+
 func (pi *domProcInst) GetNamespaceURI() string {
 	return ""
 }
