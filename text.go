@@ -35,7 +35,6 @@ func (dt *domText) GetNodeValue() string {
 }
 
 func (dt *domText) GetLocalName() string {
-	// TODO: huh? for text?
 	return ""
 }
 

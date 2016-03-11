@@ -76,6 +76,10 @@ func escape(s string) string {
 // When the 'includeNamespace' is set to true, the namespace URI is explicitly checked for
 // equality. If false, no namespace check will be done. The elements are returned as a 'live'
 // slice. The nodes are searched using the given parent node, which must not be nil.
+//
+// This function does not take the xmlns attributes into account. In other words, if an
+// Element is created without the Document's CreateElementNS() method, it will NOT have a
+// namespace. Even after an xmlns attribute is added. Xerces does it like this too.k
 func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace bool) []Element {
 	if parent == nil {
 		panic("parent node cannot be nil")
@@ -87,8 +91,6 @@ func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace b
 	traverse = func(n Node) {
 		for _, child := range n.GetChildNodes() {
 			// only check elements:
-			// TODO: fix the looking up of this thing in combination with namespace uri crap.
-			// You know: xmlns declarations, and the GetNamespaceURI()
 			if elem, ok := child.(Element); ok {
 				if includeNamespace && elem.GetNodeName() == tagname && elem.GetNamespaceURI() == namespaceURI {
 					// include namespace equality, if chosen.
