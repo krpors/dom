@@ -203,7 +203,7 @@ func TestElementGetElementsByTagName(t *testing.T) {
 }
 
 func TestElementGetElementsByTagNameNS(t *testing.T) {
-	// TODO TestElementGetElementsByTagNameNS
+	// TODO: TestElementGetElementsByTagNameNS
 }
 
 // Tests the Lookup* methods on the Element type
@@ -267,4 +267,41 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 		}
 	}
 
+}
+
+func TestElementGetPreviousNextSibling(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	first, _ := doc.CreateElement("first")
+	second, _ := doc.CreateElement("second")
+	third, _ := doc.CreateElement("third")
+	fourth := doc.CreateText("some arbitrary text at the fourth position")
+	fifth, _ := doc.CreateElement("fifth")
+
+	doc.AppendChild(root)
+	root.AppendChild(first)
+	root.AppendChild(second)
+	root.AppendChild(third)
+	root.AppendChild(fourth)
+	root.AppendChild(fifth)
+
+	var tests = []struct {
+		expected interface{} // nil or Node.
+		actual   interface{} // nil or Node.
+	}{
+		{nil, first.GetPreviousSibling()},
+		{first, second.GetPreviousSibling()},
+		{fourth, fifth.GetPreviousSibling()},
+		{nil, fifth.GetNextSibling()},
+		{third, second.GetNextSibling()},
+		{nil, root.GetPreviousSibling()},
+		{nil, doc.GetPreviousSibling()},
+		{nil, doc.GetNextSibling()},
+	}
+
+	for _, test := range tests {
+		if test.actual != test.expected {
+			t.Errorf("expected '%v', got '%v'", test.expected, test.actual)
+		}
+	}
 }
