@@ -286,8 +286,8 @@ func TestElementGetPreviousNextSibling(t *testing.T) {
 	root.AppendChild(fifth)
 
 	var tests = []struct {
-		expected interface{} // nil or Node.
-		actual   interface{} // nil or Node.
+		expected Node // or nil.
+		actual   Node // or nil.
 	}{
 		{nil, first.GetPreviousSibling()},
 		{first, second.GetPreviousSibling()},
