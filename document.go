@@ -138,14 +138,6 @@ func (dd *domDocument) setParentNode(parent Node) {
 	// no-op
 }
 
-func (dd *domDocument) setOwnerDocument(d Document) {
-	// no-op
-}
-
-func (dd *domDocument) setNamespaceURI(uri string) {
-	// no-op
-}
-
 // DOCUMENT SPECIFIC FUNCTIONS
 func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 	name := XMLName(tagName)

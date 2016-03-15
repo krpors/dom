@@ -98,14 +98,6 @@ func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent
 }
 
-func (dt *domText) setOwnerDocument(d Document) {
-	dt.ownerDocument = d
-}
-
-func (dt *domText) setNamespaceURI(uri string) {
-	// no-op
-}
-
 // Text specifics:
 
 // GetData returns the character data of this text node, unescaped.

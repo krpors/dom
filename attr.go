@@ -113,10 +113,6 @@ func (da *domAttr) setParentNode(parent Node) {
 	// no-op
 }
 
-func (da *domAttr) setOwnerDocument(d Document) {
-	da.ownerDocument = d
-}
-
 func (da *domAttr) GetName() string {
 	return da.GetNodeName()
 }

@@ -252,14 +252,6 @@ func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent
 }
 
-func (de *domElement) setOwnerDocument(d Document) {
-	de.ownerDocument = d
-}
-
-func (de *domElement) setNamespaceURI(uri string) {
-	de.namespaceURI = uri
-}
-
 func (de *domElement) String() string {
 	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
 		de.GetNodeType(), de.tagName, de.namespaceURI, de.attributes)

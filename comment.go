@@ -99,14 +99,6 @@ func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent
 }
 
-func (dc *domComment) setOwnerDocument(d Document) {
-	dc.ownerDocument = d
-}
-
-func (dc *domComment) setNamespaceURI(uri string) {
-	// no-op
-}
-
 // Text specifics:
 
 // GetComment returns the comment content.

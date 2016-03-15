@@ -103,14 +103,6 @@ func (pi *domProcInst) setTarget(target string) {
 	pi.target = target
 }
 
-// Private functions of Node:
-func (pi *domProcInst) setNamespaceURI(s string) {
-}
-
-func (pi *domProcInst) setOwnerDocument(d Document) {
-	pi.ownerDocument = d
-}
-
 func (pi *domProcInst) setParentNode(parent Node) {
 	// no-op
 }
