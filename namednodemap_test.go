@@ -10,13 +10,13 @@ func TestNamedNodeMap(t *testing.T) {
 		t.Error("expected length of 0")
 	}
 
-	comment := newComment(doc)
+	comment, _ := doc.CreateComment("meh")
 	err := nnm.SetNamedItem(comment)
 	if err == nil {
 		t.Error("expected error at this point, but got none")
 	}
 
-	attr := newAttr(doc, "name", "")
+	attr, _ := doc.CreateAttribute("name")
 	attr.SetValue("value")
 	nnm.SetNamedItem(attr)
 
@@ -35,7 +35,7 @@ func TestNamedNodeMap(t *testing.T) {
 		t.FailNow()
 	}
 
-	attrDuplicate := newAttr(doc, "name", "")
+	attrDuplicate, _ := doc.CreateAttribute("name")
 	attrDuplicate.SetValue("dupe!")
 	nnm.SetNamedItem(attrDuplicate)
 

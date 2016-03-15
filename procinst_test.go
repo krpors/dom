@@ -7,10 +7,11 @@ import (
 func TestProcessingInstructionGetters(t *testing.T) {
 	doc := NewDocument()
 
-	pi := newProcInst(doc, "procinsttarget", "procinstdata")
+	pi, _ := doc.CreateProcessingInstruction("procinsttarget", "procinstdata")
 	pi.setParentNode(doc)
 
-	if err := pi.AppendChild(newElement(doc, "", "")); err == nil {
+	bogusElement, _ := doc.CreateElement("anything")
+	if err := pi.AppendChild(bogusElement); err == nil {
 		t.Error("expected error at this point")
 	}
 	if pi.GetOwnerDocument() != doc {
