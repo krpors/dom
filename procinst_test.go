@@ -7,9 +7,7 @@ import (
 func TestProcessingInstructionGetters(t *testing.T) {
 	doc := NewDocument()
 
-	pi := newProcInst(doc)
-	pi.setData("procinstdata")
-	pi.setTarget("procinsttarget")
+	pi := newProcInst(doc, "procinsttarget", "procinstdata")
 	pi.setNamespaceURI("http://example.org/unused/and/a/no/op")
 	pi.setParentNode(doc)
 

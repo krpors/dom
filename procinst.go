@@ -8,9 +8,11 @@ type domProcInst struct {
 	target        string
 }
 
-func newProcInst(owner Document) ProcessingInstruction {
+func newProcInst(owner Document, target string, data string) ProcessingInstruction {
 	pi := &domProcInst{}
 	pi.ownerDocument = owner
+	pi.target = target
+	pi.data = data
 	return pi
 }
 

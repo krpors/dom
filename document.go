@@ -221,11 +221,7 @@ func (dd *domDocument) CreateAttributeNS(namespaceURI, name string) (Attr, error
 }
 
 func (dd *domDocument) CreateProcessingInstruction(target, data string) (ProcessingInstruction, error) {
-	pi := newProcInst(dd)
-	// FIXME: setParentNode shouldn't be here.
-	pi.setParentNode(dd)
-	pi.setData(data)
-	pi.setTarget(target)
+	pi := newProcInst(dd, target, data)
 	return pi, nil
 }
 
