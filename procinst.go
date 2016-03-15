@@ -95,7 +95,7 @@ func (pi *domProcInst) GetTarget() string {
 	return pi.target
 }
 
-func (pi *domProcInst) setData(data string) {
+func (pi *domProcInst) SetData(data string) {
 	pi.data = data
 }
 

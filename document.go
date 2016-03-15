@@ -165,7 +165,7 @@ func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, e
 
 func (dd *domDocument) CreateText(text string) Text {
 	t := newText(dd)
-	t.SetData(text)
+	t.SetText(text)
 	return t
 }
 

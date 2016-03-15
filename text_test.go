@@ -52,7 +52,7 @@ func TestTextGetters(t *testing.T) {
 		t.Error("LookupNamespaceURI should always return an empty string")
 	}
 
-	txt.SetData("this is a sample string, longer than 30 characters.")
+	txt.SetText("this is a sample string, longer than 30 characters.")
 	s := fmt.Sprintf("%v", txt)
 	expected := "TEXT_NODE: 'this is a sample string, longe [...]'"
 	if s != expected {

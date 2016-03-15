@@ -32,7 +32,7 @@ func (dt *domText) GetNodeType() NodeType {
 
 // NodeValue returns the same as GetData, the content of the text node.
 func (dt *domText) GetNodeValue() string {
-	return dt.GetData()
+	return dt.GetText()
 }
 
 func (dt *domText) GetLocalName() string {
@@ -100,14 +100,14 @@ func (dt *domText) setParentNode(parent Node) {
 
 // Text specifics:
 
-// GetData returns the character data of this text node, unescaped.
-func (dt *domText) GetData() string {
+// GetText returns the character data of this text node, unescaped.
+func (dt *domText) GetText() string {
 	return dt.data
 }
 
-// SetData sets the character data of the XML node. The data can be unescaped
-// XML, since GetData() will take care of conversion.
-func (dt *domText) SetData(data string) {
+// SetText sets the character data of the XML node. The data can be unescaped
+// XML, since GetText() will take care of conversion.
+func (dt *domText) SetText(data string) {
 	dt.data = data
 }
 

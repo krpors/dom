@@ -156,6 +156,8 @@ type ProcessingInstruction interface {
 	// The target of this processing instruction. XML defines this as being the first
 	// token following the markup that begins the processing instruction.
 	GetData() string
+	// Data is read-write.
+	SetData(data string)
 }
 
 // Attr represents an attribute in an Element. It implements the Node interface.
@@ -193,13 +195,16 @@ type Element interface {
 }
 
 // Text represents character data within an element. It implements the Node interface.
+// Note that the methods defined on this interface are not aligned with the specifications
+// due to the fact the Go's interfaces will not see a correct difference between this Text
+// interface, or the ProcessingInstruction interface when the methods have the same signatures.
 type Text interface {
 	Node
 
-	// GetData gets the character data of this Text node.
-	GetData() string
-	// SetData sets the character data of this Text node.
-	SetData(s string)
+	// GetText gets the character data of this Text node.
+	GetText() string
+	// SetText sets the character data of this Text node.
+	SetText(s string)
 }
 
 // DocumentType belongs to a Document, but can also be nil. The DocumentType

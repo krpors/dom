@@ -103,10 +103,6 @@ func (de *domElement) GetNamespacePrefix() string {
 	return de.tagName.GetPrefix()
 }
 
-func (de *domElement) SetTagName(name string) {
-	de.tagName = XMLName(name)
-}
-
 func (de *domElement) GetTagName() string {
 	return string(de.tagName)
 }

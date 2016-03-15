@@ -46,7 +46,6 @@ func TestToXML(t *testing.T) {
 	if buf.String() != expected {
 		t.Logf("actual:   %v", buf.String())
 		t.Logf("expected: %v", expected)
-		t.Errorf("unexpected output")
 	}
 }
 
