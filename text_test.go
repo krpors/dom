@@ -42,10 +42,6 @@ func TestTextGetters(t *testing.T) {
 	if txt.GetOwnerDocument() != doc {
 		t.Error("incorrect owner document")
 	}
-	txt.setNamespaceURI("anything")
-	if txt.GetNamespaceURI() != "" {
-		t.Error("namespace URI should be an empty string")
-	}
 	if txt.GetNamespacePrefix() != "" {
 		t.Error("namespace prefix should be an empty string")
 	}

@@ -131,6 +131,7 @@ type Node interface {
 	// from this node. See Namespace Prefix Lookup for details on the algorithm used by this method:
 	// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
 	LookupNamespaceURI(pfx string) string
+
 	// TODO: SetTextContent(string) implementation.
 	// SetTextContent sets the text content of the current node. On setting, any
 	// possible children this node may have are removed and, if the new string
@@ -138,9 +139,9 @@ type Node interface {
 	// attribute is set to.
 	// SetTextContent(string)
 
-	// Private functions
+	// setParentNode sets the parent node of this Node. This private method is necessary to add
+	// a parent after creation of a Node (using AppendChild).
 	setParentNode(Node)
-	setNamespaceURI(string)
 }
 
 // ProcessingInstruction interface represents a "processing instruction", used
@@ -167,7 +168,7 @@ type Attr interface {
 	SetValue(string)
 	GetOwnerElement() Element
 
-	setName(string)
+	// setOwnerElement is necessary to add an owner after creation.
 	setOwnerElement(Element)
 }
 
@@ -175,8 +176,6 @@ type Attr interface {
 type Element interface {
 	Node
 
-	// Sets the tag name of this element.
-	SetTagName(tagname string)
 	// Gets the tag name of this element.
 	GetTagName() string
 	// Convenience function to add an attribute.

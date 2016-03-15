@@ -16,8 +16,7 @@ func TestNamedNodeMap(t *testing.T) {
 		t.Error("expected error at this point, but got none")
 	}
 
-	attr := newAttr(doc)
-	attr.setName("name")
+	attr := newAttr(doc, "name", "")
 	attr.SetValue("value")
 	nnm.SetNamedItem(attr)
 
@@ -36,8 +35,7 @@ func TestNamedNodeMap(t *testing.T) {
 		t.FailNow()
 	}
 
-	attrDuplicate := newAttr(doc)
-	attrDuplicate.setName("name")
+	attrDuplicate := newAttr(doc, "name", "")
 	attrDuplicate.SetValue("dupe!")
 	nnm.SetNamedItem(attrDuplicate)
 

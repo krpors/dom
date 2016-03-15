@@ -153,8 +153,7 @@ func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 		return nil, fmt.Errorf("%v; tagname '%v'", ErrorInvalidCharacter, tagName)
 	}
 
-	e := newElement(dd)
-	e.SetTagName(tagName)
+	e := newElement(dd, tagName, "")
 	return e, nil
 }
 
@@ -163,11 +162,12 @@ func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 // it's okay. Even the Xerces implementation in Java doesn't care about the namespace URI, and will be
 // serialized just fine.
 func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, error) {
-	e, err := dd.CreateElement(tagName)
-	if err != nil {
-		return nil, err
+	name := XMLName(tagName)
+	if !name.IsValid() {
+		return nil, fmt.Errorf("%v; tagname '%v'", ErrorInvalidCharacter, tagName)
 	}
-	e.setNamespaceURI(namespaceURI)
+
+	e := newElement(dd, tagName, namespaceURI)
 	return e, nil
 }
 
@@ -205,18 +205,17 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 		return nil, fmt.Errorf("%v: '%v'", ErrorInvalidCharacter, xmlname)
 	}
 
-	attr := newAttr(dd)
-	attr.setName(name)
+	attr := newAttr(dd, name, "")
 	return attr, nil
 }
 
 func (dd *domDocument) CreateAttributeNS(namespaceURI, name string) (Attr, error) {
-	attr, err := dd.CreateAttribute(name)
-	if err != nil {
-		return nil, err
+	xmlname := XMLName(name)
+	if !xmlname.IsValid() {
+		return nil, fmt.Errorf("%v: '%v'", ErrorInvalidCharacter, xmlname)
 	}
 
-	attr.setNamespaceURI(namespaceURI)
+	attr := newAttr(dd, name, namespaceURI)
 	return attr, nil
 }
 

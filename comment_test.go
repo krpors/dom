@@ -44,7 +44,6 @@ func TestCommentGetters(t *testing.T) {
 	if cmt.GetFirstChild() != nil {
 		t.Error("first child should be nil at all times")
 	}
-	cmt.setNamespaceURI("http://example.org/fake")
 	if cmt.GetNamespaceURI() != "" {
 		t.Error("namespace URI should be empty")
 	}

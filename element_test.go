@@ -6,8 +6,7 @@ import (
 
 func TestElementGetters(t *testing.T) {
 	doc := NewDocument()
-	root := newElement(doc)
-	root.SetTagName("pfx:rewt")
+	root := newElement(doc, "pfx:rewt", "")
 
 	if root.GetNodeName() != "pfx:rewt" {
 		t.Errorf("node name is expected to be 'pfx:rewt', but was '%v'", root.GetNodeName())
@@ -41,8 +40,7 @@ func TestElementGetters(t *testing.T) {
 
 	// add some children
 	for i := 0; i < 10; i++ {
-		e := newElement(doc)
-		e.SetTagName("element" + string(i))
+		e := newElement(doc, "element"+string(i), "")
 		root.AppendChild(e)
 	}
 	if len(root.GetChildNodes()) != 10 {
@@ -50,8 +48,7 @@ func TestElementGetters(t *testing.T) {
 	}
 
 	// element without prefix:
-	root = newElement(doc)
-	root.SetTagName("rewt")
+	root = newElement(doc, "rewt", "")
 	if root.GetLocalName() != "rewt" {
 		t.Errorf("local name should be 'rewt', was '%v'", root.GetLocalName())
 	}
@@ -71,11 +68,9 @@ func TestElementOwnerDocument(t *testing.T) {
 func TestElementAppendChild(t *testing.T) {
 	doc := NewDocument()
 
-	root := newElement(doc)
-	root.SetTagName("root")
+	root := newElement(doc, "root", "")
 
-	child := newElement(doc)
-	child.SetTagName("child")
+	child := newElement(doc, "child", "")
 
 	if len(root.GetChildNodes()) != 0 {
 		t.Errorf("length of node list should be 0, but was %v", len(root.GetChildNodes()))
@@ -112,7 +107,7 @@ func TestElementAppendChild(t *testing.T) {
 		t.Errorf("expected a hierarchy error here")
 	}
 
-	attr := newAttr(doc)
+	attr := newAttr(doc, "attr", "")
 	err = root.AppendChild(attr)
 	if err == nil {
 		t.Error("expected error, got none")
@@ -121,7 +116,7 @@ func TestElementAppendChild(t *testing.T) {
 
 func TestElementHasChildNodes(t *testing.T) {
 	doc := NewDocument()
-	root := newElement(doc)
+	root := newElement(doc, "tag", "")
 	if root.HasChildNodes() {
 		t.Errorf("expected no child nodes")
 	}
@@ -132,7 +127,7 @@ func TestElementHasChildNodes(t *testing.T) {
 		t.Errorf("expected no child nodes")
 	}
 
-	child := newElement(doc)
+	child := newElement(doc, "child", "")
 	root.AppendChild(child)
 	if !root.HasChildNodes() {
 		t.Errorf("expected child nodes")
@@ -141,16 +136,14 @@ func TestElementHasChildNodes(t *testing.T) {
 
 func TestElementAttributes(t *testing.T) {
 	doc := NewDocument()
-	root := newElement(doc)
+	root := newElement(doc, "root", "")
 	root.SetAttribute("cruft", "value")
 
 	if root.GetAttribute("cruft") != "value" {
 		t.Errorf("expected 'value', got '%v'", root.GetAttribute("cruft"))
 	}
 
-	attr := newAttr(doc)
-	attr.setName("pfx:anything")
-	attr.setNamespaceURI("urn:any:namespace")
+	attr := newAttr(doc, "pfx:anything", "urn:any:namespace")
 	attr.SetValue("harpy")
 
 	root.SetAttributeNode(attr)
@@ -163,19 +156,15 @@ func TestElementAttributes(t *testing.T) {
 func TestElementGetElementsByTagName(t *testing.T) {
 	doc := NewDocument()
 
-	root := newElement(doc)
-	root.SetTagName("root")
+	root := newElement(doc, "root", "")
 
-	child1 := newElement(doc)
-	child1.SetTagName("child")
+	child1 := newElement(doc, "child", "")
 	child1.SetAttribute("name", "a")
 
-	child2 := newElement(doc)
-	child2.SetTagName("child")
+	child2 := newElement(doc, "child", "")
 	child2.SetAttribute("name", "b")
 
-	child3 := newElement(doc)
-	child3.SetTagName("child")
+	child3 := newElement(doc, "child", "")
 	child3.SetAttribute("name", "ac")
 
 	root.AppendChild(child1)

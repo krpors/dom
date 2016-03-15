@@ -16,9 +16,11 @@ type domAttr struct {
 	attrValue    string
 }
 
-func newAttr(owner Document) Attr {
+func newAttr(owner Document, name string, namespaceURI string) Attr {
 	a := &domAttr{}
 	a.ownerDocument = owner
+	a.attrName = XMLName(name)
+	a.namespaceURI = namespaceURI
 	return a
 }
 
@@ -113,16 +115,6 @@ func (da *domAttr) setParentNode(parent Node) {
 
 func (da *domAttr) setOwnerDocument(d Document) {
 	da.ownerDocument = d
-}
-
-func (da *domAttr) setNamespaceURI(uri string) {
-	da.namespaceURI = uri
-}
-
-// Attr specific functions:
-
-func (da *domAttr) setName(name string) {
-	da.attrName = XMLName(name)
 }
 
 func (da *domAttr) GetName() string {

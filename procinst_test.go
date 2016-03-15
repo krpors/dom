@@ -8,10 +8,9 @@ func TestProcessingInstructionGetters(t *testing.T) {
 	doc := NewDocument()
 
 	pi := newProcInst(doc, "procinsttarget", "procinstdata")
-	pi.setNamespaceURI("http://example.org/unused/and/a/no/op")
 	pi.setParentNode(doc)
 
-	if err := pi.AppendChild(newElement(doc)); err == nil {
+	if err := pi.AppendChild(newElement(doc, "", "")); err == nil {
 		t.Error("expected error at this point")
 	}
 	if pi.GetOwnerDocument() != doc {
