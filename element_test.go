@@ -108,6 +108,12 @@ func TestElementAppendChild(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected a hierarchy error here")
 	}
+
+	attr := newAttr()
+	err = root.AppendChild(attr)
+	if err == nil {
+		t.Error("expected error, got none")
+	}
 }
 
 func TestElementHasChildNodes(t *testing.T) {
@@ -278,6 +284,8 @@ func TestElementGetPreviousNextSibling(t *testing.T) {
 	fourth := doc.CreateText("some arbitrary text at the fourth position")
 	fifth, _ := doc.CreateElement("fifth")
 
+	noparent, _ := doc.CreateElement("noparent")
+
 	doc.AppendChild(root)
 	root.AppendChild(first)
 	root.AppendChild(second)
@@ -297,6 +305,8 @@ func TestElementGetPreviousNextSibling(t *testing.T) {
 		{nil, root.GetPreviousSibling()},
 		{nil, doc.GetPreviousSibling()},
 		{nil, doc.GetNextSibling()},
+		{nil, noparent.GetPreviousSibling()},
+		{nil, noparent.GetNextSibling()},
 	}
 
 	for _, test := range tests {

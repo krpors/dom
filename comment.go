@@ -68,11 +68,11 @@ func (dc *domComment) HasChildNodes() bool {
 }
 
 func (dc *domComment) GetPreviousSibling() Node {
-	return nil
+	return getPreviousSibling(dc)
 }
 
 func (dc *domComment) GetNextSibling() Node {
-	return nil
+	return getNextSibling(dc)
 }
 
 func (dc *domComment) GetNamespaceURI() string {

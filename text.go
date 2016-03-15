@@ -67,11 +67,11 @@ func (dt *domText) HasChildNodes() bool {
 }
 
 func (dt *domText) GetPreviousSibling() Node {
-	return nil
+	return getPreviousSibling(dt)
 }
 
 func (dt *domText) GetNextSibling() Node {
-	return nil
+	return getNextSibling(dt)
 }
 
 // GetNamespaceURI returns an empty string for Text nodes.

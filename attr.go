@@ -73,10 +73,12 @@ func (da *domAttr) HasChildNodes() bool {
 	return false
 }
 
+// GetPreviousSibling always returns nil for Attr nodes.
 func (da *domAttr) GetPreviousSibling() Node {
 	return nil
 }
 
+// GetNextSibling always returns nil for Attr nodes.
 func (da *domAttr) GetNextSibling() Node {
 	return nil
 }
@@ -90,6 +92,9 @@ func (da *domAttr) GetNamespacePrefix() string {
 }
 
 func (da *domAttr) LookupPrefix(namespace string) string {
+	if da.GetOwnerElement() != nil {
+		return da.GetOwnerElement().LookupPrefix(namespace)
+	}
 	return ""
 }
 

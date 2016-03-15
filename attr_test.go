@@ -63,6 +63,12 @@ func TestAttrGetters(t *testing.T) {
 	if a.GetValue() != "valval" {
 		t.Errorf("incorrect node value: '%v'", a.GetValue())
 	}
+	if a.GetPreviousSibling() != nil {
+		t.Error("expected nil previous sibling")
+	}
+	if a.GetNextSibling() != nil {
+		t.Error("expected nil next sibling")
+	}
 }
 
 func TestAttrLookupNamespaceURI(t *testing.T) {

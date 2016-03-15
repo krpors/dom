@@ -109,3 +109,45 @@ func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace b
 
 	return elements
 }
+
+// GetPreviousSibling gets the previous sibling, using the specified Node as
+// a reference. If there is no previous sibling (i.e. this NOde is the first), it
+// will return nil. If the Node has no parent this will return nil.
+//
+// This implementation is rather naive: it iterates through all child elements
+// of the parent, checks the position of this element, then uses that index - 1.
+func getPreviousSibling(node Node) Node {
+	if node.GetParentNode() == nil {
+		return nil
+	}
+
+	siblings := node.GetParentNode().GetChildNodes()
+	for i, n := range siblings {
+		if n == node && i > 0 {
+			return siblings[i-1]
+		}
+	}
+
+	return nil
+}
+
+// getNextSibling gets the next sibling, using the specified Node as a reference.
+// If there is no next sibling (i.e. this Node is the last), it will return nil.
+// If the Node has no parent, this will return nil.
+//
+// This implementation is rather naive: it iterates through all child elements
+// of the parent, checks the position of this Node, then uses that index + 1.
+func getNextSibling(node Node) Node {
+	if node.GetParentNode() == nil {
+		return nil
+	}
+
+	siblings := node.GetParentNode().GetChildNodes()
+	for i, n := range siblings {
+		if n == node && i < len(siblings)-1 {
+			return siblings[i+1]
+		}
+	}
+
+	return nil
+}

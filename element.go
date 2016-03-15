@@ -84,41 +84,12 @@ func (de *domElement) HasChildNodes() bool {
 	return len(de.nodes) > 0
 }
 
-// GetPreviousSibling gets the previous sibling, using the current Element as
-// a base. If there is no previous sibling (i.e. this Element is the first), it
-// will return nil. If the Element has no parent (i.e., the document element),
-// this will return nil.
 func (de *domElement) GetPreviousSibling() Node {
-	if de.GetParentNode() == nil {
-		return nil
-	}
-
-	siblings := de.GetParentNode().GetChildNodes()
-	for i, n := range siblings {
-		if n == de && i > 0 {
-			return siblings[i-1]
-		}
-	}
-
-	return nil
+	return getPreviousSibling(de)
 }
 
-// GetNextSibling gets the next sibling, using the current Element as a base.
-// If there is no next sibling (i.e. this Element is the last), it will return nil.
-// If the Element has no parent (i.e., the document element), this will return nil.
 func (de *domElement) GetNextSibling() Node {
-	if de.GetParentNode() == nil {
-		return nil
-	}
-
-	siblings := de.GetParentNode().GetChildNodes()
-	for i, n := range siblings {
-		if n == de && i < len(siblings)-1 {
-			return siblings[i+1]
-		}
-	}
-
-	return nil
+	return getNextSibling(de)
 }
 
 func (de *domElement) GetNamespaceURI() string {
