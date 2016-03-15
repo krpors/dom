@@ -7,14 +7,13 @@ import (
 func TestProcessingInstructionGetters(t *testing.T) {
 	doc := NewDocument()
 
-	pi := newProcInst()
+	pi := newProcInst(doc)
 	pi.setData("procinstdata")
 	pi.setTarget("procinsttarget")
-	pi.setOwnerDocument(doc)
 	pi.setNamespaceURI("http://example.org/unused/and/a/no/op")
 	pi.setParentNode(doc)
 
-	if err := pi.AppendChild(newElement()); err == nil {
+	if err := pi.AppendChild(newElement(doc)); err == nil {
 		t.Error("expected error at this point")
 	}
 	if pi.GetOwnerDocument() != doc {
@@ -36,13 +35,13 @@ func TestProcessingInstructionGetters(t *testing.T) {
 		t.Error("attributes should be nil")
 	}
 	if pi.GetTarget() != "procinsttarget" {
-		t.Error("target should be 'procinsttarget', but was '%v'", pi.GetTarget())
+		t.Errorf("target should be 'procinsttarget', but was '%v'", pi.GetTarget())
 	}
 	if pi.GetNodeName() != "procinsttarget" {
-		t.Error("nodename should be 'procinsttarget', but was '%v'", pi.GetNodeName())
+		t.Errorf("nodename should be 'procinsttarget', but was '%v'", pi.GetNodeName())
 	}
 	if pi.GetData() != "procinstdata" {
-		t.Error("data should be 'procinstdata', but was '%v'", pi.GetData())
+		t.Errorf("data should be 'procinstdata', but was '%v'", pi.GetData())
 	}
 	if pi.GetNodeValue() != "procinstdata" {
 		t.Errorf("node value should be 'procinstdata', but was '%v'", pi.GetNodeValue())
@@ -51,6 +50,6 @@ func TestProcessingInstructionGetters(t *testing.T) {
 		t.Error("namespace uri should be an empty string at all times")
 	}
 	if pi.GetNodeType() != ProcessingInstructionNode {
-		t.Error("node type should be '%v'", pi.GetNodeType())
+		t.Errorf("node type should be '%v'", pi.GetNodeType())
 	}
 }

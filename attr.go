@@ -16,8 +16,9 @@ type domAttr struct {
 	attrValue    string
 }
 
-func newAttr() Attr {
+func newAttr(owner Document) Attr {
 	a := &domAttr{}
+	a.ownerDocument = owner
 	return a
 }
 

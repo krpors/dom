@@ -100,15 +100,13 @@ type Node interface {
 	GetChildNodes() []Node
 	// Gets the parent node. May be nil if none was assigned.
 	GetParentNode() Node
-	// Gets the first child Node of this Node. May return nil if no child nodes
-	// exist.
+	// Gets the first child Node of this Node. May return nil if no child nodes exist.
 	GetFirstChild() Node
 	// GetAttributes will return the attributes belonging to this node. In the current
 	// spec, only Element nodes will return something sensible (i.e. non nil) when this
 	// function is called.
 	GetAttributes() NamedNodeMap
-	// Gets the owner document (the Document instance which was used to create
-	// the Node).
+	// Gets the owner document (the Document instance which was used to create the Node).
 	GetOwnerDocument() Document
 	// Appends a child to this Node. Will return an error when this Node is not
 	// able to have any (more) children, like Text nodes.
@@ -127,9 +125,7 @@ type Node interface {
 	// does not have a prefix.
 	GetNamespacePrefix() string
 	// LookupPrefix up the prefix associated to the given namespace URI, starting from this node.
-	// The default namespace declarations are ignored by this method. See Namespace Prefix Lookup
-	// for details on the algorithm used by this method:
-	//
+	// The default namespace declarations are ignored by this method.
 	LookupPrefix(namespace string) string
 	// LookupNamespaceURI looks up the namespace URI associated to the given prefix, starting
 	// from this node. See Namespace Prefix Lookup for details on the algorithm used by this method:
@@ -144,7 +140,6 @@ type Node interface {
 
 	// Private functions
 	setParentNode(Node)
-	setOwnerDocument(Document)
 	setNamespaceURI(string)
 }
 
@@ -156,14 +151,11 @@ type ProcessingInstruction interface {
 	// The content of this processing instruction. This is from the first non white
 	// space character after the target to the character immediately preceding the ?>.
 	GetTarget() string
-
 	// The target of this processing instruction. XML defines this as being the first
 	// token following the markup that begins the processing instruction.
 	GetData() string
-
 	// setData sets the data part of the processing instruction.
 	setData(string)
-
 	// setTarget sets the target part of the processing instruction, which may be
 	// anything but [XxMmLl].
 	setTarget(string)

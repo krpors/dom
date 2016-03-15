@@ -16,8 +16,9 @@ type domText struct {
 	data string
 }
 
-func newText() Text {
+func newText(owner Document) Text {
 	t := &domText{}
+	t.ownerDocument = owner
 	return t
 }
 

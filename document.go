@@ -153,8 +153,7 @@ func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 		return nil, fmt.Errorf("%v; tagname '%v'", ErrorInvalidCharacter, tagName)
 	}
 
-	e := newElement()
-	e.setOwnerDocument(dd)
+	e := newElement(dd)
 	e.SetTagName(tagName)
 	return e, nil
 }
@@ -173,8 +172,7 @@ func (dd *domDocument) CreateElementNS(namespaceURI, tagName string) (Element, e
 }
 
 func (dd *domDocument) CreateText(text string) Text {
-	t := newText()
-	t.setOwnerDocument(dd)
+	t := newText(dd)
 	t.SetData(text)
 	return t
 }
@@ -196,8 +194,7 @@ func (dd *domDocument) CreateComment(comment string) (Comment, error) {
 		return nil, fmt.Errorf("%v: comments may not contain a double hyphen (--)", ErrorInvalidCharacter)
 	}
 
-	c := newComment()
-	c.setOwnerDocument(dd)
+	c := newComment(dd)
 	c.SetComment(comment)
 	return c, nil
 }
@@ -208,9 +205,8 @@ func (dd *domDocument) CreateAttribute(name string) (Attr, error) {
 		return nil, fmt.Errorf("%v: '%v'", ErrorInvalidCharacter, xmlname)
 	}
 
-	attr := newAttr()
+	attr := newAttr(dd)
 	attr.setName(name)
-	attr.setOwnerDocument(dd)
 	return attr, nil
 }
 
@@ -225,8 +221,8 @@ func (dd *domDocument) CreateAttributeNS(namespaceURI, name string) (Attr, error
 }
 
 func (dd *domDocument) CreateProcessingInstruction(target, data string) (ProcessingInstruction, error) {
-	pi := newProcInst()
-	pi.setOwnerDocument(dd)
+	pi := newProcInst(dd)
+	// FIXME: setParentNode shouldn't be here.
 	pi.setParentNode(dd)
 	pi.setData(data)
 	pi.setTarget(target)

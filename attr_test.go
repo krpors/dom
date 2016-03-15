@@ -8,10 +8,9 @@ import (
 func TestAttrGetters(t *testing.T) {
 	doc := NewDocument()
 	elem, _ := doc.CreateElement("tag")
-	a := newAttr()
+	a := newAttr(doc)
 	a.setOwnerElement(elem)
-	a.setOwnerDocument(doc)
-	a.setParentNode(newElement())
+	a.setParentNode(newElement(doc))
 	a.setName("pfx:cruft")
 	a.SetValue("valval")
 	a.setNamespaceURI("http://example.org/lol")
@@ -33,7 +32,7 @@ func TestAttrGetters(t *testing.T) {
 	if a.GetParentNode() != nil {
 		t.Error("attr cannot have a parent (must be nil)")
 	}
-	if err := a.AppendChild(newElement()); err == nil {
+	if err := a.AppendChild(newElement(doc)); err == nil {
 		t.Error("expected an error at this point")
 	}
 	if len(a.GetChildNodes()) != 0 {
@@ -72,12 +71,13 @@ func TestAttrGetters(t *testing.T) {
 }
 
 func TestAttrLookupNamespaceURI(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+	root := newElement(doc)
 	root.SetTagName("root")
 	root.SetAttribute("xmlns:pfx", "http://example.org/pfx")
 	root.SetAttribute("xmlns:xfb", "urn:xfbcft")
 
-	child := newElement()
+	child := newElement(doc)
 	child.SetTagName("child")
 	child.SetAttribute("pfx:name", "Mimi")
 

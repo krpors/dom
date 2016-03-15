@@ -16,8 +16,9 @@ type domComment struct {
 	comment string
 }
 
-func newComment() Comment {
+func newComment(owner Document) Comment {
 	t := &domComment{}
+	t.ownerDocument = owner
 	return t
 }
 

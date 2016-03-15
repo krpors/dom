@@ -8,7 +8,6 @@ func TestDocumentGetters(t *testing.T) {
 
 	// Set some no-op setters, to increase coverage reports as well.
 	doc.setParentNode(doc.CreateText("no-op"))
-	doc.setOwnerDocument(NewDocument())
 	doc.setNamespaceURI("no-op")
 
 	if doc.GetNodeName() != "#document" {

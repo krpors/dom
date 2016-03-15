@@ -8,8 +8,9 @@ type domProcInst struct {
 	target        string
 }
 
-func newProcInst() ProcessingInstruction {
+func newProcInst(owner Document) ProcessingInstruction {
 	pi := &domProcInst{}
+	pi.ownerDocument = owner
 	return pi
 }
 
@@ -60,10 +61,10 @@ func (pi *domProcInst) HasChildNodes() bool {
 }
 
 func (pi *domProcInst) GetPreviousSibling() Node {
-	return nil
+	return getPreviousSibling(pi)
 }
 func (pi *domProcInst) GetNextSibling() Node {
-	return nil
+	return getNextSibling(pi)
 }
 
 func (pi *domProcInst) GetNamespaceURI() string {

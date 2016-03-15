@@ -3,18 +3,20 @@ package dom
 import "testing"
 
 func TestNamedNodeMap(t *testing.T) {
+	doc := NewDocument()
+
 	nnm := newNamedNodeMap()
 	if nnm.Length() != 0 {
 		t.Error("expected length of 0")
 	}
 
-	comment := newComment()
+	comment := newComment(doc)
 	err := nnm.SetNamedItem(comment)
 	if err == nil {
 		t.Error("expected error at this point, but got none")
 	}
 
-	attr := newAttr()
+	attr := newAttr(doc)
 	attr.setName("name")
 	attr.SetValue("value")
 	nnm.SetNamedItem(attr)
@@ -34,7 +36,7 @@ func TestNamedNodeMap(t *testing.T) {
 		t.FailNow()
 	}
 
-	attrDuplicate := newAttr()
+	attrDuplicate := newAttr(doc)
 	attrDuplicate.setName("name")
 	attrDuplicate.SetValue("dupe!")
 	nnm.SetNamedItem(attrDuplicate)

@@ -17,8 +17,9 @@ type domElement struct {
 	tagName XMLName // The complete tagname given, with prefix.
 }
 
-func newElement() Element {
+func newElement(owner Document) Element {
 	e := &domElement{}
+	e.ownerDocument = owner
 	return e
 }
 
@@ -113,7 +114,7 @@ func (de *domElement) SetAttribute(name, value string) {
 		de.attributes = newNamedNodeMap()
 	}
 
-	attr := newAttr()
+	attr := newAttr(de.GetOwnerDocument())
 	attr.setName(name)
 	attr.SetValue(value)
 	attr.setOwnerElement(de)

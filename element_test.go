@@ -5,7 +5,8 @@ import (
 )
 
 func TestElementGetters(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+	root := newElement(doc)
 	root.SetTagName("pfx:rewt")
 
 	if root.GetNodeName() != "pfx:rewt" {
@@ -40,7 +41,7 @@ func TestElementGetters(t *testing.T) {
 
 	// add some children
 	for i := 0; i < 10; i++ {
-		e := newElement()
+		e := newElement(doc)
 		e.SetTagName("element" + string(i))
 		root.AppendChild(e)
 	}
@@ -49,7 +50,7 @@ func TestElementGetters(t *testing.T) {
 	}
 
 	// element without prefix:
-	root = newElement()
+	root = newElement(doc)
 	root.SetTagName("rewt")
 	if root.GetLocalName() != "rewt" {
 		t.Errorf("local name should be 'rewt', was '%v'", root.GetLocalName())
@@ -68,10 +69,12 @@ func TestElementOwnerDocument(t *testing.T) {
 }
 
 func TestElementAppendChild(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+
+	root := newElement(doc)
 	root.SetTagName("root")
 
-	child := newElement()
+	child := newElement(doc)
 	child.SetTagName("child")
 
 	if len(root.GetChildNodes()) != 0 {
@@ -109,7 +112,7 @@ func TestElementAppendChild(t *testing.T) {
 		t.Errorf("expected a hierarchy error here")
 	}
 
-	attr := newAttr()
+	attr := newAttr(doc)
 	err = root.AppendChild(attr)
 	if err == nil {
 		t.Error("expected error, got none")
@@ -117,7 +120,8 @@ func TestElementAppendChild(t *testing.T) {
 }
 
 func TestElementHasChildNodes(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+	root := newElement(doc)
 	if root.HasChildNodes() {
 		t.Errorf("expected no child nodes")
 	}
@@ -128,7 +132,7 @@ func TestElementHasChildNodes(t *testing.T) {
 		t.Errorf("expected no child nodes")
 	}
 
-	child := newElement()
+	child := newElement(doc)
 	root.AppendChild(child)
 	if !root.HasChildNodes() {
 		t.Errorf("expected child nodes")
@@ -136,14 +140,15 @@ func TestElementHasChildNodes(t *testing.T) {
 }
 
 func TestElementAttributes(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+	root := newElement(doc)
 	root.SetAttribute("cruft", "value")
 
 	if root.GetAttribute("cruft") != "value" {
 		t.Errorf("expected 'value', got '%v'", root.GetAttribute("cruft"))
 	}
 
-	attr := newAttr()
+	attr := newAttr(doc)
 	attr.setName("pfx:anything")
 	attr.setNamespaceURI("urn:any:namespace")
 	attr.SetValue("harpy")
@@ -156,18 +161,20 @@ func TestElementAttributes(t *testing.T) {
 }
 
 func TestElementGetElementsByTagName(t *testing.T) {
-	root := newElement()
+	doc := NewDocument()
+
+	root := newElement(doc)
 	root.SetTagName("root")
 
-	child1 := newElement()
+	child1 := newElement(doc)
 	child1.SetTagName("child")
 	child1.SetAttribute("name", "a")
 
-	child2 := newElement()
+	child2 := newElement(doc)
 	child2.SetTagName("child")
 	child2.SetAttribute("name", "b")
 
-	child3 := newElement()
+	child3 := newElement(doc)
 	child3.SetTagName("child")
 	child3.SetAttribute("name", "ac")
 
