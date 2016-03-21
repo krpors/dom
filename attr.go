@@ -71,6 +71,16 @@ func (da *domAttr) AppendChild(child Node) error {
 	return fmt.Errorf("%v: attributes do not allow children", ErrorHierarchyRequest)
 }
 
+func (da *domAttr) RemoveChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (da *domAttr) ReplaceChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (da *domAttr) InsertBefore(newChild, refChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+
 // HasChildNodes returns false since Attr objects do not contain children.
 func (da *domAttr) HasChildNodes() bool {
 	return false

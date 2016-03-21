@@ -83,6 +83,16 @@ func (de *domElement) AppendChild(child Node) error {
 	return nil
 }
 
+func (de *domElement) RemoveChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (de *domElement) ReplaceChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (de *domElement) InsertBefore(newChild, refChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+
 func (de *domElement) HasChildNodes() bool {
 	return len(de.nodes) > 0
 }

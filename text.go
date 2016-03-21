@@ -63,6 +63,16 @@ func (dt *domText) AppendChild(child Node) error {
 	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dt.GetNodeType())
 }
 
+func (dt *domText) RemoveChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (dt *domText) ReplaceChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (dt *domText) InsertBefore(newChild, refChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+
 func (dt *domText) HasChildNodes() bool {
 	return false
 }

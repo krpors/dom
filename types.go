@@ -111,6 +111,11 @@ type Node interface {
 	// Appends a child to this Node. Will return an error when this Node is not
 	// able to have any (more) children, like Text nodes.
 	AppendChild(Node) error
+	// RemoveChild removes the child node indicated by oldChild from the list of children, and returns it. The returned
+	// error will be non nil in case the oldChild is not a child of the current Node.
+	RemoveChild(oldChild Node) (Node, error)
+	ReplaceChild(oldChild Node) (Node, error)
+	InsertBefore(newChild, refChild Node) (Node, error)
 	// Returns true when the Node has one or more children.
 	HasChildNodes() bool
 	// GetPreviousSibling gets the Node immediately preceding this Node. If there is no such

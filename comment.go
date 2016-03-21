@@ -64,6 +64,16 @@ func (dc *domComment) AppendChild(child Node) error {
 	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dc.GetNodeType())
 }
 
+func (dc *domComment) RemoveChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (dc *domComment) ReplaceChild(oldChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+func (dc *domComment) InsertBefore(newChild, refChild Node) (Node, error) {
+	panic("not implemented yet")
+}
+
 func (dc *domComment) HasChildNodes() bool {
 	return false
 }
