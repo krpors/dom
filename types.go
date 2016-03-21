@@ -23,6 +23,10 @@ var (
 	// ErrorNotSupported is returned when this implementation does not support
 	// the requested operation or object.
 	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
+
+	// ErrorNotFound is returned when a specified Node is not found, for instance
+	// during an attempt to delete a child Node from another Node.
+	ErrorNotFound = errors.New("NOT_FOUND_ERR: the given child is not found in the current context")
 )
 
 var (
@@ -114,7 +118,7 @@ type Node interface {
 	// RemoveChild removes the child node indicated by oldChild from the list of children, and returns it. The returned
 	// error will be non nil in case the oldChild is not a child of the current Node.
 	RemoveChild(oldChild Node) (Node, error)
-	ReplaceChild(oldChild Node) (Node, error)
+	ReplaceChild(newChild, oldChild Node) (Node, error)
 	InsertBefore(newChild, refChild Node) (Node, error)
 	// Returns true when the Node has one or more children.
 	HasChildNodes() bool

@@ -83,10 +83,29 @@ func (de *domElement) AppendChild(child Node) error {
 	return nil
 }
 
+// RemoveChild removes the child node indicated by oldChild from the list of children of ref, and returns it.
+// The returned error will be non nil in case the oldChild is not a child of the current Node.
 func (de *domElement) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	if oldChild == nil {
+		return nil, nil
+	}
+
+	for i, child := range de.GetChildNodes() {
+		if child == oldChild {
+			// Slice trickery to remove the node at the found index:
+			de.nodes = append(de.nodes[:i], de.nodes[i+1:]...)
+			return child, nil
+		}
+	}
+
+	return nil, fmt.Errorf("%v", ErrorNotFound)
 }
-func (de *domElement) ReplaceChild(oldChild Node) (Node, error) {
+
+// ReplaceChild replaces the child node oldChild with newChild in the list of children, and
+// returns the oldChild node. If newChild is a DocumentFragment object, oldChild is replaced
+// by all of the DocumentFragment children, which are inserted in the same order. If the
+// newChild is already in the tree, it is first removed.
+func (de *domElement) ReplaceChild(newChild, oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
 func (de *domElement) InsertBefore(newChild, refChild Node) (Node, error) {

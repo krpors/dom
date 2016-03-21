@@ -67,7 +67,7 @@ func (dc *domComment) AppendChild(child Node) error {
 func (dc *domComment) RemoveChild(oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
-func (dc *domComment) ReplaceChild(oldChild Node) (Node, error) {
+func (dc *domComment) ReplaceChild(newChild, oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
 func (dc *domComment) InsertBefore(newChild, refChild Node) (Node, error) {

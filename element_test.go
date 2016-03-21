@@ -308,3 +308,58 @@ func TestElementGetPreviousNextSibling(t *testing.T) {
 		}
 	}
 }
+
+func TestElementRemoveChild(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	first, _ := doc.CreateElement("first")
+	second, _ := doc.CreateElement("second")
+	third, _ := doc.CreateElement("third")
+	childOfThird, _ := doc.CreateElement("childOfThird")
+
+	doc.AppendChild(root)
+	root.AppendChild(first)
+	root.AppendChild(second)
+	root.AppendChild(third)
+	third.AppendChild(childOfThird)
+
+	nodeCount := len(root.GetChildNodes())
+	if nodeCount != 3 {
+		t.Errorf("expected 3 child nodes, got %v", nodeCount)
+	}
+
+	removedNode, err := root.RemoveChild(second)
+	if err != nil {
+		t.Error("unexpected error")
+		t.FailNow()
+	}
+
+	if removedNode != second {
+		t.Error("removedNode should equal second")
+		t.FailNow()
+	}
+
+	// After removing, we expect 2 children: first and third
+	nodeCount = len(root.GetChildNodes())
+	if nodeCount != 2 {
+		t.Errorf("expected 2 child nodes, got %v", nodeCount)
+		t.FailNow()
+	}
+
+	if root.GetChildNodes()[0] != first && root.GetChildNodes()[1] != third {
+		t.Error("incorrect children found")
+		t.FailNow()
+	}
+
+	// Attempt to remove a child from root which is not a child.
+	removedNode, err = root.RemoveChild(childOfThird)
+	if err == nil {
+		t.Error("expected an error at this point, but got none")
+	}
+
+	// Removing nil:
+	removedNode, err = root.RemoveChild(nil)
+	if removedNode != nil && err != nil {
+		t.Error("removedNode and err should be nil")
+	}
+}

@@ -114,7 +114,7 @@ func (dd *domDocument) AppendChild(child Node) error {
 func (dd *domDocument) RemoveChild(oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
-func (dd *domDocument) ReplaceChild(oldChild Node) (Node, error) {
+func (dd *domDocument) ReplaceChild(newChild, oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
 func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {
