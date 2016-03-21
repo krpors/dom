@@ -363,3 +363,45 @@ func TestElementRemoveChild(t *testing.T) {
 		t.Error("removedNode and err should be nil")
 	}
 }
+
+func TestElementReplaceNode(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	first, _ := doc.CreateElement("first")
+	second, _ := doc.CreateElement("second")
+	third, _ := doc.CreateElement("third")
+	childOfThird, _ := doc.CreateElement("childOfThird")
+
+	// Replacement new element, with no parent yet.
+	replacement, _ := doc.CreateElement("replacement")
+
+	doc.AppendChild(root)
+	root.AppendChild(first)
+	root.AppendChild(second)
+	root.AppendChild(third)
+	third.AppendChild(childOfThird)
+
+	// Replace the second with replacement
+	theNode, err := root.ReplaceChild(replacement, second)
+	if err != nil {
+		t.Error("unexpected error")
+		t.FailNow()
+	}
+
+	if theNode != second {
+		t.Error("theNode should equal second")
+		t.FailNow()
+	}
+
+	if len(root.GetChildNodes()) != 3 {
+		t.Errorf("expected 3 child nodes, got %v", len(root.GetChildNodes()))
+	}
+
+	if root.GetChildNodes()[1] != replacement {
+		t.Errorf("node at index 1 should be 'replacement', but was %v", root.GetChildNodes()[1])
+	}
+
+	if replacement.GetParentNode() != root {
+		t.Error("incorrect parent node")
+	}
+}

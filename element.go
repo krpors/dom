@@ -98,7 +98,7 @@ func (de *domElement) RemoveChild(oldChild Node) (Node, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("%v", ErrorNotFound)
+	return nil, ErrorNotFound
 }
 
 // ReplaceChild replaces the child node oldChild with newChild in the list of children, and
@@ -106,7 +106,33 @@ func (de *domElement) RemoveChild(oldChild Node) (Node, error) {
 // by all of the DocumentFragment children, which are inserted in the same order. If the
 // newChild is already in the tree, it is first removed.
 func (de *domElement) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	if newChild == nil {
+		return nil, fmt.Errorf("%v: given new child is nil", ErrorHierarchyRequest)
+	}
+	if oldChild == nil {
+		return nil, fmt.Errorf("%v: given old child is nil", ErrorHierarchyRequest)
+	}
+
+	// Check if newChild has a parent (i.e., it's in the tree).
+	ncParent := newChild.GetParentNode()
+	if ncParent != nil {
+		// Remove the newChild from its parent.
+		ncParent.RemoveChild(newChild)
+	}
+
+	// Find the old child, and replace it with the new child.
+	for i, child := range de.GetChildNodes() {
+		if child == oldChild {
+			// Slice trickery, again. It will make a new underlying slice with one element,
+			// the 'newChild', and then append the rest of the de.nodes to that.
+			de.nodes = append(de.nodes[:i], append([]Node{newChild}, de.nodes[i+1:]...)...)
+			// Change the parent node:
+			newChild.setParentNode(de)
+			return oldChild, nil
+		}
+	}
+
+	return nil, ErrorNotFound
 }
 func (de *domElement) InsertBefore(newChild, refChild Node) (Node, error) {
 	panic("not implemented yet")
