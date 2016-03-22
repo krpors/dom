@@ -80,45 +80,90 @@ func (dd *domDocument) AppendChild(child Node) error {
 		return nil
 	}
 
-	if dd == child {
+	if child == dd {
 		return fmt.Errorf("%v: adding a node to itself as a child", ErrorHierarchyRequest)
 	}
 
-	// Only allow elements to be append as a child... for now!
-	switch typ := child.(type) {
-	case Element:
-		// Check if a Document element is already appended.
-		docelem := dd.GetDocumentElement()
-		if docelem == nil {
-			child.setParentNode(dd)
-			dd.nodes = append(dd.nodes, child)
-			return nil
-		}
-		return fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, docelem)
-	case ProcessingInstruction:
-		// Processing instructions are legal children of a DOM Document and can appear
-		// anywhere, even before the Document element.
-		child.setParentNode(dd)
-		dd.nodes = append(dd.nodes, child)
-		return nil
-	case Comment:
-		child.setParentNode(dd)
-		dd.nodes = append(dd.nodes, child)
-		return nil
-	default:
-		return fmt.Errorf("only nodes of type (%v | %v | %v) can be added to a Document (tried '%v')",
-			ElementNode, ProcessingInstructionNode, CommentNode, typ.GetNodeType())
+	if child.GetOwnerDocument() != dd {
+		return ErrorWrongDocument
 	}
+
+	// TODO: remove child if already exists.
+
+	if child.GetNodeType() == ElementNode {
+		// Check if a Document element is already appended.
+		if dd.GetDocumentElement() != nil {
+			return fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, dd.GetDocumentElement())
+		}
+	}
+
+	if child.GetNodeType() == AttributeNode || child.GetNodeType() == TextNode {
+		return ErrorHierarchyRequest
+	}
+
+	child.setParentNode(dd)
+	dd.nodes = append(dd.nodes, child)
+	return nil
 }
 
 func (dd *domDocument) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	if oldChild == nil {
+		return nil, nil
+	}
+
+	for i, child := range dd.GetChildNodes() {
+		if child == oldChild {
+			// Slice trickery to remove the node at the found index:
+			dd.nodes = append(dd.nodes[:i], dd.nodes[i+1:]...)
+			return child, nil
+		}
+	}
+
+	return nil, ErrorNotFound
 }
+
 func (dd *domDocument) ReplaceChild(newChild, oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
+
 func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	// If a document element is already specified, and another element is attempted
+	// to insert, return an error.
+	if newChild == nil {
+		// FIXME: what in this case? Is an error ok?
+		return nil, ErrorHierarchyRequest
+	}
+
+	// Cannot insert an element if there's already one element.
+	if newChild.GetNodeType() == ElementNode && dd.GetDocumentElement() != nil {
+		return nil, fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, dd.GetDocumentElement())
+	}
+
+	if newChild.GetNodeType() == AttributeNode || newChild.GetNodeType() == TextNode {
+		return nil, ErrorHierarchyRequest
+	}
+
+	if newChild.GetOwnerDocument() != dd {
+		return nil, ErrorWrongDocument
+	}
+
+	// TODO: if refChild is nil, append to the end
+
+	// Find the reference child, insert newChild before that one.
+	for i, child := range dd.GetChildNodes() {
+		if child == refChild {
+			// Check if newChild is in the tree already. If so, remove it.
+			ncParent := newChild.GetParentNode()
+			if ncParent != nil {
+				ncParent.RemoveChild(newChild)
+			}
+			newChild.setParentNode(dd)
+			dd.nodes = append(dd.nodes[:i], append([]Node{newChild}, dd.nodes[i:]...)...)
+			return newChild, nil
+		}
+	}
+
+	return nil, ErrorNotFound
 }
 
 func (dd *domDocument) HasChildNodes() bool {

@@ -127,6 +127,19 @@ func TestDocumentAppendChildProcInst(t *testing.T) {
 	}
 }
 
+// Tests the functionality of inserting/appending elements with a different document owner.
+func TestDocumentInvalidOwner(t *testing.T) {
+	doc1 := NewDocument()
+	doc2 := NewDocument()
+
+	e, _ := doc2.CreateElement("doc2element")
+
+	err := doc1.AppendChild(e)
+	if err == nil {
+		t.Error("expected an error, got none")
+	}
+}
+
 func TestDocumentHasChildNodes(t *testing.T) {
 	doc := NewDocument()
 	if doc.HasChildNodes() {
@@ -264,8 +277,67 @@ func TestDocumentGetElementsBy(t *testing.T) {
 		t.Errorf("expected 3 elements, but got '%v'", len(elems))
 	}
 
-	// elems = doc.GetElementsByTagNameNS("http://example.org/ns1", "child")
-	// if len(elems) != 1 {
-	// 	t.Errorf("expected 1 element, but got %d", len(elems))
-	// }
+	elems = doc.GetElementsByTagNameNS("http://example.org/ns1", "child")
+	if len(elems) != 1 {
+		t.Errorf("expected 1 element, but got %d", len(elems))
+	}
+}
+
+func TestDocumentInsertBefore(t *testing.T) {
+	doc := NewDocument()
+	pi, _ := doc.CreateProcessingInstruction("quux", "foo")
+	doc.AppendChild(pi)
+
+	root, _ := doc.CreateElement("rewt")
+	n, err := doc.InsertBefore(root, pi)
+	t.Log(root.GetOwnerDocument() == pi.GetOwnerDocument())
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+		t.FailNow()
+	}
+
+	if n != root {
+		t.Error("returned node should be the same instance as the created node")
+		t.FailNow()
+	}
+
+	if len(doc.GetChildNodes()) != 2 {
+		t.Error("expected 2 child nodes")
+		t.FailNow()
+	}
+
+	if doc.GetChildNodes()[0] != root {
+		t.Error("incorrect first child node")
+	}
+
+	if doc.GetChildNodes()[1] != pi {
+		t.Error("incorrect second child node")
+	}
+
+	// Nil new child should generate an error
+	if _, err := doc.InsertBefore(nil, pi); err == nil {
+		t.Error("expected an error")
+	}
+
+	// Adding another element should fail due to existing document element.
+	e, _ := doc.CreateElement("another")
+	if _, err = doc.InsertBefore(e, pi); err == nil {
+		t.Error("expected an error")
+	}
+
+	attr, _ := doc.CreateAttribute("attr")
+	text := doc.CreateText("text")
+	if _, err = doc.InsertBefore(attr, pi); err == nil {
+		t.Error("expected an error")
+	}
+	if _, err = doc.InsertBefore(text, pi); err == nil {
+		t.Error("expected an error")
+	}
+
+	// Test inserting an element created from a different document.
+	doc2 := NewDocument()
+	pi2, _ := doc2.CreateProcessingInstruction("a", "b")
+	if _, err = doc.InsertBefore(pi2, pi); err == nil {
+		t.Error("expected an error")
+	}
 }

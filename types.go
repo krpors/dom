@@ -27,6 +27,10 @@ var (
 	// ErrorNotFound is returned when a specified Node is not found, for instance
 	// during an attempt to delete a child Node from another Node.
 	ErrorNotFound = errors.New("NOT_FOUND_ERR: the given child is not found in the current context")
+
+	// ErrorWrongDocument is returned when an insertion is attempted of a Node which was
+	// created from a different document instance.
+	ErrorWrongDocument = errors.New("WRONG_DOCUMENT_ERR: the child was created from a different Document instance")
 )
 
 var (

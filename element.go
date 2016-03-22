@@ -68,13 +68,12 @@ func (de *domElement) GetOwnerDocument() Document {
 }
 
 func (de *domElement) AppendChild(child Node) error {
-	// TODO: if an Attr is attempted to be appended, return error.
 	if de == child {
 		return fmt.Errorf("%v: adding a node to itself as a child", ErrorHierarchyRequest)
 	}
 
 	// Uh, we can do type assertion, or this.
-	if child.GetNodeType() == AttributeNode {
+	if child.GetNodeType() == AttributeNode || child.GetNodeType() == DocumentNode {
 		return fmt.Errorf("%v: an attempt was made to insert a node where it is not permitted", ErrorHierarchyRequest)
 	}
 
@@ -113,21 +112,27 @@ func (de *domElement) ReplaceChild(newChild, oldChild Node) (Node, error) {
 		return nil, fmt.Errorf("%v: given old child is nil", ErrorHierarchyRequest)
 	}
 
-	// Check if newChild has a parent (i.e., it's in the tree).
-	ncParent := newChild.GetParentNode()
-	if ncParent != nil {
-		// Remove the newChild from its parent.
-		ncParent.RemoveChild(newChild)
+	// newChild must be created by the same owner document of this element.
+	if newChild.GetOwnerDocument() != de.GetOwnerDocument() {
+		return nil, ErrorWrongDocument
 	}
 
 	// Find the old child, and replace it with the new child.
 	for i, child := range de.GetChildNodes() {
 		if child == oldChild {
+			// Check if newChild has a parent (i.e., it's in the tree).
+			ncParent := newChild.GetParentNode()
+			if ncParent != nil {
+				// Remove the newChild from its parent.
+				ncParent.RemoveChild(newChild)
+			}
+
 			// Slice trickery, again. It will make a new underlying slice with one element,
 			// the 'newChild', and then append the rest of the de.nodes to that.
 			de.nodes = append(de.nodes[:i], append([]Node{newChild}, de.nodes[i+1:]...)...)
 			// Change the parent node:
 			newChild.setParentNode(de)
+
 			return oldChild, nil
 		}
 	}

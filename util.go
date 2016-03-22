@@ -92,7 +92,7 @@ func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace b
 		for _, child := range n.GetChildNodes() {
 			// only check elements:
 			if elem, ok := child.(Element); ok {
-				if includeNamespace && elem.GetNodeName() == tagname && elem.GetNamespaceURI() == namespaceURI {
+				if includeNamespace && elem.GetLocalName() == tagname && elem.GetNamespaceURI() == namespaceURI {
 					// include namespace equality, if chosen.
 					elements = append(elements, elem)
 				} else if !includeNamespace && elem.GetNodeName() == tagname {

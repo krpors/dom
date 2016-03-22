@@ -60,17 +60,17 @@ func (dt *domText) GetOwnerDocument() Document {
 }
 
 func (dt *domText) AppendChild(child Node) error {
-	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, dt.GetNodeType())
+	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, TextNode)
 }
 
 func (dt *domText) RemoveChild(oldChild Node) (Node, error) {
 	panic("not implemented yet")
 }
 func (dt *domText) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, fmt.Errorf("%v: %v does not have children to replace", ErrorHierarchyRequest, TextNode)
 }
 func (dt *domText) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, fmt.Errorf("%v: %v does not have children to insert", ErrorHierarchyRequest, TextNode)
 }
 
 func (dt *domText) HasChildNodes() bool {
