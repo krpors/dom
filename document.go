@@ -123,7 +123,48 @@ func (dd *domDocument) RemoveChild(oldChild Node) (Node, error) {
 }
 
 func (dd *domDocument) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	if newChild == nil {
+		return nil, fmt.Errorf("%v: given new child is nil", ErrorHierarchyRequest)
+	}
+	if oldChild == nil {
+		return nil, fmt.Errorf("%v: given old child is nil", ErrorHierarchyRequest)
+	}
+
+	if newChild.GetNodeType() == AttributeNode || newChild.GetNodeType() == TextNode {
+		return nil, ErrorHierarchyRequest
+	}
+
+	// newChild must be created by the same owner document of this element.
+	if newChild.GetOwnerDocument() != dd {
+		return nil, ErrorWrongDocument
+	}
+
+	// Replacing a Node (which is not an element) with an element when there's already an element, should fail.
+	if dd.GetDocumentElement() != nil && newChild.GetNodeType() == ElementNode && oldChild.GetNodeType() != ElementNode {
+		return nil, ErrorHierarchyRequest
+	}
+
+	// Find the old child, and replace it with the new child.
+	for i, child := range dd.GetChildNodes() {
+		if child == oldChild {
+			// Check if newChild has a parent (i.e., it's in the tree).
+			ncParent := newChild.GetParentNode()
+			if ncParent != nil {
+				// Remove the newChild from its parent.
+				ncParent.RemoveChild(newChild)
+			}
+
+			// Slice trickery, again. It will make a new underlying slice with one element,
+			// the 'newChild', and then append the rest of the de.nodes to that.
+			dd.nodes = append(dd.nodes[:i], append([]Node{newChild}, dd.nodes[i+1:]...)...)
+			// Change the parent node:
+			newChild.setParentNode(dd)
+
+			return oldChild, nil
+		}
+	}
+
+	return nil, ErrorNotFound
 }
 
 func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {

@@ -288,8 +288,18 @@ func TestDocumentInsertBefore(t *testing.T) {
 	pi, _ := doc.CreateProcessingInstruction("quux", "foo")
 	doc.AppendChild(pi)
 
+	// Result after AppendChild:
+	// <document>
+	//    <?quux foo?>
+
 	root, _ := doc.CreateElement("rewt")
 	n, err := doc.InsertBefore(root, pi)
+
+	// Result of InsertBefore:
+	// <document>
+	//     <root/>
+	//     <?quux foo?>
+
 	t.Log(root.GetOwnerDocument() == pi.GetOwnerDocument())
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
@@ -312,6 +322,29 @@ func TestDocumentInsertBefore(t *testing.T) {
 
 	if doc.GetChildNodes()[1] != pi {
 		t.Error("incorrect second child node")
+	}
+
+	// Check inserting a processing instruction already in the document
+	doc.InsertBefore(pi, root)
+	// Result after InsertBefore should be:
+	// <document>
+	//    <?quux foo?>
+	//    <root>
+	if len(doc.GetChildNodes()) != 2 {
+		t.Error("expected 2 child nodes")
+		t.FailNow()
+	}
+	if doc.GetChildNodes()[0] != pi {
+		t.Error("incorrect first child node")
+	}
+	if doc.GetChildNodes()[1] != root {
+		t.Error("incorrect second child node")
+	}
+	if pi.GetParentNode() != doc {
+		t.Error("processing instruction has wrong parent node")
+	}
+	if root.GetParentNode() != doc {
+		t.Error("root has wrong parent node")
 	}
 
 	// Nil new child should generate an error
@@ -339,5 +372,68 @@ func TestDocumentInsertBefore(t *testing.T) {
 	pi2, _ := doc2.CreateProcessingInstruction("a", "b")
 	if _, err = doc.InsertBefore(pi2, pi); err == nil {
 		t.Error("expected an error")
+	}
+
+	// Test that inserting an element which is not a child returns a not found error.
+	element, _ := doc.CreateElement("anything")
+	if _, err = doc.InsertBefore(pi, element); err == nil {
+		t.Error("expected an error")
+	}
+}
+
+func TestDocumentRemoveChild(t *testing.T) {
+	doc := NewDocument()
+	e, _ := doc.CreateElement("root")
+	if _, err := doc.RemoveChild(e); err == nil {
+		t.Error("expected an error")
+	}
+
+	if a, b := doc.RemoveChild(nil); a != nil && b != nil {
+		t.Error("returned Node and error should both be nil")
+	}
+}
+
+func TestDocumentReplaceChild(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	childOfRoot, _ := doc.CreateElement("child_of_root")
+	elem, _ := doc.CreateElement("elem")
+	pi, _ := doc.CreateProcessingInstruction("target", "data")
+
+	doc.AppendChild(root)
+	root.AppendChild(childOfRoot)
+	doc.AppendChild(pi)
+
+	replacement, err := doc.ReplaceChild(elem, root)
+	if err != nil {
+		t.Error("unexpected error")
+	}
+
+	// The replacement node must equal the replaced node.
+	if replacement != root {
+		t.Error("replacement should equal elem")
+	}
+
+	if doc.GetDocumentElement() != elem {
+		t.Error("incorrect document element")
+	}
+
+	// Try to replace the processing instruction with another element. Should fail
+	// because we cannot have two document elements.
+	if _, err = doc.ReplaceChild(root, pi); err == nil {
+		t.Error("expected an error but got none")
+	}
+
+	// Try to replace the current root node (elem) with childOfRoot.
+	if _, err = doc.ReplaceChild(childOfRoot, elem); err != nil {
+		t.Error("unexpected error")
+	}
+
+	if doc.GetDocumentElement() != childOfRoot {
+		t.Error("incorrect document element")
+	}
+
+	if len(doc.GetChildNodes()) != 2 {
+		t.Error("expected 2 children")
 	}
 }
