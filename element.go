@@ -22,6 +22,7 @@ func newElement(owner Document, tagname string, namespaceURI string) Element {
 	e.ownerDocument = owner
 	e.tagName = XMLName(tagname)
 	e.namespaceURI = namespaceURI
+	e.attributes = newNamedNodeMap()
 	return e
 }
 
@@ -184,19 +185,11 @@ func (de *domElement) SetAttribute(name, value string) {
 // URI, use the setAttributeNodeNS method.
 // TODO: implement above
 func (de *domElement) SetAttributeNode(a Attr) {
-	if de.attributes == nil {
-		de.attributes = newNamedNodeMap()
-	}
-
 	a.setOwnerElement(de)
 	de.attributes.SetNamedItem(a)
 }
 
 func (de *domElement) GetAttribute(name string) string {
-	if de.attributes == nil {
-		// TODO: no attributes, return empty string??
-		return ""
-	}
 	if theAttr := de.attributes.GetNamedItem(name); theAttr != nil {
 		return theAttr.GetNodeValue()
 	}

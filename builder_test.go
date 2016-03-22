@@ -55,6 +55,22 @@ func TestBuilderCreateDocument(t *testing.T) {
 	if cmt.GetNodeType() != CommentNode {
 		t.Errorf("expecting a comment node, but was %v", cmt.GetNodeType())
 	}
+
+	// Get first person elemen, check attributes.
+	elements := doc.GetElementsByTagName("person")
+	if len(elements) <= 0 {
+		t.Error("expected at least 1 element")
+		t.FailNow()
+	}
+
+	attrVal := elements[0].GetAttribute("name")
+	if attrVal != "Foo" {
+		t.Errorf("expected 'Foo', got '%v'", attrVal)
+	}
+	attrVal = elements[0].GetAttribute("lastname")
+	if attrVal != "Quux" {
+		t.Errorf("expected 'Quux', got ''%v'", attrVal)
+	}
 }
 
 //=============================================================================

@@ -58,8 +58,6 @@ func (b *Builder) CreateDocument() (Document, error) {
 		}
 
 		switch typ := token.(type) {
-		case xml.Attr:
-			// attr, err := b.doc.CreateAttribute()
 		case xml.Comment:
 			cmt, err := b.doc.CreateComment(string(typ))
 			if err != nil {
@@ -89,6 +87,16 @@ func (b *Builder) CreateDocument() (Document, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			for _, a := range typ.Attr {
+				attr, err := b.doc.CreateAttributeNS(a.Name.Space, a.Name.Local)
+				if err != nil {
+					return nil, err
+				}
+				attr.SetValue(a.Value)
+				elem.GetAttributes().SetNamedItem(attr)
+			}
+
 			if err = curNode.AppendChild(elem); err != nil {
 				return nil, err
 			}

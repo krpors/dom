@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 )
 
 // TODO: namespaces for prefixes must be predeclared somehow before serializing
@@ -39,7 +40,12 @@ func ToXML(node Node, omitXMLDecl bool, w io.Writer) {
 				fmt.Fprintf(w, "/>")
 			}
 		case Text:
-			fmt.Fprintf(w, "%s", escape(t.GetText()))
+			// Contains only whitespaces?
+			if strings.TrimSpace(t.GetText()) == "" {
+				fmt.Fprintf(w, "%s", t.GetText())
+			} else {
+				fmt.Fprintf(w, "%s", escape(t.GetText()))
+			}
 		case Comment:
 			fmt.Fprintf(w, "<!-- %s -->", t.GetComment())
 		case ProcessingInstruction:
