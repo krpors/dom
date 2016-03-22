@@ -110,6 +110,8 @@ type Node interface {
 	GetParentNode() Node
 	// Gets the first child Node of this Node. May return nil if no child nodes exist.
 	GetFirstChild() Node
+	// GetLastChild gets the last child Node of this Node. May return nil if there is no such Node.
+	GetLastChild() Node
 	// GetAttributes will return the attributes belonging to this node. In the current
 	// spec, only Element nodes will return something sensible (i.e. non nil) when this
 	// function is called.

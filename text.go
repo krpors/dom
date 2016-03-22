@@ -51,6 +51,10 @@ func (dt *domText) GetFirstChild() Node {
 	return nil
 }
 
+func (dt *domText) GetLastChild() Node {
+	return nil
+}
+
 func (dt *domText) GetAttributes() NamedNodeMap {
 	return nil
 }

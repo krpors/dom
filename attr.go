@@ -50,8 +50,13 @@ func (da *domAttr) GetParentNode() Node {
 	return nil
 }
 
-// FirstChild will return nil, since Attr objects cannot contain children.
+// GetLastChild will return nil, since Attr objects cannot contain children.
 func (da *domAttr) GetFirstChild() Node {
+	return nil
+}
+
+// GetFirstChild will return nil, since Attr objects cannot contain children.
+func (da *domAttr) GetLastChild() Node {
 	return nil
 }
 

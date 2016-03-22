@@ -46,6 +46,10 @@ func (pi *domProcInst) GetFirstChild() Node {
 	return nil
 }
 
+func (pi *domProcInst) GetLastChild() Node {
+	return nil
+}
+
 func (pi *domProcInst) GetAttributes() NamedNodeMap {
 	return nil
 }

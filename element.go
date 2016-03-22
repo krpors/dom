@@ -60,6 +60,13 @@ func (de *domElement) GetFirstChild() Node {
 	return nil
 }
 
+func (de *domElement) GetLastChild() Node {
+	if de.HasChildNodes() {
+		return de.nodes[len(de.nodes)-1]
+	}
+	return nil
+}
+
 func (de *domElement) GetAttributes() NamedNodeMap {
 	return de.attributes
 }

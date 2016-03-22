@@ -61,7 +61,17 @@ func (dd *domDocument) GetParentNode() Node {
 // GetFirstChild returns the first child in the document. Possible nodes are
 // Comment, ProcessingInstruction, or Element.
 func (dd *domDocument) GetFirstChild() Node {
-	return dd.nodes[0]
+	if dd.HasChildNodes() {
+		return dd.nodes[0]
+	}
+	return nil
+}
+
+func (dd *domDocument) GetLastChild() Node {
+	if dd.HasChildNodes() {
+		return dd.nodes[len(dd.nodes)-1]
+	}
+	return nil
 }
 
 func (dd *domDocument) GetAttributes() NamedNodeMap {

@@ -52,6 +52,10 @@ func (dc *domComment) GetFirstChild() Node {
 	return nil
 }
 
+func (dc *domComment) GetLastChild() Node {
+	return nil
+}
+
 func (dc *domComment) GetAttributes() NamedNodeMap {
 	return nil
 }
