@@ -34,6 +34,10 @@ func TestAttrGetters(t *testing.T) {
 	if err := a.AppendChild(bogusElem); err == nil {
 		t.Error("expected an error at this point")
 	}
+	a.setParentNode(bogusElem)
+	if a.GetParentNode() != nil {
+		t.Error("parent node should be nil at all times")
+	}
 	if len(a.GetChildNodes()) != 0 {
 		t.Error("len of child nodes must be zero at all times")
 	}
@@ -67,6 +71,9 @@ func TestAttrGetters(t *testing.T) {
 	if a.GetNextSibling() != nil {
 		t.Error("expected nil next sibling")
 	}
+	if a.GetLastChild() != nil {
+		t.Error("expecting nil last child")
+	}
 }
 
 func TestAttrLookupNamespaceURI(t *testing.T) {
@@ -87,5 +94,55 @@ func TestAttrLookupNamespaceURI(t *testing.T) {
 	exp := "http://example.org/pfx"
 	if ns != exp {
 		t.Errorf("expected '%v', got '%v'", exp, ns)
+	}
+
+	// Attribute node owned by nothing:
+	attr, _ = doc.CreateAttribute("no-owner")
+	if attr.LookupNamespaceURI("pfxWhatever") != "" {
+		t.Error("expecting empty string")
+	}
+}
+
+func TestAttrLookupPrefix(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElementNS("urn:ns:attr1", "ns1:root")
+	sub1, _ := doc.CreateElement("ns1:sub1")
+	sub2, _ := doc.CreateElement("ns1:sub2")
+	sub3, _ := doc.CreateElement("ns1:sub3")
+	sub4, _ := doc.CreateElement("ns1:sub4")
+
+	attr1, _ := doc.CreateAttribute("ns1:name")
+	attr1.SetValue("melissandre")
+
+	doc.AppendChild(root)
+	root.AppendChild(sub1)
+	root.AppendChild(sub2)
+	root.AppendChild(sub3)
+	root.AppendChild(sub4)
+	sub4.SetAttributeNode(attr1)
+
+	pfx := attr1.LookupPrefix("urn:ns:attr1")
+	if pfx != "ns1" {
+		t.Errorf("expected 'ns1', got '%v'", pfx)
+	}
+
+	// Attribute node owned by nothing:
+	attr1, _ = doc.CreateAttribute("no-owner")
+	if attr1.LookupPrefix("n") != "" {
+		t.Error("expecting empty string")
+	}
+}
+
+func TestAttrReplaceInsertRemoveChild(t *testing.T) {
+	doc := NewDocument()
+	attr, _ := doc.CreateAttribute("attr")
+	if _, err := attr.ReplaceChild(nil, nil); err == nil {
+		t.Error("expected error")
+	}
+	if _, err := attr.InsertBefore(nil, nil); err == nil {
+		t.Error("expected error")
+	}
+	if _, err := attr.RemoveChild(nil); err == nil {
+		t.Error("expected error")
 	}
 }

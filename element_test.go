@@ -48,6 +48,15 @@ func TestElementGetters(t *testing.T) {
 		t.Errorf("node list length should be 10, but was %v", len(root.GetChildNodes()))
 	}
 
+	child := root.GetFirstChild().GetNodeName()
+	if child != "element0" {
+		t.Errorf("first child should be 'element0', but was '%v'", child)
+	}
+	child = root.GetLastChild().GetNodeName()
+	if child != "element9" {
+		t.Errorf("first child should be 'element9', but was '%v'", child)
+	}
+
 	// element without prefix:
 	root, _ = doc.CreateElement("rewt")
 	if root.GetLocalName() != "rewt" {
@@ -77,6 +86,10 @@ func TestElementAppendChild(t *testing.T) {
 
 	if root.GetFirstChild() != nil {
 		t.Error("first child should be nil")
+	}
+
+	if root.GetLastChild() != nil {
+		t.Error("last child should be nil")
 	}
 
 	err := root.AppendChild(child)
@@ -148,6 +161,36 @@ func TestElementAttributes(t *testing.T) {
 
 	if root.GetAttribute("pfx:anything") != "harpy" {
 		t.Errorf("expected 'harpy' but was '%v'", root.GetAttribute("pfx:anything"))
+	}
+}
+
+func TestElementSetAttributeNodeWrongDoc(t *testing.T) {
+	docOne := NewDocument()
+	e, _ := docOne.CreateElement("rootOne")
+
+	docTwo := NewDocument()
+	attr, _ := docTwo.CreateAttribute("attr")
+
+	// Attempt to set an attribute created by docTwo, into docOne.
+	if err := e.SetAttributeNode(attr); err == nil {
+		t.Error("expected a error")
+	}
+}
+
+func TestElementSetAttributeNodeOwnedByElement(t *testing.T) {
+	doc := NewDocument()
+	e1, _ := doc.CreateElement("root")
+	e2, _ := doc.CreateElement("sub")
+	a, _ := doc.CreateAttribute("attr")
+
+	doc.AppendChild(e1)
+	e1.AppendChild(e2)
+	if err := e1.SetAttributeNode(a); err != nil {
+		t.Error("unexpected error")
+	}
+
+	if err := e2.SetAttributeNode(a); err == nil {
+		t.Error("expected error")
 	}
 }
 

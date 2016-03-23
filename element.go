@@ -85,6 +85,8 @@ func (de *domElement) AppendChild(child Node) error {
 		return fmt.Errorf("%v: an attempt was made to insert a node where it is not permitted", ErrorHierarchyRequest)
 	}
 
+	// TODO: remove child when already in the tree
+
 	child.setParentNode(de)
 	de.nodes = append(de.nodes, child)
 	return nil
@@ -176,10 +178,6 @@ func (de *domElement) GetTagName() string {
 }
 
 func (de *domElement) SetAttribute(name, value string) {
-	if de.attributes == nil {
-		de.attributes = newNamedNodeMap()
-	}
-
 	attr := newAttr(de.GetOwnerDocument(), name, "")
 	attr.SetValue(value)
 	attr.setOwnerElement(de)
@@ -191,9 +189,20 @@ func (de *domElement) SetAttribute(name, value string) {
 // by itself has no effect. To add a new attribute node with a qualified name and namespace
 // URI, use the setAttributeNodeNS method.
 // TODO: implement above
-func (de *domElement) SetAttributeNode(a Attr) {
+func (de *domElement) SetAttributeNode(a Attr) error {
+	// Attribute and Element must share the same owner document.
+	if a.GetOwnerDocument() != de.GetOwnerDocument() {
+		return ErrorWrongDocument
+	}
+
+	// Is the Attribute is already owned by another Element?
+	if a.GetOwnerElement() != nil {
+		return ErrorAttrInUse
+	}
+
 	a.setOwnerElement(de)
 	de.attributes.SetNamedItem(a)
+	return nil
 }
 
 func (de *domElement) GetAttribute(name string) string {

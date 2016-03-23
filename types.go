@@ -31,6 +31,10 @@ var (
 	// ErrorWrongDocument is returned when an insertion is attempted of a Node which was
 	// created from a different document instance.
 	ErrorWrongDocument = errors.New("WRONG_DOCUMENT_ERR: the child was created from a different Document instance")
+
+	// ErrorAttrInUse is returned when an attribute is already an attribute of another Element object.
+	// The DOM user must explicitly create/clone Attr nodes to re-use them in other elements.
+	ErrorAttrInUse = errors.New("INUSE_ATTRIBUTE_ERR: the attribute is already an attribute of another Element")
 )
 
 var (
@@ -199,8 +203,8 @@ type Element interface {
 	SetAttribute(name, value string)
 	// Convenience function to get an attribute value.
 	GetAttribute(name string) string
-	// Sets an attribute based on the Attr type.
-	SetAttributeNode(a Attr)
+	// SetAttributeNode sets an attribute based on the Attr type.
+	SetAttributeNode(a Attr) error
 	// GetElementsByTagName finds all descendant elements of the current element,
 	// with the given tag name, in document order.
 	GetElementsByTagName(string) []Element
