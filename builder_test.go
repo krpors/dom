@@ -28,10 +28,10 @@ var exampleDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
 </directory>`
 
 // Tests a completely valid document and checks whether everything is in place.
-func TestBuilderCreateDocument(t *testing.T) {
+func TestBuilderParse(t *testing.T) {
 	reader := strings.NewReader(exampleDoc1)
 	builder := NewBuilder(reader)
-	doc, err := builder.CreateDocument()
+	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error after building document from string: '%v'", err)
 		t.FailNow()
@@ -87,10 +87,10 @@ var exampleDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
 
 // Tests whether whitespaces before and after the document element don't generate
 // an error.
-func TestBuilderCreateDocumentWhitespaces(t *testing.T) {
+func TestBuilderParseWhitespaces(t *testing.T) {
 	reader := strings.NewReader(exampleDoc2)
 	builder := NewBuilder(reader)
-	doc, err := builder.CreateDocument()
+	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error: '%v'", err)
 		t.FailNow()
@@ -120,10 +120,10 @@ invalid content.
 	Character data can exist here.
 </directory>`
 
-func TestBuilderCreateDocumentContentInProlog(t *testing.T) {
+func TestBuilderParseContentInProlog(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc1)
 	builder := NewBuilder(reader)
-	_, err := builder.CreateDocument()
+	_, err := builder.Parse()
 	if err == nil {
 		t.Errorf("expected error after building document from string, but got none")
 	}
@@ -138,10 +138,10 @@ var exampleErrDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
 </stuff>
 chardata content in trailing section`
 
-func TestBuilderCreateDocumentTrailingChars(t *testing.T) {
+func TestBuilderParseTrailingChars(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc2)
 	builder := NewBuilder(reader)
-	_, err := builder.CreateDocument()
+	_, err := builder.Parse()
 	if err == nil {
 		t.Errorf("expected error due to trailing character data after root node")
 	}
@@ -165,10 +165,10 @@ var exampleDoc3 = `<?xml version="1.0" encoding="UTF-8"?>
 
 // Tests whether embedding the same prefixes (pfx) within a document results
 // in the correct associated namespaces.
-func TestBuilderCreateDocumentNamespaces(t *testing.T) {
+func TestBuilderParseNamespaces(t *testing.T) {
 	reader := strings.NewReader(exampleDoc3)
 	builder := NewBuilder(reader)
-	doc, err := builder.CreateDocument()
+	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}

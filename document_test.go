@@ -300,7 +300,6 @@ func TestDocumentInsertBefore(t *testing.T) {
 	//     <root/>
 	//     <?quux foo?>
 
-	t.Log(root.GetOwnerDocument() == pi.GetOwnerDocument())
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 		t.FailNow()
