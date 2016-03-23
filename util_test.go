@@ -2,6 +2,7 @@ package dom
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 )
 
@@ -22,30 +23,41 @@ func TestToXML(t *testing.T) {
 
 	procinst, _ := doc.CreateProcessingInstruction("violin", "tdavis")
 	root, _ := doc.CreateElement("root")
+	whitespaceText := doc.CreateText("  ")
 	comment, _ := doc.CreateComment("rox your sox")
 	first, _ := doc.CreateElement("first")
 	text := doc.CreateText("< & > are entities!")
 	second, _ := doc.CreateElement("second")
-	nonchildren, _ := doc.CreateElement("nochildren")
+	nochildren, _ := doc.CreateElement("nochildren")
+	attr, _ := doc.CreateAttribute("name")
+	attr.SetValue("value")
 
 	doc.AppendChild(procinst)
 	doc.AppendChild(root)
-
+	root.AppendChild(whitespaceText)
 	root.AppendChild(first)
 	root.AppendChild(comment)
-	first.AppendChild(text)
-
 	root.AppendChild(second)
-	second.AppendChild(nonchildren)
+
+	first.AppendChild(text)
+	second.AppendChild(nochildren)
+	nochildren.SetAttributeNode(attr)
 
 	var buf bytes.Buffer
 	ToXML(doc, false, &buf)
 
-	expected := `<?xml version="1.0" encoding="UTF-8"?><?violin tdavis?><root><first>&lt; &amp; &gt; are entities!</first><!-- rox your sox --><second><nochildren/></second></root>`
+	bla := []string{
+		`<?xml version="1.0" encoding="UTF-8"?>`,
+		`<?violin tdavis?>`,
+		`<root>  <first>&lt; &amp; &gt; are entities!</first><!-- rox your sox --><second><nochildren name="value"/></second></root>`,
+	}
+
+	expected := strings.Join(bla, "")
 
 	if buf.String() != expected {
 		t.Logf("actual:   %v", buf.String())
 		t.Logf("expected: %v", expected)
+		t.Fail()
 	}
 }
 

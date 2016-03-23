@@ -85,12 +85,8 @@ func escape(s string) string {
 //
 // This function does not take the xmlns attributes into account. In other words, if an
 // Element is created without the Document's CreateElementNS() method, it will NOT have a
-// namespace. Even after an xmlns attribute is added. Xerces does it like this too.k
+// namespace. Even after an xmlns attribute is added. Xerces does it like this too.
 func getElementsBy(parent Node, namespaceURI, tagname string, includeNamespace bool) []Element {
-	if parent == nil {
-		panic("parent node cannot be nil")
-	}
-
 	var elements []Element
 
 	var traverse func(n Node)
