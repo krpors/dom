@@ -7,43 +7,38 @@ import (
 // This file contains the definitions of errors, interfaces and other constants
 // of the DOM Level 3 spec.
 
-// Error definitions:
-var (
-	// ErrorHierarchyRequest is the error which can be returned when the node
-	// is of a type that does not allow children, if the node to append to is
-	// one of this node's ancestors or this node itself, or if this node is of
-	// type Document and the DOM application attempts to append a second
-	// DocumentType or Element node.
-	ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
+// ErrorHierarchyRequest is the error which can be returned when the node
+// is of a type that does not allow children, if the node to append to is
+// one of this node's ancestors or this node itself, or if this node is of
+// type Document and the DOM application attempts to append a second
+// DocumentType or Element node.
+var ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
 
-	// ErrorInvalidCharacter is returned when an invalid character is used for
-	// for example an element or attribute name.
-	ErrorInvalidCharacter = errors.New("INVALID_CHARACTER_ERR: an invalid or illegal XML character is specified")
+// ErrorInvalidCharacter is returned when an invalid character is used for
+// for example an element or attribute name.
+var ErrorInvalidCharacter = errors.New("INVALID_CHARACTER_ERR: an invalid or illegal XML character is specified")
 
-	// ErrorNotSupported is returned when this implementation does not support
-	// the requested operation or object.
-	ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
+// ErrorNotSupported is returned when this implementation does not support
+// the requested operation or object.
+var ErrorNotSupported = errors.New("NOT_SUPPORTED_ERR: this implementation does not support the requested type of object or operation")
 
-	// ErrorNotFound is returned when a specified Node is not found, for instance
-	// during an attempt to delete a child Node from another Node.
-	ErrorNotFound = errors.New("NOT_FOUND_ERR: the given child is not found in the current context")
+// ErrorNotFound is returned when a specified Node is not found, for instance
+// during an attempt to delete a child Node from another Node.
+var ErrorNotFound = errors.New("NOT_FOUND_ERR: the given child is not found in the current context")
 
-	// ErrorWrongDocument is returned when an insertion is attempted of a Node which was
-	// created from a different document instance.
-	ErrorWrongDocument = errors.New("WRONG_DOCUMENT_ERR: the child was created from a different Document instance")
+// ErrorWrongDocument is returned when an insertion is attempted of a Node which was
+// created from a different document instance.
+var ErrorWrongDocument = errors.New("WRONG_DOCUMENT_ERR: the child was created from a different Document instance")
 
-	// ErrorAttrInUse is returned when an attribute is already an attribute of another Element object.
-	// The DOM user must explicitly create/clone Attr nodes to re-use them in other elements.
-	ErrorAttrInUse = errors.New("INUSE_ATTRIBUTE_ERR: the attribute is already an attribute of another Element")
-)
+// ErrorAttrInUse is returned when an attribute is already an attribute of another Element object.
+// The DOM user must explicitly create/clone Attr nodes to re-use them in other elements.
+var ErrorAttrInUse = errors.New("INUSE_ATTRIBUTE_ERR: the attribute is already an attribute of another Element")
 
-var (
-	// XMLDeclaration is the usually default XML processing instruction at the
-	// start of XML documents. This is merely added as a convenience. It's the
-	// same declaration which the encoding/xml package has, except it does not
-	// have a trailing newline.
-	XMLDeclaration = `<?xml version="1.0" encoding="UTF-8"?>`
-)
+// XMLDeclaration is the usually default XML processing instruction at the
+// start of XML documents. This is merely added as a convenience. It's the
+// same declaration which the encoding/xml package has, except it does not
+// have a trailing newline.
+var XMLDeclaration = `<?xml version="1.0" encoding="UTF-8"?>`
 
 // NodeType defines the types of nodes which exist in the DOM.
 type NodeType uint8
@@ -165,18 +160,17 @@ type Node interface {
 
 // ProcessingInstruction interface represents a "processing instruction", used
 // in XML as a way to keep processor-specific information in the text of the document.
+// A processing instruction has the following form in an XML document:
+//	<?target data?>
+// The target of a processing instruction can be anything except the string [XxMmLl].
+// The data can be anything, except the string ?> since that denotes the end of the
+// processing instruction. If that happens, a fatal error should occur.
 type ProcessingInstruction interface {
 	Node
 
-	// The content of this processing instruction. This is from the first non white
-	// space character after the target to the character immediately preceding the ?>.
-	// Target can be anything except the [XxMmLl] string.
-	GetTarget() string
-	// The target of this processing instruction. XML defines this as being the first
-	// token following the markup that begins the processing instruction.
-	GetData() string
-	// Data is read-write.
-	SetData(data string)
+	GetTarget() string   // Gets the target of the processing instruction.
+	GetData() string     // Gets the data of the processing instruction.
+	SetData(data string) // Sets the data.
 }
 
 // Attr represents an attribute in an Element. It implements the Node interface.
@@ -214,16 +208,14 @@ type Element interface {
 }
 
 // Text represents character data within an element. It implements the Node interface.
-// Note that the methods defined on this interface are not aligned with the specifications
+// Note that the name of the methods defined on this interface are not aligned with the specifications,
 // due to the fact the Go's interfaces will not see a correct difference between this Text
 // interface, or the ProcessingInstruction interface when the methods have the same signatures.
 type Text interface {
 	Node
 
-	// GetText gets the character data of this Text node.
-	GetText() string
-	// SetText sets the character data of this Text node.
-	SetText(s string)
+	GetText() string  // Gets the character data of this Text node.
+	SetText(s string) // Sets the character data of this Text node.
 }
 
 // DocumentType belongs to a Document, but can also be nil. The DocumentType
@@ -234,15 +226,13 @@ type Text interface {
 type DocumentType interface {
 	Node
 
-	// GetName gets the name of the DTD; i.e.  the name immediately following the DOCTYPE keyword.
-	GetName() string
-	// GetPublicID returns public identifier of the external subset.
-	GetPublicID() string
-	// GetSystemID returns the system identifier of the external subset. This may be an absolute URI or not.
-	GetSystemID() string
+	GetName() string     // Gets the name of the DTD; i.e. the name immediately following the DOCTYPE keyword.
+	GetPublicID() string // Returns the public identifier of the external subset.
+	GetSystemID() string // Returns the system identifier of the external subset. This may be an absolute URI or not.
 }
 
-// Document is the root of the Document Object Model. It implements the Node interface.
+// Document is the root of the Document Object Model. It implements the Node interface. As per the spec,
+// all child nodes must be created through an instance of a Document object.
 type Document interface {
 	Node
 
@@ -281,10 +271,8 @@ type Document interface {
 type Comment interface {
 	Node
 
-	// GetComment gets the comment text of this node.
-	GetComment() string
-	// SetComment gets the comment text of this node.
-	SetComment(comment string)
+	GetComment() string        // Returns the comment text of this node.
+	SetComment(comment string) // Sets the comment text of this node.
 }
 
 // NamedNodeMap represent collections of nodes that can be accessed by name.
