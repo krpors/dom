@@ -8,58 +8,66 @@ There are several other implementations floating about. This is currently just
 an experiment to see how far I can get, and perhaps it can grow into a usable
 implementation.
 
-## Interfaces, interfaces everywhere
+## Interfaces
 
 Since the spec for DOM3 regards everything as interfaces, I tried to do the
 same in this package. Whether that will work out well or not is the question.
-Right now, the Document type is (per spec) the main entrypoint for creating
-any kind of Node.
+Right now, the Document type is (per spec) the main entry point for creating
+any kind of Node. The following interfaces have (partial) implementations:
 
+* `Document`: the entry point for creating Nodes.
+* `Element`: for example: `<pfx:element/>`
+* `Attr`: attributes of elements, for example: `<pfx:element pfx:attribute="hi"/>`
+* `ProcessingInstruction`: for example: `<?spacing true?>`
+* `Comment`: for example: `<!-- comment node -->`
+* `Text`: basic text as a child of an Element
+
+The following are omitted:
+
+* `NodeList`: is just too convoluted to implement this as well IMO. A slice is sufficient.
+* `CDATASection`: it's just `Text`.
+* `CharacterData`: which is just a String type with methods defined on it.
 
 ## Example code
 
-The API in the workings. Serialization and deserialization are obviously
-a big todo so this only checks the API.
+Reading XML documents is pretty much working, and the DOM can be traversed using the
+supplied methods. An example program using this DOM implementation:
 
 ```go
 package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/krpors/dom"
 )
 
-func tree(n dom.Node, padding string) {
-	fmt.Printf("%s%v\n", padding, n)
-	for _, child := range n.GetChildNodes() {
-		tree(child, padding+"    ")
+func main() {
+	resp, err := http.Get("https://www.reddit.com/r/golang/.xml")
+	if err != nil {
+		fmt.Println("failed:", err)
+		os.Exit(1)
+	}
+
+	builder := dom.NewBuilder(resp.Body)
+	doc, err := builder.Parse()
+	if err != nil {
+		os.Exit(2)
+	}
+
+	entries := doc.GetElementsByTagName("entry")
+	for _, entry := range entries {
+		username := entry.GetElementsByTagName("name")[0]
+		title := entry.GetElementsByTagName("title")[0]
+
+		fmt.Printf("'%s' posted '%s'\n", username.GetFirstChild().GetNodeValue(), title.GetFirstChild().GetNodeValue())
 	}
 }
-
-func main() {
-	doc := dom.NewDocument()
-
-	root, _ := doc.CreateElement("root")
-
-	sub1, _ := doc.CreateElement("one")
-	txt1 := doc.CreateText("sample text 1")
-	sub1.AppendChild(txt1)
-	sub1.SetAttribute("cruft", "twelve")
-	sub1.SetAttribute("once", "twice")
-
-	nnm := sub1.GetAttributes()
-	fmt.Println(nnm.Length())
-	fmt.Println(nnm.GetNamedItem("cruft").GetNodeValue())
-
-	sub2, _ := doc.CreateElement("two")
-	txt2 := doc.CreateText("sample text 2")
-	sub2.AppendChild(txt2)
-
-	root.AppendChild(sub1)
-	root.AppendChild(sub2)
-
-	doc.AppendChild(root)
-
-	tree(doc, "")
-}
 ```
+
+This will get an XML feed from the [r/golang](https://reddit.com/r/golang) subreddit,
+and prints out the `name` and `title` nodes from each `entry` node. It's obviously a bit
+verbose and probably not really 'idiomatic' Go, but the goal is mostly to be consistent
+with the DOM specification.
