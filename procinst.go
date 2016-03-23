@@ -63,13 +63,13 @@ func (pi *domProcInst) AppendChild(child Node) error {
 }
 
 func (pi *domProcInst) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (pi *domProcInst) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (pi *domProcInst) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 
 func (pi *domProcInst) HasChildNodes() bool {

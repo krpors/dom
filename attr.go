@@ -77,13 +77,13 @@ func (da *domAttr) AppendChild(child Node) error {
 }
 
 func (da *domAttr) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (da *domAttr) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (da *domAttr) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 
 // HasChildNodes returns false since Attr objects do not contain children.

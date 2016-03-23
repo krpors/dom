@@ -69,13 +69,13 @@ func (dc *domComment) AppendChild(child Node) error {
 }
 
 func (dc *domComment) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (dc *domComment) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 func (dc *domComment) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, ErrorHierarchyRequest
 }
 
 func (dc *domComment) HasChildNodes() bool {
