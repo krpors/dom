@@ -92,11 +92,16 @@ func (pi *domProcInst) GetNamespacePrefix() string {
 }
 
 func (pi *domProcInst) LookupPrefix(namespace string) string {
+	if pi.GetParentNode() != nil {
+		return pi.LookupPrefix(namespace)
+	}
 	return ""
 }
 
 func (pi *domProcInst) LookupNamespaceURI(pfx string) string {
-	// TODO: LookupNamespaceURI
+	if pi.GetParentNode() != nil {
+		return pi.LookupNamespaceURI(pfx)
+	}
 	return ""
 }
 

@@ -205,8 +205,7 @@ func TestBuilderParseNamespaces(t *testing.T) {
 	}
 
 	// Try to find some elements using GetElementsByTagName[NS].
-	// TODO: use doc instead of the doc element
-	gebtn := docelem.GetElementsByTagName("childElement")
+	gebtn := doc.GetElementsByTagName("childElement")
 	if len(gebtn) != 2 {
 		t.Errorf("expected 2, got %d", len(gebtn))
 	}
