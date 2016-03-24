@@ -64,17 +64,17 @@ func (dt *domText) GetOwnerDocument() Document {
 }
 
 func (dt *domText) AppendChild(child Node) error {
-	return fmt.Errorf("%v: %v does not allow children", ErrorHierarchyRequest, TextNode)
+	return fmt.Errorf("%v: %v does not allow child nodes", ErrorHierarchyRequest, TextNode)
 }
 
 func (dt *domText) RemoveChild(oldChild Node) (Node, error) {
-	panic("not implemented yet")
+	return nil, fmt.Errorf("%v: %v does not allow child nodes - nothing to remove", ErrorHierarchyRequest, TextNode)
 }
 func (dt *domText) ReplaceChild(newChild, oldChild Node) (Node, error) {
-	return nil, fmt.Errorf("%v: %v does not have children to replace", ErrorHierarchyRequest, TextNode)
+	return nil, fmt.Errorf("%v: %v does not allow child nodes - nothing to replace", ErrorHierarchyRequest, TextNode)
 }
 func (dt *domText) InsertBefore(newChild, refChild Node) (Node, error) {
-	return nil, fmt.Errorf("%v: %v does not have children to insert", ErrorHierarchyRequest, TextNode)
+	return nil, fmt.Errorf("%v: %v does not allow child nodes - nothing to insert", ErrorHierarchyRequest, TextNode)
 }
 
 func (dt *domText) HasChildNodes() bool {
@@ -123,6 +123,12 @@ func (dt *domText) GetText() string {
 // XML, since GetText() will take care of conversion.
 func (dt *domText) SetText(data string) {
 	dt.data = data
+}
+
+// IsElementContentWhitespace returns true when the Text node contains ignorable
+// whitespace, like any combinations of \t, \n, \r and space characters.
+func (dt *domText) IsElementContentWhitespace() bool {
+	return strings.TrimSpace(dt.GetText()) == ""
 }
 
 func (dt *domText) String() string {

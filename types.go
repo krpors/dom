@@ -12,6 +12,7 @@ import (
 // one of this node's ancestors or this node itself, or if this node is of
 // type Document and the DOM application attempts to append a second
 // DocumentType or Element node.
+
 var ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
 
 // ErrorInvalidCharacter is returned when an invalid character is used for
@@ -94,57 +95,33 @@ func (n NodeType) String() string {
 // interface expose methods for dealing with children, not all objects implementing
 // the Node interface may have children.
 type Node interface {
-	// Gets the node name. Depending on the type (Attr, CDATASection, Element etc.)
-	// the result of this call differs.
-	GetNodeName() string
-	// Gets the type of node.
-	GetNodeType() NodeType
-	// Gets the node value. Like GetNodeName(), the output differs depending on the type.
-	GetNodeValue() string
-	// Returns the local part of the qualified name of this node.
-	GetLocalName() string
-	// Gets the list of child nodes.
-	GetChildNodes() []Node
-	// Gets the parent node. May be nil if none was assigned.
-	GetParentNode() Node
-	// Gets the first child Node of this Node. May return nil if no child nodes exist.
-	GetFirstChild() Node
-	// GetLastChild gets the last child Node of this Node. May return nil if there is no such Node.
-	GetLastChild() Node
-	// GetAttributes will return the attributes belonging to this node. In the current
-	// spec, only Element nodes will return something sensible (i.e. non nil) when this
-	// function is called.
-	GetAttributes() NamedNodeMap
-	// Gets the owner document (the Document instance which was used to create the Node).
-	GetOwnerDocument() Document
-	// Appends a child to this Node. Will return an error when this Node is not
-	// able to have any (more) children, like Text nodes.
-	AppendChild(Node) error
-	// RemoveChild removes the child node indicated by oldChild from the list of children, and returns it. The returned
-	// error will be non nil in case the oldChild is not a child of the current Node.
-	RemoveChild(oldChild Node) (Node, error)
-	ReplaceChild(newChild, oldChild Node) (Node, error)
-	InsertBefore(newChild, refChild Node) (Node, error)
-	// Returns true when the Node has one or more children.
-	HasChildNodes() bool
-	// GetPreviousSibling gets the Node immediately preceding this Node. If there is no such
-	// node, this method returns nil.
-	GetPreviousSibling() Node
-	// GetNextSibling gets the Node immediately following this Node. If there is no such node,
-	// this methods returns nil.
-	GetNextSibling() Node
-	// Returns the namespace URI of this node.
-	GetNamespaceURI() string
-	// GetNamespacePrefix returns the prefix of this node, or an empty string if it
-	// does not have a prefix.
-	GetNamespacePrefix() string
-	// LookupPrefix up the prefix associated to the given namespace URI, starting from this node.
-	// The default namespace declarations are ignored by this method.
-	LookupPrefix(namespace string) string
-	// LookupNamespaceURI looks up the namespace URI associated to the given prefix, starting
-	// from this node. See Namespace Prefix Lookup for details on the algorithm used by this method:
-	// https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
-	LookupNamespaceURI(pfx string) string
+	GetNodeName() string   // Returns the node name.
+	GetNodeType() NodeType // Returns the node type (e.g. ElementNode, CommentNode, ...)
+	GetNodeValue() string  // Returns the node value.
+	GetLocalName() string  // Returns the local part of the node name.
+
+	GetParentNode() Node // Gets the parent Node, or nil of the Node has no parent.
+
+	GetAttributes() NamedNodeMap // Returns the NamedNodeMap containing attributes, if any.
+	GetOwnerDocument() Document  // Gets the owner document (the Document instance which was used to create the Node).
+
+	GetChildNodes() []Node                              // Gets the list of child nodes this Node has, if any
+	GetFirstChild() Node                                // Gets the first child Node of this Node. May return nil if no child nodes exist.
+	GetLastChild() Node                                 // Gets the last child Node of this Node. May return nil if there is no such Node.
+	AppendChild(Node) error                             // Appends a child to this Node. Returns an error when the Node does not allow the child Node.
+	RemoveChild(oldChild Node) (Node, error)            // Removes oldChild and returns it.
+	ReplaceChild(newChild, oldChild Node) (Node, error) // Replaces oldChild with newChild, and returns newChild.
+	InsertBefore(newChild, refChild Node) (Node, error) // Inserts newChild before the refChild.
+	HasChildNodes() bool                                // Returns true when the Node has one or more children.
+
+	GetPreviousSibling() Node // Gets the Node immediately preceding this Node. Returns nil if no previous sibling exists.
+	GetNextSibling() Node     // Gets the Node immediately following this Node. Returns nil if no following sibling exists.
+
+	GetNamespaceURI() string    // Returns the namespace URI of this node.
+	GetNamespacePrefix() string // Returns the namespace prefix of this node.
+
+	LookupPrefix(namespace string) string // Look up the prefix associated to the given namespace URI, starting from this node.
+	LookupNamespaceURI(pfx string) string // LookupNamespaceURI looks up the namespace URI associated to the given prefix.
 
 	// TODO: SetTextContent(string) implementation.
 	// SetTextContent sets the text content of the current node. On setting, any
@@ -153,9 +130,7 @@ type Node interface {
 	// attribute is set to.
 	// SetTextContent(string)
 
-	// setParentNode sets the parent node of this Node. This private method is necessary to add
-	// a parent after creation of a Node (using AppendChild).
-	setParentNode(Node)
+	setParentNode(Node) // Sets the parent node of this Node.
 }
 
 // ProcessingInstruction interface represents a "processing instruction", used
@@ -216,6 +191,8 @@ type Text interface {
 
 	GetText() string  // Gets the character data of this Text node.
 	SetText(s string) // Sets the character data of this Text node.
+
+	IsElementContentWhitespace() bool // Return true if the Text node contains "ignorable whitespace".
 }
 
 // DocumentType belongs to a Document, but can also be nil. The DocumentType

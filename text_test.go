@@ -59,3 +59,25 @@ func TestTextGetters(t *testing.T) {
 		t.Errorf("expected '%v', got '%v'", expected, s)
 	}
 }
+
+func TestTextIsIgnorableWhitespace(t *testing.T) {
+	var tests = []struct {
+		t        string
+		expected bool
+	}{
+		{"\n\r\n\r\t\t", true},
+		{"\n\ra\n\r\t\t", false},
+		{"\r\n\r\n   \r    ", true},
+		{"         ", true},
+		{"         \r", true},
+		{"     x            ", false},
+	}
+
+	doc := NewDocument()
+	for _, test := range tests {
+		text := doc.CreateText(test.t)
+		if text.IsElementContentWhitespace() != test.expected {
+			t.Errorf("expected '%v'", test.expected)
+		}
+	}
+}
