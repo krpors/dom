@@ -107,6 +107,15 @@ func (dt *domText) LookupNamespaceURI(pfx string) string {
 	return ""
 }
 
+func (dt *domText) GetTextContent() string {
+	// TODO: implement
+	return ""
+}
+
+func (dt *domText) SetTextContent(content string) {
+	// TODO: implement
+}
+
 // Private functions:
 func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent

@@ -123,12 +123,8 @@ type Node interface {
 	LookupPrefix(namespace string) string // Look up the prefix associated to the given namespace URI, starting from this node.
 	LookupNamespaceURI(pfx string) string // LookupNamespaceURI looks up the namespace URI associated to the given prefix.
 
-	// TODO: SetTextContent(string) implementation.
-	// SetTextContent sets the text content of the current node. On setting, any
-	// possible children this node may have are removed and, if the new string
-	// is not empty, replaced by a single Text node containing the string this
-	// attribute is set to.
-	// SetTextContent(string)
+	GetTextContent() string // Gets the text content of the current Node.
+	SetTextContent(string)  // Sets the text content of the current Node. Any possible children are removed.
 
 	setParentNode(Node) // Sets the parent node of this Node.
 }

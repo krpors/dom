@@ -113,6 +113,14 @@ func (dc *domComment) LookupNamespaceURI(pfx string) string {
 	return ""
 }
 
+func (dc *domComment) GetTextContent() string {
+	return dc.GetNodeValue()
+}
+
+func (dc *domComment) SetTextContent(content string) {
+	dc.SetComment(content)
+}
+
 // Private functions:
 func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent

@@ -312,6 +312,15 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 	return ""
 }
 
+func (de *domElement) GetTextContent() string {
+	// TODO: implement
+	return ""
+}
+
+func (de *domElement) SetTextContent(content string) {
+	// TODO: implement
+}
+
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent

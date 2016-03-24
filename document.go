@@ -363,6 +363,17 @@ func (dd *domDocument) LookupNamespaceURI(pfx string) string {
 	return ""
 }
 
+// GetTextContent should return null, but Go doesn't allow null strings so this method
+// will return an empty string.
+func (dd *domDocument) GetTextContent() string {
+	return ""
+}
+
+// SetTextContent does nothing on a Document Node.
+func (dd *domDocument) SetTextContent(content string) {
+	// no-op.
+}
+
 func (dd *domDocument) String() string {
 	return fmt.Sprintf("%s", dd.GetNodeType())
 }

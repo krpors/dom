@@ -123,6 +123,14 @@ func (da *domAttr) LookupNamespaceURI(pfx string) string {
 	return ""
 }
 
+func (da *domAttr) GetTextContent() string {
+	return da.GetValue()
+}
+
+func (da *domAttr) SetTextContent(content string) {
+	da.SetValue(content)
+}
+
 // Private functions:
 func (da *domAttr) setParentNode(parent Node) {
 	// no-op

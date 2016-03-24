@@ -122,6 +122,15 @@ func (pi *domProcInst) setTarget(target string) {
 	pi.target = target
 }
 
+func (pi *domProcInst) GetTextContent() string {
+	// TODO: implement
+	return ""
+}
+
+func (pi *domProcInst) SetTextContent(content string) {
+	// TODO: implement
+}
+
 func (pi *domProcInst) setParentNode(parent Node) {
 	// no-op
 }
