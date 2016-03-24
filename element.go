@@ -177,18 +177,28 @@ func (de *domElement) GetTagName() string {
 	return string(de.tagName)
 }
 
-func (de *domElement) SetAttribute(name, value string) {
-	attr := newAttr(de.GetOwnerDocument(), name, "")
+func (de *domElement) SetAttribute(name, value string) error {
+	attr, err := de.GetOwnerDocument().CreateAttribute(name)
+	if err != nil {
+		return err
+	}
+
+	// TODO: Get the prefix (if any), double check if its declared. If it is not,
+	// setting that attribute should generate an error. There's no way however, to
+	// check if a namespace is just.. empty, or undefined, since the 'nil value' of
+	// a Go string is just plain empty. Find a workaround!
+
 	attr.SetValue(value)
 	attr.setOwnerElement(de)
 	de.attributes.SetNamedItem(attr)
+
+	return nil
 }
 
 // SetAttributeNode adds a new attribute node. If an attribute with that name (nodeName) is
 // already present in the element, it is replaced by the new one. Replacing an attribute node
 // by itself has no effect. To add a new attribute node with a qualified name and namespace
-// URI, use the setAttributeNodeNS method.
-// TODO: implement above
+// URI, use the SetAttributeNodeNS method.
 func (de *domElement) SetAttributeNode(a Attr) error {
 	// Attribute and Element must share the same owner document.
 	if a.GetOwnerDocument() != de.GetOwnerDocument() {
@@ -200,10 +210,14 @@ func (de *domElement) SetAttributeNode(a Attr) error {
 		return ErrorAttrInUse
 	}
 
+	// TODO: See comment inside SetAttribute.
+
 	a.setOwnerElement(de)
 	de.attributes.SetNamedItem(a)
 	return nil
 }
+
+// TODO: SetAttributeNodeNS
 
 func (de *domElement) GetAttribute(name string) string {
 	if theAttr := de.attributes.GetNamedItem(name); theAttr != nil {
@@ -266,6 +280,7 @@ func (de *domElement) LookupPrefix(namespace string) string {
 // LookupNamespaceURI looks up the namespace URI belonging to the prefix pfx. See
 // https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
 // for more information on the implementation of this method.
+// TODO: change the return type to (ns string, found bool)
 func (de *domElement) LookupNamespaceURI(pfx string) string {
 	if de.GetNamespaceURI() != "" && de.GetNamespacePrefix() == pfx {
 		return de.GetNamespaceURI()

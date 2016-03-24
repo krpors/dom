@@ -71,3 +71,10 @@ This will get an XML feed from the [r/golang](https://reddit.com/r/golang) subre
 and prints out the `name` and `title` nodes from each `entry` node. It's obviously a bit
 verbose and probably not really 'idiomatic' Go, but the goal is mostly to be consistent
 with the DOM specification.
+
+## Challenges
+
+1. No inheritance, meaning double implementations of the same functionality (Element, Comment,
+	ProcessingInstruction, ...). More code, but better separation.
+1. Spec mentions things like 'if x is null, then ...', but Go doesn't have null pointers for
+	Strings, for example.

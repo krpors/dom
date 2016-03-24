@@ -162,20 +162,12 @@ type Attr interface {
 type Element interface {
 	Node
 
-	// Gets the tag name of this element.
-	GetTagName() string
-	// Convenience function to add an attribute.
-	SetAttribute(name, value string)
-	// Convenience function to get an attribute value.
-	GetAttribute(name string) string
-	// SetAttributeNode sets an attribute based on the Attr type.
-	SetAttributeNode(a Attr) error
-	// GetElementsByTagName finds all descendant elements of the current element,
-	// with the given tag name, in document order.
-	GetElementsByTagName(string) []Element
-	// GetElementsByTagNameNS finds all descendant elements of the current element,
-	// with the given tag name and namespace URI, in document order.
-	GetElementsByTagNameNS(namespaceURI, tagname string) []Element
+	GetTagName() string                                            // Gets the tag name of this element.
+	SetAttribute(name, value string) error                         // Convenience function to add an attribute.
+	SetAttributeNode(a Attr) error                                 // Sets an attribute based on the Attr type.
+	GetAttribute(name string) string                               // Convenience function to get an attribute value.
+	GetElementsByTagName(string) []Element                         // Find all descendant elements of the current element.
+	GetElementsByTagNameNS(namespaceURI, tagname string) []Element // Like GetElementsByTagName, except with a namespace URI.
 }
 
 // Text represents character data within an element. It implements the Node interface.
