@@ -108,12 +108,11 @@ func (dt *domText) LookupNamespaceURI(pfx string) string {
 }
 
 func (dt *domText) GetTextContent() string {
-	// TODO: implement
-	return ""
+	return dt.GetNodeValue()
 }
 
 func (dt *domText) SetTextContent(content string) {
-	// TODO: implement
+	dt.SetText(content)
 }
 
 // Private functions:

@@ -448,3 +448,60 @@ func TestElementReplaceNode(t *testing.T) {
 		t.Error("incorrect parent node")
 	}
 }
+
+func TestElementTextContent(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+
+	a, _ := doc.CreateElement("a")
+	aText := doc.CreateText("hello")
+
+	b, _ := doc.CreateElement("b")
+	bText := doc.CreateText("world")
+
+	c, _ := doc.CreateElement("c")
+	cText := doc.CreateText("watching")
+
+	ba, _ := doc.CreateElement("ba")
+	baText1 := doc.CreateText("thanks")
+	baText2 := doc.CreateText("for")
+
+	// Create the tree
+	doc.AppendChild(root)
+
+	root.AppendChild(a)
+	root.AppendChild(b)
+	root.AppendChild(c)
+
+	a.AppendChild(aText) // hello
+
+	b.AppendChild(bText) // world
+	b.AppendChild(ba)
+
+	ba.AppendChild(baText1) // thanks
+	ba.AppendChild(baText2) // for
+
+	c.AppendChild(cText) // watching
+
+	txt := root.GetTextContent()
+	expected := "helloworldthanksforwatching"
+	if txt != expected {
+		t.Errorf("expected '%v', got '%v'", expected, txt)
+	}
+
+	// Now, remove them all by calling SetTextContent:
+	root.SetTextContent("HAI!")
+
+	if len(root.GetChildNodes()) != 1 {
+		t.Error("expected 1 child node after SetTextContent")
+		t.FailNow()
+	}
+
+	if txt, ok := root.GetChildNodes()[0].(Text); ok {
+		if txt.GetNodeValue() != "HAI!" {
+			t.Error("incorrect node content")
+		}
+	} else {
+		t.Error("failed type assertion for Text node")
+	}
+}

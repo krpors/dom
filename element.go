@@ -313,12 +313,34 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 }
 
 func (de *domElement) GetTextContent() string {
-	// TODO: implement
-	return ""
+	if !de.HasChildNodes() {
+		return ""
+	}
+
+	textContent := ""
+	for _, child := range de.GetChildNodes() {
+		// Skip comments and PIs.
+		if child.GetNodeType() == CommentNode || child.GetNodeType() == ProcessingInstructionNode {
+			continue
+		}
+
+		textContent += child.GetTextContent()
+	}
+
+	return textContent
 }
 
+// SetTextContent will remove any possible children this node may have if the content string is not empty. The children
+// will be replaced by a single Text node containing the content.
 func (de *domElement) SetTextContent(content string) {
-	// TODO: implement
+	if content == "" {
+		return
+	}
+	// Remove existing nodes from this element by initializing an empty Node slice.
+	de.nodes = make([]Node, 0)
+
+	text := de.GetOwnerDocument().CreateText(content)
+	de.AppendChild(text)
 }
 
 // Private functions:

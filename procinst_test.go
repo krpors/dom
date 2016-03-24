@@ -23,6 +23,9 @@ func TestProcessingInstructionGetters(t *testing.T) {
 	if pi.GetFirstChild() != nil {
 		t.Error("processing instructions should not have children")
 	}
+	if pi.GetLastChild() != nil {
+		t.Error("processing instructions should not have children")
+	}
 	if len(pi.GetChildNodes()) != 0 {
 		t.Error("child nodes length should be 0")
 	}
@@ -49,5 +52,17 @@ func TestProcessingInstructionGetters(t *testing.T) {
 	}
 	if pi.GetNodeType() != ProcessingInstructionNode {
 		t.Errorf("node type should be '%v'", pi.GetNodeType())
+	}
+	if pi.GetNamespacePrefix() != "" {
+		t.Error("namespace prefix should be an empty string")
+	}
+	if _, err := pi.RemoveChild(nil); err == nil {
+		t.Error("expected error, but got none")
+	}
+	if _, err := pi.InsertBefore(nil, nil); err == nil {
+		t.Error("expected error, but got none")
+	}
+	if _, err := pi.ReplaceChild(nil, nil); err == nil {
+		t.Error("expected error, but got none")
 	}
 }
