@@ -48,8 +48,8 @@ func TestTextGetters(t *testing.T) {
 	if txt.LookupPrefix("anything") != "" {
 		t.Error("LookupPrefix should always return an empty string")
 	}
-	if txt.LookupNamespaceURI("asd") != "" {
-		t.Error("LookupNamespaceURI should always return an empty string")
+	if _, found := txt.LookupNamespaceURI("asd"); found {
+		t.Error("LookupNamespaceURI should always return an empty string and false")
 	}
 
 	txt.SetText("this is a sample string, longer than 30 characters.")

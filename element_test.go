@@ -271,26 +271,64 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 	child.AppendChild(grandchild2)
 
 	// Test lookup namespace stuff by URI:
-	var tests = []struct {
-		expected string
-		actual   string
-	}{
-		{"http://example.org/root", root.LookupNamespaceURI("pfx")},
-		{"http://example.org/child", child.LookupNamespaceURI("")},
-		{"http://example.org/parent", grandchild1.LookupNamespaceURI("ns1")},
-		{"http://example.org/root", grandchild1.LookupNamespaceURI("pfx")},
-		{"http://example.org/grandchild2", grandchild2.LookupNamespaceURI("")},
-		{"", grandchild2.LookupNamespaceURI("none-this-prefix-not-registered")},
-	}
-
-	for _, test := range tests {
-		if test.expected != test.actual {
-			t.Errorf("expected '%s', got '%s'", test.expected, test.actual)
+	expected := "http://example.org/root"
+	actual, found := root.LookupNamespaceURI("pfx")
+	if !found {
+		t.Error("namespace prefix should have been found")
+	} else {
+		if actual != expected {
+			t.Errorf("expected '%v', got '%v'", expected, actual)
 		}
 	}
 
+	expected = "http://example.org/child"
+	actual, found = child.LookupNamespaceURI("")
+	if !found {
+		t.Error("empty namespace prefix should have been found")
+	} else {
+		if actual != expected {
+			t.Errorf("expected '%v', got '%v'", expected, actual)
+		}
+	}
+
+	expected = "http://example.org/parent"
+	actual, found = grandchild1.LookupNamespaceURI("ns1")
+	if !found {
+		t.Error("empty namespace prefix should have been found")
+	} else {
+		if actual != expected {
+			t.Errorf("expected '%v', got '%v'", expected, actual)
+		}
+	}
+
+	expected = "http://example.org/root"
+	actual, found = grandchild1.LookupNamespaceURI("pfx")
+	if !found {
+		t.Error("empty namespace prefix should have been found")
+	} else {
+		if actual != expected {
+			t.Errorf("expected '%v', got '%v'", expected, actual)
+		}
+	}
+
+	expected = "http://example.org/grandchild2"
+	actual, found = grandchild2.LookupNamespaceURI("")
+	if !found {
+		t.Error("empty namespace prefix should have been found")
+	} else {
+		if actual != expected {
+			t.Errorf("expected '%v', got '%v'", expected, actual)
+		}
+	}
+
+	expected = ""
+	actual, found = grandchild2.LookupNamespaceURI("none-this-prefix-is-not-registered")
+	if found {
+		t.Error("namespace prefix should not be found")
+	}
+
 	// Test lookup prefix stuff:
-	tests = []struct {
+	var tests = []struct {
 		expected string
 		actual   string
 	}{
@@ -455,6 +493,7 @@ func TestElementTextContent(t *testing.T) {
 
 	a, _ := doc.CreateElement("a")
 	aText := doc.CreateText("hello")
+	aComment, _ := doc.CreateComment("this comment should be ignored")
 
 	b, _ := doc.CreateElement("b")
 	bText := doc.CreateText("world")
@@ -469,11 +508,17 @@ func TestElementTextContent(t *testing.T) {
 	// Create the tree
 	doc.AppendChild(root)
 
+	// No children, return empty string.
+	if root.GetTextContent() != "" {
+		t.Error("root has no children, should return empty string")
+	}
+
 	root.AppendChild(a)
 	root.AppendChild(b)
 	root.AppendChild(c)
 
-	a.AppendChild(aText) // hello
+	a.AppendChild(aText)    // hello
+	a.AppendChild(aComment) // <!-- this comment should be ignored -->
 
 	b.AppendChild(bText) // world
 	b.AppendChild(ba)
@@ -491,6 +536,7 @@ func TestElementTextContent(t *testing.T) {
 
 	// Now, remove them all by calling SetTextContent:
 	root.SetTextContent("HAI!")
+	root.SetTextContent("") // this should do absolutely nothing.
 
 	if len(root.GetChildNodes()) != 1 {
 		t.Error("expected 1 child node after SetTextContent")

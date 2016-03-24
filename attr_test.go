@@ -90,16 +90,16 @@ func TestAttrLookupNamespaceURI(t *testing.T) {
 
 	root.AppendChild(child)
 
-	ns := attr.LookupNamespaceURI("pfx")
+	ns, found := attr.LookupNamespaceURI("pfx")
 	exp := "http://example.org/pfx"
-	if ns != exp {
+	if ns != exp || !found {
 		t.Errorf("expected '%v', got '%v'", exp, ns)
 	}
 
 	// Attribute node owned by nothing:
 	attr, _ = doc.CreateAttribute("no-owner")
-	if attr.LookupNamespaceURI("pfxWhatever") != "" {
-		t.Error("expecting empty string")
+	if _, found := attr.LookupNamespaceURI("pfxWhatever"); found {
+		t.Error("expecting false")
 	}
 }
 

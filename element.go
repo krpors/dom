@@ -183,10 +183,15 @@ func (de *domElement) SetAttribute(name, value string) error {
 		return err
 	}
 
-	// TODO: Get the prefix (if any), double check if its declared. If it is not,
-	// setting that attribute should generate an error. There's no way however, to
-	// check if a namespace is just.. empty, or undefined, since the 'nil value' of
-	// a Go string is just plain empty. Find a workaround!
+	// Get the prefix (if any), double check if its declared. If it is not, then setting that
+	// attribute generates an error.
+	// TODO: improve this
+	// if attr.GetNamespacePrefix() != "" {
+	// 	_, found := de.LookupNamespaceURI(attr.GetNamespacePrefix())
+	// 	if !found {
+	// 		return fmt.Errorf("the namespace for prefix '%v' has not been declared", attr.GetNamespacePrefix())
+	// 	}
+	// }
 
 	attr.SetValue(value)
 	attr.setOwnerElement(de)
@@ -280,10 +285,9 @@ func (de *domElement) LookupPrefix(namespace string) string {
 // LookupNamespaceURI looks up the namespace URI belonging to the prefix pfx. See
 // https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespaceURIAlgo
 // for more information on the implementation of this method.
-// TODO: change the return type to (ns string, found bool)
-func (de *domElement) LookupNamespaceURI(pfx string) string {
+func (de *domElement) LookupNamespaceURI(pfx string) (string, bool) {
 	if de.GetNamespaceURI() != "" && de.GetNamespacePrefix() == pfx {
-		return de.GetNamespaceURI()
+		return de.GetNamespaceURI(), true
 	}
 
 	// Check the element's xmlns declarations.
@@ -293,7 +297,7 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 			a := node.(Attr)
 			// <elem xmlns="..." />, and prefix is empty:
 			if a.GetNodeName() == "xmlns" && pfx == "" {
-				return a.GetNodeValue()
+				return a.GetNodeValue(), true
 			}
 
 			// <elem xmlnsanycharacter="..." />, and prefix is empty:
@@ -301,7 +305,7 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 			// This seems to be according to spec. Anything starting with xmlns is just a namespace declaration.
 			// Xerces DOM also works like this.
 			if strings.HasPrefix(a.GetNodeName(), "xmlns") && !strings.Contains(a.GetNodeName(), ":") && pfx == "" {
-				return a.GetNodeValue()
+				return a.GetNodeValue(), true
 			}
 
 			// <pfx:elem xmlns:pfx="..." />, with a given prefix:
@@ -311,7 +315,7 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 			// result in the local name 'pfx'.
 			s := strings.LastIndex(a.GetNodeName(), ":")
 			if strings.HasPrefix(a.GetNodeName(), "xmlns") && s >= 0 && a.GetNodeName()[s+1:] == pfx {
-				return a.GetNodeValue()
+				return a.GetNodeValue(), true
 			}
 		}
 	}
@@ -324,7 +328,7 @@ func (de *domElement) LookupNamespaceURI(pfx string) string {
 	}
 
 	// In the end, nothing is found.
-	return ""
+	return "", false
 }
 
 func (de *domElement) GetTextContent() string {

@@ -116,11 +116,11 @@ func (da *domAttr) LookupPrefix(namespace string) string {
 	return ""
 }
 
-func (da *domAttr) LookupNamespaceURI(pfx string) string {
+func (da *domAttr) LookupNamespaceURI(pfx string) (string, bool) {
 	if da.GetOwnerElement() != nil {
 		return da.GetOwnerElement().LookupNamespaceURI(pfx)
 	}
-	return ""
+	return "", false
 }
 
 func (da *domAttr) GetTextContent() string {

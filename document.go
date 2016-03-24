@@ -356,11 +356,11 @@ func (dd *domDocument) LookupPrefix(namespace string) string {
 	return ""
 }
 
-func (dd *domDocument) LookupNamespaceURI(pfx string) string {
+func (dd *domDocument) LookupNamespaceURI(pfx string) (string, bool) {
 	if dd.GetDocumentElement() != nil {
 		return dd.GetDocumentElement().LookupNamespaceURI(pfx)
 	}
-	return ""
+	return "", false
 }
 
 // GetTextContent should return null, but Go doesn't allow null strings so this method
