@@ -98,8 +98,6 @@ func (dd *domDocument) AppendChild(child Node) error {
 		return ErrorWrongDocument
 	}
 
-	// TODO: remove child if already exists.
-
 	if child.GetNodeType() == ElementNode {
 		// Check if a Document element is already appended.
 		if dd.GetDocumentElement() != nil {
@@ -109,6 +107,12 @@ func (dd *domDocument) AppendChild(child Node) error {
 
 	if child.GetNodeType() == AttributeNode || child.GetNodeType() == TextNode {
 		return ErrorHierarchyRequest
+	}
+
+	// Child already has a parent. Remove it!
+	cparent := child.GetParentNode()
+	if cparent != nil {
+		cparent.RemoveChild(child)
 	}
 
 	child.setParentNode(dd)
@@ -198,7 +202,14 @@ func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {
 		return nil, ErrorWrongDocument
 	}
 
-	// TODO: if refChild is nil, append to the end
+	// If refChild is nil, append to the end, and return.
+	if refChild == nil {
+		err := dd.AppendChild(newChild)
+		if err != nil {
+			return nil, err
+		}
+		return newChild, nil
+	}
 
 	// Find the reference child, insert newChild before that one.
 	for i, child := range dd.GetChildNodes() {

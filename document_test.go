@@ -36,6 +36,12 @@ func TestDocumentGetters(t *testing.T) {
 	if doc.GetNamespacePrefix() != "" {
 		t.Error("document cannot have a namespace prefix")
 	}
+	if doc.GetFirstChild() != nil {
+		t.Error("no children, GetFirstChild should return nil")
+	}
+	if doc.GetLastChild() != nil {
+		t.Error("no children, GetLastChild should return nil")
+	}
 }
 
 // Tests appending doc to itself, and appending two document elements.

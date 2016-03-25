@@ -149,8 +149,51 @@ func (de *domElement) ReplaceChild(newChild, oldChild Node) (Node, error) {
 
 	return nil, ErrorNotFound
 }
+
+// InsertBefore inserts the Node newChild before the reference child, refChild.
+// If the refChild is nil, the newChild will simply be appended at the end of
+// the list of children.
 func (de *domElement) InsertBefore(newChild, refChild Node) (Node, error) {
-	panic("not implemented yet")
+	if newChild == nil {
+		// FIXME: what in this case? Is an error ok?
+		return nil, ErrorHierarchyRequest
+	}
+
+	if newChild.GetNodeType() == AttributeNode {
+		return nil, ErrorHierarchyRequest
+	}
+
+	// New child must have the same owner Document as this element's document.
+	if newChild.GetOwnerDocument() != de.GetOwnerDocument() {
+		return nil, ErrorWrongDocument
+	}
+
+	// If refChild is nil, append to the end, and return.
+	if refChild == nil {
+		err := de.AppendChild(newChild)
+		if err != nil {
+			return nil, err
+		}
+		return newChild, nil
+	}
+
+	// Find the reference child, insert newChild before that one.
+	for i, child := range de.GetChildNodes() {
+		if child == refChild {
+			// Check if newChild is in the tree already. If so, remove it.
+			ncParent := newChild.GetParentNode()
+			if ncParent != nil {
+				ncParent.RemoveChild(newChild)
+			}
+			newChild.setParentNode(de)
+			de.nodes = append(de.nodes[:i], append([]Node{newChild}, de.nodes[i:]...)...)
+			return newChild, nil
+		}
+	}
+
+	// The reference child is given, but not found. We got no information where
+	// to insert the newChild at.
+	return nil, ErrorNotFound
 }
 
 func (de *domElement) HasChildNodes() bool {

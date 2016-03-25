@@ -178,6 +178,12 @@ func TestElementAttributes(t *testing.T) {
 	if err != nil {
 		t.Error("unexpected error")
 	}
+
+	// Try setting an attribute with an invalid name.
+	err = root.SetAttribute("<invalid", "name")
+	if err == nil {
+		t.Error("expected error due to invalid attribute name")
+	}
 }
 
 func TestElementSetAttributeNodeWrongDoc(t *testing.T) {
