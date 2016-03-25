@@ -84,11 +84,17 @@ func TestAttrLookupNamespaceURI(t *testing.T) {
 	root.SetAttribute("xmlns:xfb", "urn:xfbcft")
 
 	child, _ := doc.CreateElement("child")
+	root.AppendChild(child) // must append child first or else SetAttribute fails.
+
 	child.SetAttribute("pfx:name", "Mimi")
 
-	attr := child.GetAttributes().GetNamedItem("pfx:name").(Attr)
+	t.Log(child.GetAttributes().GetItems())
 
-	root.AppendChild(child)
+	attr, ok := child.GetAttributes().GetNamedItem("pfx:name").(Attr)
+	if !ok {
+		t.Error("expected type assertion ok for Attr")
+		t.FailNow()
+	}
 
 	ns, found := attr.LookupNamespaceURI("pfx")
 	exp := "http://example.org/pfx"

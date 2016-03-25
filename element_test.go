@@ -149,6 +149,9 @@ func TestElementHasChildNodes(t *testing.T) {
 func TestElementAttributes(t *testing.T) {
 	doc := NewDocument()
 	root, _ := doc.CreateElement("root")
+	// Declare one namespace for usage.
+	root.SetAttribute("xmlns:declared", "http://example.org/declared")
+
 	root.SetAttribute("cruft", "value")
 
 	if root.GetAttribute("cruft") != "value" {
@@ -161,6 +164,19 @@ func TestElementAttributes(t *testing.T) {
 
 	if root.GetAttribute("pfx:anything") != "harpy" {
 		t.Errorf("expected 'harpy' but was '%v'", root.GetAttribute("pfx:anything"))
+	}
+
+	// Setting an attribute with a prefix, but a namespace cannot be found
+	// should generate an error.
+	err := root.SetAttribute("undeclared:attr", "fail")
+	if err == nil {
+		t.Error("expected an error")
+	}
+
+	// Setting an attribute, prefix is declared in the root. Should be OK.
+	err = root.SetAttribute("declared:name", "captain planet")
+	if err != nil {
+		t.Error("unexpected error")
 	}
 }
 

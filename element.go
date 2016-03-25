@@ -183,15 +183,23 @@ func (de *domElement) SetAttribute(name, value string) error {
 		return err
 	}
 
+	var namespaceFound = false
+
 	// Get the prefix (if any), double check if its declared. If it is not, then setting that
-	// attribute generates an error.
-	// TODO: improve this
-	// if attr.GetNamespacePrefix() != "" {
-	// 	_, found := de.LookupNamespaceURI(attr.GetNamespacePrefix())
-	// 	if !found {
-	// 		return fmt.Errorf("the namespace for prefix '%v' has not been declared", attr.GetNamespacePrefix())
-	// 	}
-	// }
+	// attribute generates an error. Attributes with prefix "xmlns" must always be able
+	// to be set, and no lookup is necessary. Attributes without a prefix should be ok
+	// as well.
+	if attr.GetNamespacePrefix() == "xmlns" || attr.GetNamespacePrefix() == "" {
+		namespaceFound = true
+	} else if attr.GetNamespacePrefix() != "" {
+		// Not xmlns, but a different prefix. Look it up, see if it's declared somewhere
+		// up in the tree.
+		_, namespaceFound = de.LookupNamespaceURI(attr.GetNamespacePrefix())
+	}
+
+	if !namespaceFound {
+		return fmt.Errorf("the namespace for prefix '%v' has not been declared", attr.GetNamespacePrefix())
+	}
 
 	attr.SetValue(value)
 	attr.setOwnerElement(de)
