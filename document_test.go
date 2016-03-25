@@ -441,4 +441,33 @@ func TestDocumentReplaceChild(t *testing.T) {
 	if len(doc.GetChildNodes()) != 2 {
 		t.Error("expected 2 children")
 	}
+
+	// Nil new child should report error
+	if _, err = doc.ReplaceChild(nil, childOfRoot); err == nil {
+		t.Error("replacing a new nil child should return an error")
+	}
+
+	// Nil old child should report error
+	if _, err = doc.ReplaceChild(pi, nil); err == nil {
+		t.Error("replacing a new nil child with nil ref should return an error")
+	}
+
+	// Replacing a child with unsupported node types:
+	attr, _ := doc.CreateAttribute("hi")
+	if _, err = doc.ReplaceChild(attr, pi); err == nil {
+		t.Error("replacing child with attr should return error")
+	}
+
+	txt := doc.CreateText("text0r")
+	if _, err = doc.ReplaceChild(txt, pi); err == nil {
+		t.Error("replacing child with text should return error")
+	}
+
+	// Child from anotha motha
+	docOther := NewDocument()
+	element, _ := docOther.CreateElement("tag")
+	if _, err = doc.ReplaceChild(element, childOfRoot); err == nil {
+		t.Error("replacing child with a new child from another document should return an error")
+	}
+
 }

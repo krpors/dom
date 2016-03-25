@@ -143,7 +143,6 @@ func (dd *domDocument) ReplaceChild(newChild, oldChild Node) (Node, error) {
 	if oldChild == nil {
 		return nil, fmt.Errorf("%v: given old child is nil", ErrorHierarchyRequest)
 	}
-
 	if newChild.GetNodeType() == AttributeNode || newChild.GetNodeType() == TextNode {
 		return nil, ErrorHierarchyRequest
 	}
@@ -189,6 +188,15 @@ func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {
 		return nil, ErrorHierarchyRequest
 	}
 
+	// If refChild is nil, append to the end, and return.
+	if refChild == nil {
+		err := dd.AppendChild(newChild)
+		if err != nil {
+			return nil, err
+		}
+		return newChild, nil
+	}
+
 	// Cannot insert an element if there's already one element.
 	if newChild.GetNodeType() == ElementNode && dd.GetDocumentElement() != nil {
 		return nil, fmt.Errorf("%v: a Document element already exists (<%v>)", ErrorHierarchyRequest, dd.GetDocumentElement())
@@ -200,15 +208,6 @@ func (dd *domDocument) InsertBefore(newChild, refChild Node) (Node, error) {
 
 	if newChild.GetOwnerDocument() != dd {
 		return nil, ErrorWrongDocument
-	}
-
-	// If refChild is nil, append to the end, and return.
-	if refChild == nil {
-		err := dd.AppendChild(newChild)
-		if err != nil {
-			return nil, err
-		}
-		return newChild, nil
 	}
 
 	// Find the reference child, insert newChild before that one.
