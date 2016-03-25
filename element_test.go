@@ -573,3 +573,136 @@ func TestElementTextContent(t *testing.T) {
 		t.Error("failed type assertion for Text node")
 	}
 }
+
+// Tests InsertBefore functionality.
+func TestElementInsertBefore(t *testing.T) {
+	// <root>
+	//   <child>
+	//     <grandchild/>
+	//   </child>
+	// </root>
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	child, _ := doc.CreateElement("child")
+	grandChild, _ := doc.CreateElement("grandchild")
+	replacement, _ := doc.CreateElement("replacement")
+	attr, _ := doc.CreateAttribute("attribute")
+
+	doc.AppendChild(root)
+	root.AppendChild(child)
+	child.AppendChild(grandChild)
+
+	if _, err := root.InsertBefore(nil, child); err == nil {
+		t.Error("expected error (newChild is nil)")
+	}
+	if _, err := root.InsertBefore(attr, child); err == nil {
+		t.Error("expected error (invalid nodetype replacement)")
+	}
+
+	// "Normal" replacement. refChild is found, same owner document etc.
+	// The resulting document should now look like:
+	// <root>
+	//   <replacement/>
+	//   <child>
+	//     <grandchild/>
+	//   </child>
+	// </root>
+	repl, err := root.InsertBefore(replacement, child)
+	if err != nil {
+		t.Error("unexpected error")
+		t.FailNow()
+	}
+	if repl != replacement {
+		t.Error("repl != replacement")
+	}
+	if len(root.GetChildNodes()) != 2 {
+		t.Error("expected 2 child nodes in <root>, got %v", len(root.GetChildNodes()))
+	}
+
+	// Grandchild is already in the tree, must be removed.
+	// The resulting document should now look like:
+	// <root>
+	//   <replacement/>
+	//   <grandchild/>
+	//   <child/>
+	// </root>
+	repl, err = root.InsertBefore(grandChild, child)
+	if err != nil {
+		t.Error("unexpected error")
+		t.FailNow()
+	}
+	if repl != grandChild {
+		t.Error("repl != grandchild")
+	}
+
+	// Double check the order of elements.
+	if len(root.GetChildNodes()) != 3 {
+		t.Errorf("expected 3 child nodes, got %v", len(root.GetChildNodes()))
+	}
+
+	cnode := root.GetChildNodes()[0]
+	if cnode != replacement {
+		t.Errorf("node 0 should be <replacement>, but was '%v'", cnode)
+	}
+	cnode = root.GetChildNodes()[1]
+	if cnode != grandChild {
+		t.Errorf("node 1 should be <grandchild>, but was '%v'", cnode)
+	}
+	cnode = root.GetChildNodes()[2]
+	if cnode != child {
+		t.Errorf("node 2 should be <child>, but was '%v'", cnode)
+	}
+
+	// Check if the <child> node doesn't have any children left (grandchild
+	// is move to the root).
+	if len(child.GetChildNodes()) != 0 {
+		t.Error("<child> should have zero child nodes left")
+	}
+}
+
+// Tests the other cases for InsertBefore.
+func TestElementInsertBefore2(t *testing.T) {
+	dom1 := NewDocument()
+	root1, _ := dom1.CreateElement("root1")
+	child1, _ := dom1.CreateElement("child1")
+	grandchild1, _ := dom1.CreateElement("grandchild1")
+
+	dom1.AppendChild(root1)
+	root1.AppendChild(child1)
+	child1.AppendChild(grandchild1)
+
+	dom2 := NewDocument()
+	root2, _ := dom2.CreateElement("root2")
+	dom2.AppendChild(root2)
+
+	// Insert element created from different document
+	if _, err := root1.InsertBefore(root2, child1); err == nil {
+		t.Error("expected an error")
+	}
+
+	// grandchild1 is no child of root1, so this should return ErrNotFound.
+	if _, err := root1.InsertBefore(grandchild1, root1); err == nil {
+		t.Error("expected an error")
+	}
+
+	// refChild is nil, should result in appending the child.
+	n, err := root1.InsertBefore(grandchild1, nil)
+	if err != nil {
+		t.Error("unexpected error")
+		t.FailNow()
+	}
+	if n != grandchild1 {
+		t.Error("n != grandchild1")
+		t.FailNow()
+	}
+	if len(root1.GetChildNodes()) != 2 {
+		t.Error("!!!")
+	}
+	// First child of <root> should be <child1>, second <grandchild1>.
+	if root1.GetChildNodes()[0] != child1 {
+		t.Error("node 0 should be <child1>")
+	}
+	if root1.GetChildNodes()[1] != grandchild1 {
+		t.Error("node 1 should be <grandchild>")
+	}
+}
