@@ -33,6 +33,9 @@ func TestTextGetters(t *testing.T) {
 	if txt.GetFirstChild() != nil {
 		t.Error("text nodes cannot have children")
 	}
+	if txt.GetLastChild() != nil {
+		t.Error("text nodes cannot have children")
+	}
 	if txt.HasChildNodes() {
 		t.Error("text nodes cannot have children")
 	}
@@ -42,8 +45,20 @@ func TestTextGetters(t *testing.T) {
 	if txt.GetOwnerDocument() != doc {
 		t.Error("incorrect owner document")
 	}
+	if txt.GetNamespaceURI() != "" {
+		t.Error("namespace URI should be an empty string")
+	}
 	if txt.GetNamespacePrefix() != "" {
 		t.Error("namespace prefix should be an empty string")
+	}
+	if _, err := txt.ReplaceChild(nil, nil); err == nil {
+		t.Error("replacing child should always return an error")
+	}
+	if _, err := txt.RemoveChild(nil); err == nil {
+		t.Error("removing child should always return an error")
+	}
+	if _, err := txt.InsertBefore(nil, nil); err == nil {
+		t.Error("inserting a child should always return an error")
 	}
 	if txt.LookupPrefix("anything") != "" {
 		t.Error("LookupPrefix should always return an empty string")
@@ -51,12 +66,39 @@ func TestTextGetters(t *testing.T) {
 	if _, found := txt.LookupNamespaceURI("asd"); found {
 		t.Error("LookupNamespaceURI should always return an empty string and false")
 	}
+	thetext := "some text content"
+	txt.SetTextContent(thetext)
+	if txt.GetTextContent() != thetext {
+		t.Errorf("expected '%v', got '%v'", thetext, txt.GetTextContent())
+	}
 
 	txt.SetText("this is a sample string, longer than 30 characters.")
 	s := fmt.Sprintf("%v", txt)
 	expected := "TEXT_NODE: 'this is a sample string, longe [...]'"
 	if s != expected {
 		t.Errorf("expected '%v', got '%v'", expected, s)
+	}
+}
+
+func TestTextPrevNextSibling(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	child1, _ := doc.CreateElement("child1")
+	text := doc.CreateText("some text")
+	child3, _ := doc.CreateElement("child3")
+
+	doc.AppendChild(root)
+	root.AppendChild(child1)
+	root.AppendChild(text)
+	root.AppendChild(child3)
+
+	node := text.GetPreviousSibling()
+	if node != child1 {
+		t.Errorf("expected 'child1' as previous sibling, got '%v'", node)
+	}
+	node = text.GetNextSibling()
+	if node != child3 {
+		t.Errorf("expected 'child3' as next sibling, got '%v'", node)
 	}
 }
 
