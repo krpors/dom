@@ -11,6 +11,20 @@ import (
 // TODO: namespaces for prefixes must be predeclared somehow before serializing
 // or else it must generate an error.
 
+// PrintTree prints the whole tree starting from the given Node 'node' to the
+// writer w.
+func PrintTree(start Node, w io.Writer) {
+	var traverse func(Node, string)
+
+	traverse = func(n Node, indent string) {
+		fmt.Fprintf(w, "%s%v\n", indent, n)
+		for _, child := range n.GetChildNodes() {
+			traverse(child, indent+"  ")
+		}
+	}
+	traverse(start, "")
+}
+
 // ToXML is a utility function to serialize a Node and its children to the
 // given writer 'w'. The whole tree is traversed using recursion, which is
 // pretty much eligible for a refactor for optimalization reasons.

@@ -144,6 +144,8 @@ func (dt *domText) String() string {
 	var d string
 	if len(dt.data) > maxlen {
 		d = strings.TrimSpace(dt.data[0:maxlen] + " [...]")
+	} else {
+		d = dt.GetText()
 	}
 	return fmt.Sprintf("%s: '%s'", dt.GetNodeType(), d)
 }

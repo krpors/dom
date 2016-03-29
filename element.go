@@ -422,5 +422,5 @@ func (de *domElement) setParentNode(parent Node) {
 
 func (de *domElement) String() string {
 	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
-		de.GetNodeType(), de.tagName, de.namespaceURI, de.attributes)
+		de.GetNodeType(), de.tagName, de.namespaceURI, len(de.attributes.GetItems()))
 }

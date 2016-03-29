@@ -12,7 +12,8 @@ import (
 type Builder struct {
 	reader io.Reader // Reader containing the XML document.
 
-	NamespaceAware bool // Enable namespace awareness.
+	NamespaceAware          bool // Enable namespace awareness. Default: true.
+	ReadIgnorableWhitespace bool // Enable ignoring of ignorable whitespace. Default: true.
 }
 
 // NewBuilder constructs a new Builder using the given reader. The reader is expected
@@ -21,6 +22,7 @@ func NewBuilder(reader io.Reader) *Builder {
 	b := &Builder{}
 	b.reader = reader
 	b.NamespaceAware = true
+	b.ReadIgnorableWhitespace = false
 	return b
 }
 
@@ -120,8 +122,14 @@ func (b *Builder) Parse() (Document, error) {
 				// parsing in the stream. Same behaviour as above.
 				continue
 			}
-			// In all other cases, create a text node and add it to the current node as a child.
+
 			text := doc.CreateText(string(typ))
+			// Should we ignore ignorable whitespaces, and the text content is whitespace?
+			if !b.ReadIgnorableWhitespace && text.IsElementContentWhitespace() {
+				continue
+			}
+
+			// In all other cases, create a text node and add it to the current node as a child.
 			if err := curNode.AppendChild(text); err != nil {
 				return nil, err
 			}
