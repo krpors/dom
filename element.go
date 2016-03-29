@@ -86,6 +86,8 @@ func (de *domElement) AppendChild(child Node) error {
 	}
 
 	// TODO: remove child when already in the tree
+	// TODO: if child is an element, check the prefix, and if the node does not have an explicit NS, find it in the tree.
+	// If it cannot be found, return an error!!! See SetAttribute.
 
 	child.setParentNode(de)
 	de.nodes = append(de.nodes, child)
