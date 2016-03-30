@@ -12,7 +12,6 @@ import (
 // one of this node's ancestors or this node itself, or if this node is of
 // type Document and the DOM application attempts to append a second
 // DocumentType or Element node.
-
 var ErrorHierarchyRequest = errors.New("HIERARCHY_REQUEST_ERR: an attempt was made to insert a node where it is not permitted")
 
 // ErrorInvalidCharacter is returned when an invalid character is used for
@@ -240,10 +239,33 @@ type Comment interface {
 	SetComment(comment string) // Sets the comment text of this node.
 }
 
-// NamedNodeMap represent collections of nodes that can be accessed by name.
+// NamedNodeMap represents collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
 	GetNamedItem(string) Node
 	SetNamedItem(Node) error
 	GetItems() map[string]Node
 	Length() int
+}
+
+// Configuration contains fields which can control the output of the Parser
+// and Serializer. Note that not (all configuration are specified or used (yet).
+type Configuration struct {
+	CDataSections            bool // Keep CDataSection Nodes in the Document.
+	Comments                 bool // Keep Comment nodes in the Document.
+	ElementContentWhitespace bool // Keep all whitespaces in the Document.
+	Namespaces               bool // Perform namespace processing as defined in https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
+	NamespaceDeclarations    bool // Include (true) or discard (false) namespace declaration attributes.
+	NormalizeCharacters      bool // Perform or do not perform character normalization.
+}
+
+// NewConfiguration creates a Configuration object with the defaults as per the DOM spec.
+func NewConfiguration() Configuration {
+	return Configuration{
+		CDataSections:            true,
+		Comments:                 true,
+		ElementContentWhitespace: true,
+		Namespaces:               true,
+		NamespaceDeclarations:    true,
+		NormalizeCharacters:      false,
+	}
 }
