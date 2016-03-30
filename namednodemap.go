@@ -46,6 +46,18 @@ func (nnm *domNamedNodeMap) SetNamedItem(n Node) error {
 	return fmt.Errorf("%v: can not set a non-Attr node as a named item", ErrorHierarchyRequest)
 }
 
+func (nnm *domNamedNodeMap) RemoveNamedItem(name string) {
+	delete(nnm.nodes, name)
+}
+
 func (nnm *domNamedNodeMap) Length() int {
 	return len(nnm.nodes)
+}
+
+func (nnm *domNamedNodeMap) String() string {
+	s := ""
+	for k, v := range nnm.GetItems() {
+		s += fmt.Sprintf("%v=%v,", k, v.GetNodeValue())
+	}
+	return s
 }

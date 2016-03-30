@@ -2,6 +2,7 @@ package dom
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -616,7 +617,7 @@ func TestElementInsertBefore(t *testing.T) {
 		t.Error("repl != replacement")
 	}
 	if len(root.GetChildNodes()) != 2 {
-		t.Error("expected 2 child nodes in <root>, got %v", len(root.GetChildNodes()))
+		t.Errorf("expected 2 child nodes in <root>, got %v", len(root.GetChildNodes()))
 	}
 
 	// Grandchild is already in the tree, must be removed.
@@ -705,4 +706,32 @@ func TestElementInsertBefore2(t *testing.T) {
 	if root1.GetChildNodes()[1] != grandchild1 {
 		t.Error("node 1 should be <grandchild>")
 	}
+}
+
+func TestElementNormalize(t *testing.T) {
+	// TODO: test normalizing.
+
+	nsSoap := "http://www.w3.org/2003/05/soap-envelope"
+	nsStock := "http://example.org/stock"
+	nsStockId := "http://example.org/stock/id"
+
+	doc := NewDocument()
+	envelope, _ := doc.CreateElementNS(nsSoap, "soap:Envelope")
+	envelope.SetAttribute("xmlns:m", nsStock)
+	header, _ := doc.CreateElement("soap:Header")
+	header.SetAttribute("xmlns:soap", nsSoap)
+	body, _ := doc.CreateElementNS(nsSoap, "soap:Body")
+	stock, _ := doc.CreateElement("m:GetStock")
+	id, _ := doc.CreateElementNS(nsStockId, "id:Id")
+	id.SetTextContent("GOOG")
+
+	doc.AppendChild(envelope)
+	envelope.AppendChild(header)
+	envelope.AppendChild(body)
+	body.AppendChild(stock)
+	stock.AppendChild(id)
+
+	PrintTree(doc, os.Stdout)
+	doc.NormalizeDocument()
+	PrintTree(doc, os.Stdout)
 }

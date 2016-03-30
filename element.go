@@ -86,8 +86,6 @@ func (de *domElement) AppendChild(child Node) error {
 	}
 
 	// TODO: remove child when already in the tree
-	// TODO: if child is an element, check the prefix, and if the node does not have an explicit NS, find it in the tree.
-	// If it cannot be found, return an error!!! See SetAttribute.
 
 	child.setParentNode(de)
 	de.nodes = append(de.nodes, child)
@@ -296,6 +294,56 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 	return getElementsBy(de, namespaceURI, tagname, true)
 }
 
+// normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
+// method of the Document interface.
+func (de *domElement) normalizeNamespaces() {
+	fmt.Printf("==> Analyzing %v\n", de)
+
+	parent := de.GetParentNode()
+
+	if de.GetNamespaceURI() != "" {
+		// Check if the namespace/prefix pair is in scope of the binding. We do this by checking the parent element,
+		// or else this will always return 'true'.
+
+		nsuri, found := parent.LookupNamespaceURI(de.GetNamespacePrefix())
+		// pfx := de.LookupPrefix(nsuri)
+
+		if found && nsuri == de.GetNamespaceURI() {
+			fmt.Println("Inherited.")
+			//  do nothing, declaration in scope is inherited!?!
+		} else {
+			/*
+				==> Create a local namespace declaration attr for this namespace,
+				 with Element's current prefix (or a default namespace, if
+				 no prefix). If there's a conflicting local declaration
+				 already present, change its value to use this namespace.
+			*/
+			fmt.Println(":D")
+			de.SetAttribute("xmlns:"+de.GetNamespacePrefix(), de.GetNamespaceURI())
+		}
+	} else {
+		fmt.Println("No naemspce uri")
+		pfx := de.GetNamespacePrefix()
+		if pfx != "" {
+			// Empty namespace uri, but prefix is given.
+			// If the prefix of this element does not have a namespace
+			if _, found := parent.LookupNamespaceURI(pfx); found {
+				// default namespace?
+				fmt.Println("...but found up in the tree!")
+				de.GetAttributes().RemoveNamedItem("xmlns:" + pfx)
+			}
+		}
+	}
+
+	fmt.Println()
+
+	for _, c := range de.GetChildNodes() {
+		if e, ok := c.(Element); ok {
+			e.normalizeNamespaces()
+		}
+	}
+}
+
 // LookupPrefix looks up the prefix associated to the given namespace URI, starting from this node.
 // The default namespace declarations are ignored by this method. See Namespace Prefix Lookup for
 // details on the algorithm used by this method:
@@ -421,6 +469,6 @@ func (de *domElement) setParentNode(parent Node) {
 }
 
 func (de *domElement) String() string {
-	return fmt.Sprintf("%s, <%s>, ns=%s, attrs=%v",
-		de.GetNodeType(), de.tagName, de.namespaceURI, len(de.attributes.GetItems()))
+	return fmt.Sprintf("%s, <%s>, ns=%s, attrs={%v}",
+		de.GetNodeType(), de.tagName, de.namespaceURI, de.attributes)
 }

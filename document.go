@@ -362,6 +362,14 @@ func (dd *domDocument) GetElementsByTagNameNS(namespaceURI, tagname string) []El
 	return getElementsBy(dd, namespaceURI, tagname, true)
 }
 
+func (dd *domDocument) NormalizeDocument() {
+	for _, c := range dd.GetChildNodes() {
+		if e, ok := c.(Element); ok {
+			e.normalizeNamespaces()
+		}
+	}
+}
+
 func (dd *domDocument) LookupPrefix(namespace string) string {
 	return ""
 }

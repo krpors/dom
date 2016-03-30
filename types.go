@@ -167,6 +167,8 @@ type Element interface {
 	GetAttribute(name string) string                               // Convenience function to get an attribute value.
 	GetElementsByTagName(string) []Element                         // Find all descendant elements of the current element.
 	GetElementsByTagNameNS(namespaceURI, tagname string) []Element // Like GetElementsByTagName, except with a namespace URI.
+
+	normalizeNamespaces() // Normalizes namespaces. See https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
 }
 
 // Text represents character data within an element. It implements the Node interface.
@@ -228,6 +230,8 @@ type Document interface {
 	// GetElementsByTagNameNS finds all descendant elements of the current element,
 	// with the given tag name and namespace URI, in document order.
 	GetElementsByTagNameNS(namespaceURI, tagname string) []Element
+
+	NormalizeDocument() // Puts the Document in 'normal form'.
 }
 
 // Comment represents a comment node in an XML tree (e.g. <!-- ... -->). It implements
@@ -241,10 +245,11 @@ type Comment interface {
 
 // NamedNodeMap represents collections of nodes that can be accessed by name.
 type NamedNodeMap interface {
-	GetNamedItem(string) Node
-	SetNamedItem(Node) error
-	GetItems() map[string]Node
-	Length() int
+	GetNamedItem(string) Node  // Gets a named item identified by the given string. Returns nil if nothing is found.
+	SetNamedItem(Node) error   // Adds a new item. The node's NodeName is used as a key.
+	RemoveNamedItem(string)    // Removes the item identified by the given string.
+	GetItems() map[string]Node // Gets the items as a Go map.
+	Length() int               // Gets the amount of items in the named node map.
 }
 
 // Configuration contains fields which can control the output of the Parser
