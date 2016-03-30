@@ -7,28 +7,28 @@ import (
 	"strings"
 )
 
-// Builder is the entrypoint of the dom package to parse an XML tree from the given
+// Parser is the entrypoint of the dom package to parse an XML tree from the given
 // reader, into the doc attribute, using the decoder from encoding/xml.
-type Builder struct {
+type Parser struct {
 	reader io.Reader // Reader containing the XML document.
 
 	NamespaceAware          bool // Enable namespace awareness. Default: true.
 	ReadIgnorableWhitespace bool // Enable ignoring of ignorable whitespace. Default: true.
 }
 
-// NewBuilder constructs a new Builder using the given reader. The reader is expected
+// NewParser constructs a new Parser using the given reader. The reader is expected
 // to contain the (...valid) XML tree. Namespace awareness will be set to true per default.
-func NewBuilder(reader io.Reader) *Builder {
-	b := &Builder{}
+func NewParser(reader io.Reader) *Parser {
+	b := &Parser{}
 	b.reader = reader
 	b.NamespaceAware = true
 	b.ReadIgnorableWhitespace = true
 	return b
 }
 
-// Parse parses an XML Document contained within the reader attribute of the current Builder.
+// Parse parses an XML Document contained within the reader attribute of the current Parser.
 // A Document will be returned and a nil error if the parsing succeeded.
-func (b *Builder) Parse() (Document, error) {
+func (b *Parser) Parse() (Document, error) {
 	doc := NewDocument()
 	decoder := xml.NewDecoder(b.reader)
 	var curNode = Node(doc)

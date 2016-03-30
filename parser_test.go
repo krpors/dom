@@ -28,9 +28,9 @@ var exampleDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
 </directory>`
 
 // Tests a completely valid document and checks whether everything is in place.
-func TestBuilderParse(t *testing.T) {
+func TestParserParse(t *testing.T) {
 	reader := strings.NewReader(exampleDoc1)
-	builder := NewBuilder(reader)
+	builder := NewParser(reader)
 	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error after building document from string: '%v'", err)
@@ -87,9 +87,9 @@ var exampleDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
 
 // Tests whether whitespaces before and after the document element don't generate
 // an error.
-func TestBuilderParseWhitespaces(t *testing.T) {
+func TestParserParseWhitespaces(t *testing.T) {
 	reader := strings.NewReader(exampleDoc2)
-	builder := NewBuilder(reader)
+	builder := NewParser(reader)
 	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error: '%v'", err)
@@ -120,9 +120,9 @@ invalid content.
 	Character data can exist here.
 </directory>`
 
-func TestBuilderParseContentInProlog(t *testing.T) {
+func TestParserParseContentInProlog(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc1)
-	builder := NewBuilder(reader)
+	builder := NewParser(reader)
 	_, err := builder.Parse()
 	if err == nil {
 		t.Errorf("expected error after building document from string, but got none")
@@ -138,9 +138,9 @@ var exampleErrDoc2 = `<?xml version="1.0" encoding="UTF-8"?>
 </stuff>
 chardata content in trailing section`
 
-func TestBuilderParseTrailingChars(t *testing.T) {
+func TestParserParseTrailingChars(t *testing.T) {
 	reader := strings.NewReader(exampleErrDoc2)
-	builder := NewBuilder(reader)
+	builder := NewParser(reader)
 	_, err := builder.Parse()
 	if err == nil {
 		t.Errorf("expected error due to trailing character data after root node")
@@ -165,9 +165,9 @@ var exampleDoc3 = `<?xml version="1.0" encoding="UTF-8"?>
 
 // Tests whether embedding the same prefixes (pfx) within a document results
 // in the correct associated namespaces.
-func TestBuilderParseNamespaces(t *testing.T) {
+func TestParserParseNamespaces(t *testing.T) {
 	reader := strings.NewReader(exampleDoc3)
-	builder := NewBuilder(reader)
+	builder := NewParser(reader)
 	doc, err := builder.Parse()
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
