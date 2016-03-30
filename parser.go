@@ -12,17 +12,16 @@ import (
 type Parser struct {
 	reader io.Reader // Reader containing the XML document.
 
-	NamespaceAware          bool // Enable namespace awareness. Default: true.
-	ReadIgnorableWhitespace bool // Enable ignoring of ignorable whitespace. Default: true.
+	Configuration Configuration
 }
 
 // NewParser constructs a new Parser using the given reader. The reader is expected
 // to contain the (...valid) XML tree. Namespace awareness will be set to true per default.
+// Parser configuration will be set to a default one.
 func NewParser(reader io.Reader) *Parser {
 	b := &Parser{}
 	b.reader = reader
-	b.NamespaceAware = true
-	b.ReadIgnorableWhitespace = true
+	b.Configuration = NewConfiguration()
 	return b
 }
 
@@ -71,7 +70,7 @@ func (b *Parser) Parse() (Document, error) {
 			// That's not all: https://github.com/golang/go/issues/11735
 			// Therefore, we don't set any kind of prefix ourselves.
 			namespace := ""
-			if b.NamespaceAware {
+			if b.Configuration.NamespaceDeclarations {
 				namespace = typ.Name.Space
 			}
 			elem, err := doc.CreateElementNS(namespace, typ.Name.Local)
@@ -81,7 +80,7 @@ func (b *Parser) Parse() (Document, error) {
 
 			for _, a := range typ.Attr {
 				namespace = ""
-				if b.NamespaceAware {
+				if b.Configuration.NamespaceDeclarations {
 					namespace = a.Name.Space
 				}
 				attr, err := doc.CreateAttributeNS(namespace, a.Name.Local)
@@ -125,7 +124,7 @@ func (b *Parser) Parse() (Document, error) {
 
 			text := doc.CreateText(string(typ))
 			// Should we ignore ignorable whitespaces, and the text content is whitespace?
-			if !b.ReadIgnorableWhitespace && text.IsElementContentWhitespace() {
+			if !b.Configuration.ElementContentWhitespace && text.IsElementContentWhitespace() {
 				continue
 			}
 
