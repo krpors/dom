@@ -88,8 +88,6 @@ func TestAttrLookupNamespaceURI(t *testing.T) {
 
 	child.SetAttribute("pfx:name", "Mimi")
 
-	t.Log(child.GetAttributes().GetItems())
-
 	attr, ok := child.GetAttributes().GetNamedItem("pfx:name").(Attr)
 	if !ok {
 		t.Error("expected type assertion ok for Attr")
