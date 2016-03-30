@@ -22,7 +22,7 @@ func NewBuilder(reader io.Reader) *Builder {
 	b := &Builder{}
 	b.reader = reader
 	b.NamespaceAware = true
-	b.ReadIgnorableWhitespace = false
+	b.ReadIgnorableWhitespace = true
 	return b
 }
 
