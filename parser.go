@@ -45,6 +45,11 @@ func (b *Parser) Parse() (Document, error) {
 
 		switch typ := token.(type) {
 		case xml.Comment:
+			// Skip comments?
+			if !b.Configuration.Comments {
+				continue
+			}
+
 			cmt, err := doc.CreateComment(string(typ))
 			if err != nil {
 				return nil, err
@@ -83,7 +88,14 @@ func (b *Parser) Parse() (Document, error) {
 				if b.Configuration.NamespaceDeclarations {
 					namespace = a.Name.Space
 				}
-				attr, err := doc.CreateAttributeNS(namespace, a.Name.Local)
+
+				// correctly create attribute names if it contains a prefix, e.g. xmlns:
+				attrName := a.Name.Local
+				if a.Name.Space != "" {
+					attrName = a.Name.Space + ":" + a.Name.Local
+				}
+
+				attr, err := doc.CreateAttributeNS(namespace, attrName)
 				if err != nil {
 					return nil, err
 				}
