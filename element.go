@@ -296,7 +296,7 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 
 // normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
 // method of the Document interface.
-func (de *domElement) normalizeNamespaces() {
+func (de *domElement) normalizeNamespaces(counter *int) {
 	fmt.Printf("==> %v\n", de)
 
 	parent := de.GetParentNode()
@@ -313,7 +313,7 @@ func (de *domElement) normalizeNamespaces() {
 			//  do nothing, declaration in scope is inherited!?!
 			// Remove redundant xmlns attribute.
 			de.removeNSDecl()
-			de.tagName = XMLName("ns1:" + de.GetLocalName())
+			de.tagName = XMLName(pfx + ":" + de.GetLocalName())
 		} else {
 			/*
 				==> Create a local namespace declaration attr for this namespace,
@@ -325,8 +325,9 @@ func (de *domElement) normalizeNamespaces() {
 			// 1. Find xmlns declarations with same element prefix. Remove it.
 			de.removeNSDecl()
 			// 2. Create new xmlns attribute with computed prefix.
-			de.SetAttribute("xmlns:ns1", de.GetNamespaceURI())
-			de.tagName = XMLName("ns1:" + de.GetLocalName())
+			de.SetAttribute(fmt.Sprintf("xmlns:ns%d", *counter), de.GetNamespaceURI())
+			de.tagName = XMLName(fmt.Sprintf("ns%d:%s", *counter, de.GetLocalName()))
+			*counter++
 		}
 	} else {
 		fmt.Println("No naemspce uri")
@@ -347,7 +348,7 @@ func (de *domElement) normalizeNamespaces() {
 
 	for _, c := range de.GetChildNodes() {
 		if e, ok := c.(Element); ok {
-			e.normalizeNamespaces()
+			e.normalizeNamespaces(counter)
 		}
 	}
 }

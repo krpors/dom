@@ -168,7 +168,7 @@ type Element interface {
 	GetElementsByTagName(string) []Element                         // Find all descendant elements of the current element.
 	GetElementsByTagNameNS(namespaceURI, tagname string) []Element // Like GetElementsByTagName, except with a namespace URI.
 
-	normalizeNamespaces() // Normalizes namespaces. See https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
+	normalizeNamespaces(counter *int) // Normalizes namespaces. See https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
 }
 
 // Text represents character data within an element. It implements the Node interface.
