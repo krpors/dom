@@ -73,26 +73,41 @@ func (b *Parser) Parse() (Document, error) {
 		case xml.StartElement:
 			//  FIXME: The default encoding/xml.Decoder does fuck all about prefixes.
 			// That's not all: https://github.com/golang/go/issues/11735
-			// Therefore, we don't set any kind of prefix ourselves.
+			// Therefore, we don't/can't set any kind of prefix ourselves. The
+			// NormalizeDocument() or Normalize() can be used to "fix" the namespaces.
 			namespace := ""
+			// Are we parsing namespaces? e.g. namespace awareness?
 			if b.Configuration.NamespaceDeclarations {
 				namespace = typ.Name.Space
 			}
+
 			elem, err := doc.CreateElementNS(namespace, typ.Name.Local)
 			if err != nil {
 				return nil, err
 			}
 
+			// Iterate over the element's attributes.
 			for _, a := range typ.Attr {
 				namespace = ""
+				// Are we parsing namespaces?
 				if b.Configuration.NamespaceDeclarations {
 					namespace = a.Name.Space
 				}
 
-				// correctly create attribute names if it contains a prefix, e.g. xmlns:
+				// fmt.Printf("%s, %s, %s\n", a.Name.Space, a.Name.Local, a.Value)
+
 				attrName := a.Name.Local
-				if a.Name.Space != "" {
-					attrName = a.Name.Space + ":" + a.Name.Local
+
+				// OK: there is some weirdness going in with parsing attributes.
+				// For example, these have different outputs:
+				//
+				//	xmlns:bla="what" : namespace = "xmlns", localname = "bla", value = "what".
+				//  bla="what" : namespace = "" (unless bound), localname = "bla", value = "what"
+				//  ns0:bla="what" : namespace = [whatever ns0 is bound to], localname = "bla"
+				//
+				// Therefore, we handle the xmlns edge case like this
+				if strings.HasPrefix(a.Name.Space, "xmlns") {
+					continue // Skip it!! No need for namespace declarations anyway.
 				}
 
 				attr, err := doc.CreateAttributeNS(namespace, attrName)

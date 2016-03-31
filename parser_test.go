@@ -1,6 +1,7 @@
 package dom
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -34,7 +35,7 @@ func TestParserParse(t *testing.T) {
 	builder := NewParser(reader)
 	doc, err := builder.Parse()
 	if err != nil {
-		t.Errorf("unexpected error after building document from string: '%v'", err)
+		t.Errorf("unexpected error after building document from string: %v", err)
 		t.FailNow()
 	}
 
@@ -231,6 +232,7 @@ var exampleDoc4 = `<?xml version="1.0" encoding="UTF-8"?>
   <soap:Body xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
     <m:GetStockPrice xmlns:m="http://www.example.org/stock/Surya">
       <m:StockName xmlns:m="http://www.example.org/stock/Surya" identifier="cruft">IBM and more!</m:StockName>
+	  <soap:Extension>Wow, what's happening!</soap:Extension>
     </m:GetStockPrice>
   </soap:Body>
 </soap:Envelope>`
@@ -250,4 +252,5 @@ func TestParserWut(t *testing.T) {
 	PrintTree(doc, os.Stdout)
 
 	ToXML(doc, false, os.Stdout)
+	fmt.Println()
 }

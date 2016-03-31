@@ -297,7 +297,7 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 // normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
 // method of the Document interface.
 func (de *domElement) normalizeNamespaces(counter *int) {
-	fmt.Printf("==> %v\n", de)
+	//fmt.Printf("==> %v\n", de)
 
 	parent := de.GetParentNode()
 
@@ -307,9 +307,9 @@ func (de *domElement) normalizeNamespaces(counter *int) {
 
 		pfx := parent.LookupPrefix(de.GetNamespaceURI())
 		nsuri, found := parent.LookupNamespaceURI(pfx)
-		fmt.Printf("Found prefix=%s, namespace=%s\n", pfx, nsuri)
+		//fmt.Printf("Found prefix=%s, namespace=%s\n", pfx, nsuri)
 		if found && nsuri == de.GetNamespaceURI() && pfx != "" {
-			fmt.Println("Namespace is inherited. Check prefix, set it.")
+			//fmt.Println("Namespace is inherited. Check prefix, set it.")
 			//  do nothing, declaration in scope is inherited!?!
 			// Remove redundant xmlns attribute.
 			de.removeNSDecl()
@@ -321,7 +321,7 @@ func (de *domElement) normalizeNamespaces(counter *int) {
 				 no prefix). If there's a conflicting local declaration
 				 already present, change its value to use this namespace.
 			*/
-			fmt.Println("Create xmlns declaration, plus prefix.")
+			//fmt.Println("Create xmlns declaration, plus prefix.")
 			// 1. Find xmlns declarations with same element prefix. Remove it.
 			de.removeNSDecl()
 			// 2. Create new xmlns attribute with computed prefix.
@@ -330,21 +330,21 @@ func (de *domElement) normalizeNamespaces(counter *int) {
 			*counter++
 		}
 	} else {
-		fmt.Println("No naemspce uri")
+		//fmt.Println("No naemspce uri")
 		pfx := de.GetNamespacePrefix()
 		if pfx != "" {
 			// Empty namespace uri, but prefix is given.
 			// If the prefix of this element does not have a namespace
 			if _, found := parent.LookupNamespaceURI(pfx); found {
 				// default namespace?
-				fmt.Println("...but found up in the tree!")
+				//fmt.Println("...but found up in the tree!")
 				de.GetAttributes().RemoveNamedItem("xmlns:" + pfx)
 			}
 		}
 	}
 
-	fmt.Printf("==> %v\n", de)
-	fmt.Println()
+	//fmt.Printf("==> %v\n", de)
+	//fmt.Println()
 
 	for _, c := range de.GetChildNodes() {
 		if e, ok := c.(Element); ok {
@@ -483,7 +483,7 @@ func (de *domElement) removeNSDecl() {
 	for nsdecl := range de.GetAttributes().GetItems() {
 		if strings.HasPrefix(nsdecl, "xmlns") {
 			// remove it.
-			fmt.Printf("Removing xmlns attribute '%s'\n", nsdecl)
+			//fmt.Printf("Removing xmlns attribute '%s'\n", nsdecl)
 			de.GetAttributes().RemoveNamedItem(nsdecl)
 		}
 	}
