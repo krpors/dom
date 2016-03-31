@@ -1,6 +1,7 @@
 package dom
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
@@ -221,4 +222,30 @@ func TestParserParseNamespaces(t *testing.T) {
 	if len(gebtn) != 1 {
 		t.Errorf("expected 1, got %d", len(gebtn))
 	}
+}
+
+var exampleDoc4 = `<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+  <soap:Header xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:superfluous="http://www.w3.org/2003/05/soap-envelope">
+  </soap:Header>
+  <soap:Body xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+    <m:GetStockPrice xmlns:m="http://www.example.org/stock/Surya">
+      <m:StockName xmlns:m="http://www.example.org/stock/Surya" identifier="cruft">IBM and more!</m:StockName>
+    </m:GetStockPrice>
+  </soap:Body>
+</soap:Envelope>`
+
+func TestParserWut(t *testing.T) {
+	reader := strings.NewReader(exampleDoc4)
+	parser := NewParser(reader)
+	parser.Configuration.ElementContentWhitespace = false
+	parser.Configuration.Comments = false
+	doc, err := parser.Parse()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	doc.NormalizeDocument()
+	PrintTree(doc, os.Stdout)
 }

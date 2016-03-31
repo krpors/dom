@@ -297,7 +297,7 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 // normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
 // method of the Document interface.
 func (de *domElement) normalizeNamespaces() {
-	fmt.Printf("==> Analyzing %v\n", de)
+	fmt.Printf("==> %v\n", de)
 
 	parent := de.GetParentNode()
 
@@ -305,12 +305,15 @@ func (de *domElement) normalizeNamespaces() {
 		// Check if the namespace/prefix pair is in scope of the binding. We do this by checking the parent element,
 		// or else this will always return 'true'.
 
-		nsuri, found := parent.LookupNamespaceURI(de.GetNamespacePrefix())
-		// pfx := de.LookupPrefix(nsuri)
-
-		if found && nsuri == de.GetNamespaceURI() {
-			fmt.Println("Inherited.")
+		pfx := parent.LookupPrefix(de.GetNamespaceURI())
+		nsuri, found := parent.LookupNamespaceURI(pfx)
+		fmt.Printf("Found prefix=%s, namespace=%s\n", pfx, nsuri)
+		if found && nsuri == de.GetNamespaceURI() && pfx != "" {
+			fmt.Println("Namespace is inherited. Check prefix, set it.")
 			//  do nothing, declaration in scope is inherited!?!
+			// Remove redundant xmlns attribute.
+			de.removeNSDecl()
+			de.tagName = XMLName("ns1:" + de.GetLocalName())
 		} else {
 			/*
 				==> Create a local namespace declaration attr for this namespace,
@@ -318,8 +321,12 @@ func (de *domElement) normalizeNamespaces() {
 				 no prefix). If there's a conflicting local declaration
 				 already present, change its value to use this namespace.
 			*/
-			fmt.Println(":D")
-			de.SetAttribute("xmlns:"+de.GetNamespacePrefix(), de.GetNamespaceURI())
+			fmt.Println("Create xmlns declaration, plus prefix.")
+			// 1. Find xmlns declarations with same element prefix. Remove it.
+			de.removeNSDecl()
+			// 2. Create new xmlns attribute with computed prefix.
+			de.SetAttribute("xmlns:ns1", de.GetNamespaceURI())
+			de.tagName = XMLName("ns1:" + de.GetLocalName())
 		}
 	} else {
 		fmt.Println("No naemspce uri")
@@ -335,6 +342,7 @@ func (de *domElement) normalizeNamespaces() {
 		}
 	}
 
+	fmt.Printf("==> %v\n", de)
 	fmt.Println()
 
 	for _, c := range de.GetChildNodes() {
@@ -466,6 +474,18 @@ func (de *domElement) SetTextContent(content string) {
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent
+}
+
+// removeNSDeclAndSet finds xmlns:prefix declarations, and removes them. New namespace declarations will be
+// created once we see we need them.
+func (de *domElement) removeNSDecl() {
+	for nsdecl := range de.GetAttributes().GetItems() {
+		if strings.HasPrefix(nsdecl, "xmlns") {
+			// remove it.
+			fmt.Printf("Removing xmlns attribute '%s'\n", nsdecl)
+			de.GetAttributes().RemoveNamedItem(nsdecl)
+		}
+	}
 }
 
 func (de *domElement) String() string {
