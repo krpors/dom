@@ -94,8 +94,6 @@ func (b *Parser) Parse() (Document, error) {
 					namespace = a.Name.Space
 				}
 
-				// fmt.Printf("%s, %s, %s\n", a.Name.Space, a.Name.Local, a.Value)
-
 				attrName := a.Name.Local
 
 				// OK: there is some weirdness going in with parsing attributes.
@@ -105,11 +103,23 @@ func (b *Parser) Parse() (Document, error) {
 				//  bla="what" : namespace = "" (unless bound), localname = "bla", value = "what"
 				//  ns0:bla="what" : namespace = [whatever ns0 is bound to], localname = "bla"
 				//
-				// Therefore, we handle the xmlns edge case like this
+				// Therefore, we handle the xmlns edge case like this, so we can assign prefixes
+				// to elements. Looks extremely hacky, and it is. I wish it could behave more SAX like.
+
+				// fmt.Printf("%s, %s, %s\n", a.Name.Space, a.Name.Local, a.Value)
+
 				if strings.HasPrefix(a.Name.Space, "xmlns") {
-					continue // Skip it!! No need for namespace declarations anyway.
+					if a.Value == typ.Name.Space {
+						// At this point, there is a match between a namespace declaration (+ prefix) append
+						// the StartElement we're in. We're gonna give our Element a namespace prefix.
+						elem.setTagName(a.Name.Local + ":" + typ.Name.Local)
+					} else {
+						elem.SetAttribute("xmlns:"+a.Name.Local, a.Value)
+					}
+					continue // Skip it!! No need for namespace declarations anyway. They can be fixed by normalizing.
 				}
 
+				// Add all other (normal) attributes.
 				attr, err := doc.CreateAttributeNS(namespace, attrName)
 				if err != nil {
 					return nil, err

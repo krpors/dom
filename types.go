@@ -168,6 +168,7 @@ type Element interface {
 	GetElementsByTagName(string) []Element                         // Find all descendant elements of the current element.
 	GetElementsByTagNameNS(namespaceURI, tagname string) []Element // Like GetElementsByTagName, except with a namespace URI.
 
+	setTagName(string)                // Sets the tagname when necessary.
 	normalizeNamespaces(counter *int) // Normalizes namespaces. See https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
 }
 
@@ -255,12 +256,15 @@ type NamedNodeMap interface {
 // Configuration contains fields which can control the output of the Parser
 // and Serializer. Note that not (all configuration are specified or used (yet).
 type Configuration struct {
-	CDataSections            bool // Keep CDataSection Nodes in the Document.
-	Comments                 bool // Keep Comment nodes in the Document.
-	ElementContentWhitespace bool // Keep all whitespaces in the Document.
-	Namespaces               bool // Perform namespace processing as defined in https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
-	NamespaceDeclarations    bool // Include (true) or discard (false) namespace declaration attributes.
-	NormalizeCharacters      bool // Perform or do not perform character normalization.
+	CDataSections            bool   // Keep CDataSection Nodes in the Document.
+	Comments                 bool   // Keep Comment nodes in the Document.
+	ElementContentWhitespace bool   // Keep all whitespaces in the Document.
+	Namespaces               bool   // Perform namespace processing as defined in https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#normalizeDocumentAlgo
+	NamespaceDeclarations    bool   // Include (true) or discard (false) namespace declaration attributes.
+	NormalizeCharacters      bool   // Perform or do not perform character normalization.
+	OmitXMLDeclaration       bool   // Omits XML declaration during serialization. Default: false.
+	PrettyPrint              bool   // Pretty print during serialization. Default: false.
+	IndentCharacter          string // Indent character, if pretty printing. Default is four spaces.
 }
 
 // NewConfiguration creates a Configuration object with the defaults as per the DOM spec.
@@ -272,5 +276,8 @@ func NewConfiguration() Configuration {
 		Namespaces:               true,
 		NamespaceDeclarations:    true,
 		NormalizeCharacters:      false,
+		OmitXMLDeclaration:       false,
+		PrettyPrint:              false,
+		IndentCharacter:          "    ",
 	}
 }

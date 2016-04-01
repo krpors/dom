@@ -572,7 +572,4 @@ func TestDocumentNormalizeSpaces(t *testing.T) {
 			t.Error("expected 0 attributes")
 		}
 	}
-
-	// 4. nonamespace: prefix, but no namespace. Just serialize as-is.
-	// 4. body: inherited, same namespace. No xmlns:soap attribute.
 }

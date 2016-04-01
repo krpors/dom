@@ -1,8 +1,6 @@
 package dom
 
 import (
-	"fmt"
-	"os"
 	"strings"
 	"testing"
 )
@@ -181,7 +179,7 @@ func TestParserParseNamespaces(t *testing.T) {
 	}
 
 	childElement1 := docelem.GetChildNodes()[3]
-	if childElement1.GetNodeName() != "childElement" {
+	if childElement1.GetNodeName() != "pfx:childElement" {
 		t.Errorf("expected 'childElement', got '%v'", childElement1.GetNodeName())
 	}
 	if childElement1.GetNamespaceURI() != "urn:ns:pfx:childelement" {
@@ -189,7 +187,7 @@ func TestParserParseNamespaces(t *testing.T) {
 	}
 
 	samePrefix := childElement1.GetChildNodes()[3]
-	if samePrefix.GetNodeName() != "samePrefix" {
+	if samePrefix.GetNodeName() != "pfx:samePrefix" {
 		t.Errorf("expected 'samePrefix', got '%v'", samePrefix.GetNodeName())
 	}
 
@@ -207,9 +205,9 @@ func TestParserParseNamespaces(t *testing.T) {
 	}
 
 	// Try to find some elements using GetElementsByTagName[NS].
-	gebtn := doc.GetElementsByTagName("childElement")
-	if len(gebtn) != 2 {
-		t.Errorf("expected 2, got %d", len(gebtn))
+	gebtn := doc.GetElementsByTagName("pfx:childElement")
+	if len(gebtn) != 1 {
+		t.Errorf("expected 1, got %d", len(gebtn))
 	}
 	meh := gebtn[0].GetElementsByTagNameNS("urn:ns:pfx:sameprefix", "samePrefix")
 	if len(meh) != 1 {
@@ -248,9 +246,6 @@ func TestParserWut(t *testing.T) {
 		t.FailNow()
 	}
 
-	// PrintTree(doc, os.Stdout)
 	doc.NormalizeDocument()
-
-	ToXML(doc, false, os.Stdout)
-	fmt.Println()
+	// TODO: verify?
 }

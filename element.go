@@ -294,6 +294,15 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 	return getElementsBy(de, namespaceURI, tagname, true)
 }
 
+// setTagName is only used internally, when the tagname needs to change. One example is during parsing:
+// The Go encoding/xml package does not directly take prefixes into account, so we do some hackery to
+// make that work. After we found a prefx<->namespace match, we need to change the tagname.
+//
+// Is it assumed that the tagname is XML valid at that point. For now.
+func (de *domElement) setTagName(tagname string) {
+	de.tagName = XMLName(tagname)
+}
+
 // normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
 // method of the Document interface.
 func (de *domElement) normalizeNamespaces(counter *int) {
