@@ -297,54 +297,34 @@ func (de *domElement) GetElementsByTagNameNS(namespaceURI, tagname string) []Ele
 // normalizeNamespaces normalizes namespace declaration attributes and prefixes, as part of the NormalizeDocument
 // method of the Document interface.
 func (de *domElement) normalizeNamespaces(counter *int) {
-	//fmt.Printf("==> %v\n", de)
-
 	parent := de.GetParentNode()
+	// fmt.Printf("==> Parent node: %v\n", parent)
+	// fmt.Printf("    Normalizing: %v\n", de)
 
+	// Does the current element have a namespace URI defined?
 	if de.GetNamespaceURI() != "" {
-		// Check if the namespace/prefix pair is in scope of the binding. We do this by checking the parent element,
-		// or else this will always return 'true'.
-
-		pfx := parent.LookupPrefix(de.GetNamespaceURI())
-		nsuri, found := parent.LookupNamespaceURI(pfx)
-		//fmt.Printf("Found prefix=%s, namespace=%s\n", pfx, nsuri)
-		if found && nsuri == de.GetNamespaceURI() && pfx != "" {
-			//fmt.Println("Namespace is inherited. Check prefix, set it.")
-			//  do nothing, declaration in scope is inherited!?!
-			// Remove redundant xmlns attribute.
+		// Never inherited if the parent is the Document itself. In that case,
+		// this element is the root element.
+		if parent.GetNodeType() == DocumentNode {
 			de.removeNSDecl()
-			de.tagName = XMLName(pfx + ":" + de.GetLocalName())
+			de.createXmlnsDecl()
 		} else {
-			/*
-				==> Create a local namespace declaration attr for this namespace,
-				 with Element's current prefix (or a default namespace, if
-				 no prefix). If there's a conflicting local declaration
-				 already present, change its value to use this namespace.
-			*/
-			//fmt.Println("Create xmlns declaration, plus prefix.")
-			// 1. Find xmlns declarations with same element prefix. Remove it.
-			de.removeNSDecl()
-			// 2. Create new xmlns attribute with computed prefix.
-			de.SetAttribute(fmt.Sprintf("xmlns:ns%d", *counter), de.GetNamespaceURI())
-			de.tagName = XMLName(fmt.Sprintf("ns%d:%s", *counter, de.GetLocalName()))
-			*counter++
-		}
-	} else {
-		//fmt.Println("No naemspce uri")
-		pfx := de.GetNamespacePrefix()
-		if pfx != "" {
-			// Empty namespace uri, but prefix is given.
-			// If the prefix of this element does not have a namespace
-			if _, found := parent.LookupNamespaceURI(pfx); found {
-				// default namespace?
-				//fmt.Println("...but found up in the tree!")
-				de.GetAttributes().RemoveNamedItem("xmlns:" + pfx)
+			// Check if the declaration is inherited by looking up the prefix.
+			ns, found := parent.LookupNamespaceURI(de.GetNamespacePrefix())
+			if !found || ns != de.GetNamespaceURI() {
+				// The namespace is inherited from a top level element.
+				// fmt.Println("    Inherited?")
+				de.removeNSDecl()
+				de.createXmlnsDecl()
+			} else {
+				// fmt.Printf("    Found: %s, %s\n", ns, de.GetNamespacePrefix())
 			}
+			// Else, it's inherited from the parent, and nothing needs to be done.
 		}
 	}
 
-	//fmt.Printf("==> %v\n", de)
-	//fmt.Println()
+	// fmt.Printf("==> Result:      %v\n", de)
+	// fmt.Println()
 
 	for _, c := range de.GetChildNodes() {
 		if e, ok := c.(Element); ok {
@@ -486,6 +466,14 @@ func (de *domElement) removeNSDecl() {
 			//fmt.Printf("Removing xmlns attribute '%s'\n", nsdecl)
 			de.GetAttributes().RemoveNamedItem(nsdecl)
 		}
+	}
+}
+
+func (de *domElement) createXmlnsDecl() {
+	if de.GetNamespacePrefix() == "" {
+		de.SetAttribute("xmlns", de.GetNamespaceURI())
+	} else {
+		de.SetAttribute("xmlns:"+de.GetNamespacePrefix(), de.GetNamespaceURI())
 	}
 }
 

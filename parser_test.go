@@ -248,8 +248,8 @@ func TestParserWut(t *testing.T) {
 		t.FailNow()
 	}
 
+	// PrintTree(doc, os.Stdout)
 	doc.NormalizeDocument()
-	PrintTree(doc, os.Stdout)
 
 	ToXML(doc, false, os.Stdout)
 	fmt.Println()

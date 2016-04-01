@@ -2,7 +2,6 @@ package dom
 
 import (
 	"fmt"
-	"os"
 	"testing"
 )
 
@@ -706,41 +705,4 @@ func TestElementInsertBefore2(t *testing.T) {
 	if root1.GetChildNodes()[1] != grandchild1 {
 		t.Error("node 1 should be <grandchild>")
 	}
-}
-
-func TestElementNormalize(t *testing.T) {
-	nsSoap := "http://www.w3.org/2003/05/soap-envelope"
-	nsStock := "http://example.org/stock"
-	nsStockId := "http://example.org/stock/id"
-
-	doc := NewDocument()
-	envelope, _ := doc.CreateElementNS(nsSoap, "soap:Envelope")
-	header, _ := doc.CreateElement("soap:Header") // NOTE: no explicit namespace!
-	ext, _ := doc.CreateElementNS(nsSoap, "meh:Extension")
-	nonamespace, _ := doc.CreateElement("cruft:other") // NOTE: no namespace, just serialize.
-	body, _ := doc.CreateElementNS(nsSoap, "soap:Body")
-	stock, _ := doc.CreateElementNS(nsStock, "m:GetStock")
-	id, _ := doc.CreateElementNS(nsStockId, "id:Id")
-	name, _ := doc.CreateElementNS(nsStock, "m:Name")
-	id.SetTextContent("GOOG")
-
-	doc.AppendChild(envelope)
-	envelope.AppendChild(header)
-	envelope.AppendChild(ext)
-	envelope.AppendChild(nonamespace)
-	envelope.AppendChild(body)
-	body.AppendChild(stock)
-	stock.AppendChild(id)
-	stock.AppendChild(name)
-
-	doc.NormalizeDocument()
-	PrintTree(doc, os.Stdout)
-
-	// OK: test things:
-	// 1. envelope: must get the xmlns:soap attribute.
-	// 2. header: no explicit namespace. OK, leave.
-	// 3. ext: other prefix, but namespace is defined in parent, look it up, set prefix to 'soap'.
-	//    Xerces does this differently, and just declares xmlns:meh.
-	// 4. nonamespace: prefix, but no namespace. Just serialize as-is.
-	// 4. body: inherited, same namespace. No xmlns:soap attribute.
 }

@@ -471,3 +471,108 @@ func TestDocumentReplaceChild(t *testing.T) {
 	}
 
 }
+
+// Tests the document's normalization procedure, mainly namespaces.
+func TestDocumentNormalizeSpaces(t *testing.T) {
+	nsSoap := "http://www.w3.org/2003/05/soap-envelope"
+	nsStock := "http://example.org/stock"
+	nsStockID := "http://example.org/stock/id"
+	nsNoPfx := "http://example.org/no-namespace-prefix"
+	nsNoPfx2 := "http://example.org/no-namespace-prefix-other"
+
+	doc := NewDocument()
+	envelope, _ := doc.CreateElementNS(nsSoap, "soap:Envelope")
+	header, _ := doc.CreateElement("soap:Header") // NOTE: no explicit namespace!
+	ext, _ := doc.CreateElementNS(nsSoap, "meh:Extension")
+	nonamespace, _ := doc.CreateElement("cruft:other") // NOTE: no namespace, just serialize.
+	body, _ := doc.CreateElementNS(nsSoap, "soap:Body")
+	stock, _ := doc.CreateElementNS(nsStock, "m:GetStock")
+	id, _ := doc.CreateElementNS(nsStockID, "id:Id")
+	id.SetTextContent("GOOG")
+	name, _ := doc.CreateElementNS(nsStock, "m:Name")
+
+	nopfx, _ := doc.CreateElementNS(nsNoPfx, "nopfx")
+	childOfNoPfx, _ := doc.CreateElementNS(nsNoPfx, "childOfNoPfx")
+	childOfNoPfxOtherNamespace, _ := doc.CreateElementNS(nsNoPfx2, "hello")
+
+	namespacedDeepChild, _ := doc.CreateElementNS(nsStock, "m:DeepChild")
+
+	// TODO: ext: other prefix, but namespace is defined in parent, look it up,
+	// set prefix to 'soap'. Xerces does this differently, and just declares xmlns:meh.
+	// Check if this is a good option to implement.
+
+	doc.AppendChild(envelope)
+	envelope.AppendChild(header)
+	envelope.AppendChild(ext)
+	envelope.AppendChild(nonamespace)
+	envelope.AppendChild(body)
+	body.AppendChild(stock)
+	stock.AppendChild(id)
+	stock.AppendChild(name)
+	stock.AppendChild(nopfx)
+	nopfx.AppendChild(childOfNoPfx)
+	childOfNoPfx.AppendChild(childOfNoPfxOtherNamespace)
+	childOfNoPfx.AppendChild(namespacedDeepChild)
+
+	doc.NormalizeDocument()
+
+	{ // Check the soap:Envelope elemenet and attributes.
+		act := envelope.GetTagName()
+		exp := "soap:Envelope"
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+		// soap:Envelope must have a xmlns:soap attribute.
+		act = envelope.GetAttribute("xmlns:soap")
+		exp = nsSoap
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+	}
+
+	{ // Check the soap:Header element, and attributes.
+		act := header.GetTagName()
+		exp := "soap:Header"
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+		// no xmlns:soap attribute necessary.
+		if header.GetAttributes().Length() != 0 {
+			t.Error("expected 0 attributes")
+		}
+	}
+
+	{ // Extension checks.
+		act := ext.GetTagName()
+		exp := "meh:Extension"
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+	}
+
+	{ // Cruft checks.
+		act := nonamespace.GetTagName()
+		exp := "cruft:other"
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+		// no xmlns:soap attribute necessary.
+		if nonamespace.GetAttributes().Length() != 0 {
+			t.Error("expected 0 attributes")
+		}
+	}
+	{ // Body checks (heh)
+		act := body.GetTagName()
+		exp := "soap:Body"
+		if act != exp {
+			t.Errorf("expected '%s', got '%s'", exp, act)
+		}
+		// no xmlns:soap attribute necessary.
+		if body.GetAttributes().Length() != 0 {
+			t.Error("expected 0 attributes")
+		}
+	}
+
+	// 4. nonamespace: prefix, but no namespace. Just serialize as-is.
+	// 4. body: inherited, same namespace. No xmlns:soap attribute.
+}
