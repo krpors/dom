@@ -1,7 +1,6 @@
 package dom
 
 import (
-	"os"
 	"strings"
 	"testing"
 )
@@ -247,7 +246,7 @@ func TestParserWut(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	doc.NormalizeDocument()
-	PrintTree(doc, os.Stdout)
+	_ = doc
+	// doc.NormalizeDocument()
+	// PrintTree(doc, os.Stdout)
 }
