@@ -109,14 +109,7 @@ func (b *Parser) Parse() (Document, error) {
 				// fmt.Printf("%s, %s, %s\n", a.Name.Space, a.Name.Local, a.Value)
 
 				if strings.HasPrefix(a.Name.Space, "xmlns") {
-					if a.Value == typ.Name.Space {
-						// At this point, there is a match between a namespace declaration (+ prefix) append
-						// the StartElement we're in. We're gonna give our Element a namespace prefix.
-						elem.setTagName(a.Name.Local + ":" + typ.Name.Local)
-					} else {
-						elem.SetAttribute("xmlns:"+a.Name.Local, a.Value)
-					}
-					continue // Skip it!! No need for namespace declarations anyway. They can be fixed by normalizing.
+					continue
 				}
 
 				// Add all other (normal) attributes.
