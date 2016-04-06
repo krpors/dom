@@ -128,10 +128,12 @@ func MoveNamespacesToRoot(d Document) {
 
 			// Only do something if the namespace uri of the element is not empty.
 			if e.GetNamespaceURI() != "" {
-				pfx := e.GetParentNode().LookupPrefix(e.GetNamespaceURI())
+				pfx := e.LookupPrefix(e.GetNamespaceURI())
 				if pfx != "" {
 					// Prefix is found (predeclared), so use that prefix for this namespace. Rename the element.
 					e.setTagName(pfx + ":" + e.GetLocalName())
+					// Declare an xmlns attribute in the document element.
+					docElem.SetAttribute("xmlns:"+pfx, e.GetNamespaceURI())
 				} else {
 					// no prefix, make one up.
 					newPrefix := fmt.Sprintf("ns%d", counter)
