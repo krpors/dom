@@ -5,10 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"strings"
 )
-
-// TODO: namespaces for prefixes must be predeclared somehow before serializing
-// or else it must generate an error.
 
 // PrintTree prints the whole tree starting from the given Node 'node' to the
 // writer w.
@@ -106,4 +104,50 @@ func getNextSibling(node Node) Node {
 	}
 
 	return nil
+}
+
+// MoveNamespacesToRoot literally moves all found namespace declarations to the "base" Node.
+func MoveNamespacesToRoot(d Document) {
+	var traverse func(n Node)
+
+	docElem := d.GetDocumentElement()
+
+	counter := 0
+	traverse = func(n Node) {
+		// 1. remove all xmlns: declarations
+		// 2. get the node's namespace.
+		// 3. check if it's declared in the base
+		//   3a. if declared, use that prefix.
+		//   3b. if not declared, declare it in base.
+		if e, ok := n.(Element); ok {
+			for k := range e.GetAttributes().GetItems() {
+				if strings.HasPrefix(k, "xmlns") {
+					e.GetAttributes().RemoveNamedItem(k)
+				}
+			}
+
+			// Only do something if the namespace uri of the element is not empty.
+			if e.GetNamespaceURI() != "" {
+				pfx := e.GetParentNode().LookupPrefix(e.GetNamespaceURI())
+				if pfx != "" {
+					// Prefix is found (predeclared), so use that prefix for this namespace. Rename the element.
+					e.setTagName(pfx + ":" + e.GetLocalName())
+				} else {
+					// no prefix, make one up.
+					newPrefix := fmt.Sprintf("ns%d", counter)
+					docElem.SetAttribute("xmlns:"+newPrefix, e.GetNamespaceURI())
+					// Use this new namespace prefix for this node.
+					e.setTagName(newPrefix + ":" + e.GetLocalName())
+					// increment the prefix counter.
+					counter++
+				}
+			}
+		}
+
+		for _, child := range n.GetChildNodes() {
+			traverse(child)
+		}
+	}
+
+	traverse(d)
 }
