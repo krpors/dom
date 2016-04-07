@@ -461,6 +461,10 @@ func (de *domElement) SetTextContent(content string) {
 	de.AppendChild(text)
 }
 
+func (de *domElement) CloneNode(deep bool) Node {
+	return nil
+}
+
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent

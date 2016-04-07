@@ -121,6 +121,10 @@ func (dc *domComment) SetTextContent(content string) {
 	dc.SetComment(content)
 }
 
+func (dc *domComment) CloneNode(deep bool) Node {
+	return nil
+}
+
 // Private functions:
 func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent

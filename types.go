@@ -113,6 +113,8 @@ type Node interface {
 	InsertBefore(newChild, refChild Node) (Node, error) // Inserts newChild before the refChild.
 	HasChildNodes() bool                                // Returns true when the Node has one or more children.
 
+	CloneNode(deep bool) Node // Creates a duplicate of the current node.
+
 	GetPreviousSibling() Node // Gets the Node immediately preceding this Node. Returns nil if no previous sibling exists.
 	GetNextSibling() Node     // Gets the Node immediately following this Node. Returns nil if no following sibling exists.
 

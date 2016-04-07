@@ -115,6 +115,10 @@ func (dt *domText) SetTextContent(content string) {
 	dt.SetText(content)
 }
 
+func (dt *domText) CloneNode(deep bool) Node {
+	return nil
+}
+
 // Private functions:
 func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent

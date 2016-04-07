@@ -393,6 +393,10 @@ func (dd *domDocument) SetTextContent(content string) {
 	// no-op.
 }
 
+func (dd *domDocument) CloneNode(deep bool) Node {
+	return nil
+}
+
 func (dd *domDocument) String() string {
 	return fmt.Sprintf("%s", dd.GetNodeType())
 }

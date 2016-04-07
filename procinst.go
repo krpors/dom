@@ -130,6 +130,10 @@ func (pi *domProcInst) SetTextContent(content string) {
 	// no-op
 }
 
+func (pi *domProcInst) CloneNode(deep bool) Node {
+	return nil
+}
+
 func (pi *domProcInst) setParentNode(parent Node) {
 	// no-op
 }

@@ -131,6 +131,10 @@ func (da *domAttr) SetTextContent(content string) {
 	da.SetValue(content)
 }
 
+func (da *domAttr) CloneNode(deep bool) Node {
+	return nil
+}
+
 // Private functions:
 func (da *domAttr) setParentNode(parent Node) {
 	// no-op
