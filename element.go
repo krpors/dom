@@ -461,8 +461,35 @@ func (de *domElement) SetTextContent(content string) {
 	de.AppendChild(text)
 }
 
+// CloneNode for Elements clones this element. If deep is set to false, it will create a clone of the
+// Element, plus its attributes. If deep is set to true, it will create a clone of all its children (and so on).
 func (de *domElement) CloneNode(deep bool) Node {
-	return nil
+	// Clone element
+	cloneElement, err := de.ownerDocument.CreateElementNS(de.namespaceURI, string(de.tagName))
+	if err != nil {
+		panic("CreateElement returned an error, but should be impossible at this point")
+	}
+	// Then its attributes.
+	for _, attrNode := range de.GetAttributes().GetItems() {
+		cloneAttr, err := de.GetOwnerDocument().CreateAttributeNS(attrNode.GetNamespaceURI(), attrNode.GetNodeName())
+		if err != nil {
+			panic("CreateAttributeNS returned an error, but should be impossible at this point")
+		}
+		cloneAttr.SetValue(attrNode.GetNodeValue())
+		cloneElement.SetAttributeNode(cloneAttr)
+	}
+
+	if !deep {
+		// No deep clone, so return it.
+		return cloneElement
+	}
+	// Do a deep clone.
+	for _, child := range de.GetChildNodes() {
+		childClone := child.CloneNode(true)
+		cloneElement.AppendChild(childClone)
+	}
+
+	return cloneElement
 }
 
 // Private functions:

@@ -2,6 +2,7 @@ package dom
 
 import (
 	"fmt"
+	"os"
 	"testing"
 )
 
@@ -705,4 +706,51 @@ func TestElementInsertBefore2(t *testing.T) {
 	if root1.GetChildNodes()[1] != grandchild1 {
 		t.Error("node 1 should be <grandchild>")
 	}
+}
+
+// Tests the cloning process.
+func TestElementClone(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("prefix:Root")
+	child, _ := doc.CreateElementNS("urn:uri", "ns:Child")
+	child.SetAttribute("xmlns:attrpfx", "urn:attrpfx")
+	child.SetAttribute("a", "b")
+	attr, _ := doc.CreateAttributeNS("urn:attrpfx", "attrpfx:namespacedAttribute")
+	attr.SetValue("example")
+
+	doc.AppendChild(root)
+	root.AppendChild(child)
+	child.SetAttributeNode(attr)
+
+	// Clone the child node and return it (no deep clone)
+	clone := child.CloneNode(false)
+
+	if clone == child {
+		t.Error("unexpected equality (n == child)")
+		t.FailNow()
+	}
+
+	tests := []struct {
+		expected interface{}
+		actual   interface{}
+	}{
+		{"urn:uri", clone.GetNamespaceURI()},
+		{"ns:Child", clone.GetNodeName()},
+		{3, clone.GetAttributes().Length()},
+		{"b", clone.GetAttributes().GetNamedItem("a").GetNodeValue()},
+		{"example", clone.GetAttributes().GetNamedItem("attrpfx:namespacedAttribute").GetNodeValue()},
+		{"urn:attrpfx", clone.GetAttributes().GetNamedItem("xmlns:attrpfx").GetNodeValue()},
+	}
+
+	for _, test := range tests {
+		if test.expected != test.actual {
+			t.Errorf("expected '%v', got '%v'", test.expected, test.actual)
+		}
+	}
+
+	// Attempt a deep clone.
+	clone = root.CloneNode(true)
+
+	child.AppendChild(clone)
+	PrintTree(doc, os.Stdout)
 }

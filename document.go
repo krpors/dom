@@ -17,16 +17,12 @@ import (
 
 type domDocument struct {
 	nodes []Node
-
-	nameList map[string]string // map of namespace + prefix
 }
 
 // NewDocument creates a new Document which can be used to create
 // custom documents using the methods supplied.
 func NewDocument() Document {
-	d := &domDocument{}
-	d.nameList = make(map[string]string)
-	return d
+	return &domDocument{}
 }
 
 // NODE SPECIFIC FUNCTIONS
@@ -394,6 +390,7 @@ func (dd *domDocument) SetTextContent(content string) {
 }
 
 func (dd *domDocument) CloneNode(deep bool) Node {
+
 	return nil
 }
 

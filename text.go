@@ -116,7 +116,8 @@ func (dt *domText) SetTextContent(content string) {
 }
 
 func (dt *domText) CloneNode(deep bool) Node {
-	return nil
+	cloneText := dt.ownerDocument.CreateText(dt.data)
+	return cloneText
 }
 
 // Private functions:

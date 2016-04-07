@@ -122,7 +122,11 @@ func (dc *domComment) SetTextContent(content string) {
 }
 
 func (dc *domComment) CloneNode(deep bool) Node {
-	return nil
+	cloneComment, err := dc.ownerDocument.CreateComment(dc.comment)
+	if err != nil {
+		panic("CreateComment returned error, but was unexpected at this point")
+	}
+	return cloneComment
 }
 
 // Private functions:

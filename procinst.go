@@ -131,7 +131,11 @@ func (pi *domProcInst) SetTextContent(content string) {
 }
 
 func (pi *domProcInst) CloneNode(deep bool) Node {
-	return nil
+	clonePi, err := pi.ownerDocument.CreateProcessingInstruction(pi.target, pi.data)
+	if err != nil {
+		panic("CreateProcessingInstruction returned an unexpected error")
+	}
+	return clonePi
 }
 
 func (pi *domProcInst) setParentNode(parent Node) {
