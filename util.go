@@ -106,6 +106,40 @@ func getNextSibling(node Node) Node {
 	return nil
 }
 
+// importNode is a generic function used by all Node types to import a Node to the specified Document.
+// A clone is internally created, where the parent will be nil. It merely creates a clone, sets the
+// owner document of the clone node (+ child nodes, if 'deep' is true) to the Document 'doc'.
+func importNode(doc Document, n Node, deep bool) Node {
+	// TODO: per spec, Document types cannot be imported and should return an error.
+
+	// Start by cloning the specified node, deep or not. This clone will not have a parent.
+	// Do not do a deep clone at this point, we'll do that below, while traversing children
+	// if 'deep' is set to true.
+	clone := n.CloneNode(false)
+	// Set the owner document of the clone to our specified document.
+	clone.setOwnerDocument(doc)
+	// If the clone has attributes (should be Elements only), set the owner document there too.
+	attrs := clone.GetAttributes()
+	if attrs != nil {
+		for _, v := range attrs.GetItems() {
+			v.setOwnerDocument(doc)
+		}
+	}
+
+	// Prematurely return when we don't do a deep import.
+	if !deep {
+		return clone
+	}
+
+	// At this point, a deep clone is requested, so call importNode again with the child for cloning.
+	for _, c := range n.GetChildNodes() {
+		childClone := importNode(doc, c, true)
+		clone.AppendChild(childClone)
+	}
+
+	return clone
+}
+
 // MoveNamespacesToRoot literally moves all found namespace declarations to the "base" Node.
 func MoveNamespacesToRoot(d Document) {
 	var traverse func(n Node)

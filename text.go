@@ -120,8 +120,8 @@ func (dt *domText) CloneNode(deep bool) Node {
 	return cloneText
 }
 
-func (dt *domText) ImportNode(n Node) Node {
-	return nil
+func (dt *domText) ImportNode(n Node, deep bool) Node {
+	return importNode(dt.ownerDocument, n, deep)
 }
 
 // Private functions:

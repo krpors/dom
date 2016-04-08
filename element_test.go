@@ -748,9 +748,66 @@ func TestElementClone(t *testing.T) {
 		}
 	}
 
-	// Attempt a deep clone.
+	// Attempt a deep clone, and append it to the child
 	clone = root.CloneNode(true)
-
 	child.AppendChild(clone)
-	PrintTree(doc, os.Stdout)
+
+	elems := doc.GetElementsByTagName("prefix:Root")
+	if len(elems) != 2 {
+		t.Errorf("expected length of 2, got %d", len(elems))
+	}
+	elems = doc.GetElementsByTagName("ns:Child")
+	if len(elems) != 2 {
+		t.Errorf("expected length of 2, got %d", len(elems))
+	}
+}
+
+func TestElementImportNode(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	root.SetAttribute("first", "root-1")
+	child, _ := doc.CreateElement("child")
+	child.SetAttribute("first", "child-1")
+	child.SetAttribute("second", "child-2")
+	grandchild, _ := doc.CreateElementNS("urn:grandchild:ns", "grandchild")
+	grandchild.SetAttribute("first", "grandchild-1")
+	grandchild.SetTextContent("hello")
+
+	doc.AppendChild(root)
+	root.AppendChild(child)
+	child.AppendChild(grandchild)
+
+	// Create a new dcument, import root node and all it's descendants.
+	doc2 := NewDocument()
+	imported := doc2.ImportNode(root, true)
+	doc2.AppendChild(imported)
+
+	PrintTree(doc2, os.Stdout)
+
+	if imported.GetOwnerDocument() != doc2 {
+		t.Error("incorrect owner document")
+	}
+
+	// This testing table is a trainwreck, but it gets the job done.
+	tests := []struct {
+		expected interface{}
+		actual   interface{}
+	}{
+		{1, len(doc2.GetChildNodes())},
+		{"root", doc2.GetChildNodes()[0].GetNodeName()},
+		{"root-1", doc2.GetChildNodes()[0].GetAttributes().GetNamedItem("first").GetNodeValue()},
+		{"child", doc2.GetChildNodes()[0].GetChildNodes()[0].GetNodeName()},
+		{"child-1", doc2.GetChildNodes()[0].GetChildNodes()[0].GetAttributes().GetNamedItem("first").GetNodeValue()},
+		{"child-2", doc2.GetChildNodes()[0].GetChildNodes()[0].GetAttributes().GetNamedItem("second").GetNodeValue()},
+		{"grandchild", doc2.GetChildNodes()[0].GetChildNodes()[0].GetChildNodes()[0].GetNodeName()},
+		{"urn:grandchild:ns", doc2.GetChildNodes()[0].GetChildNodes()[0].GetChildNodes()[0].GetNamespaceURI()},
+		{"hello", doc2.GetChildNodes()[0].GetChildNodes()[0].GetChildNodes()[0].GetChildNodes()[0].GetNodeValue()},
+	}
+
+	for i, test := range tests {
+		if test.actual != test.expected {
+			t.Errorf("test %d: expected %v, got %v", i, test.expected, test.actual)
+			t.FailNow()
+		}
+	}
 }

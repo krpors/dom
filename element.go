@@ -270,8 +270,6 @@ func (de *domElement) SetAttributeNode(a Attr) error {
 		return ErrorAttrInUse
 	}
 
-	// TODO: See comment inside SetAttribute.
-
 	a.setOwnerElement(de)
 	de.attributes.SetNamedItem(a)
 	return nil
@@ -468,18 +466,14 @@ func (de *domElement) SetTextContent(content string) {
 // CloneNode for Elements clones this element. If deep is set to false, it will create a clone of the
 // Element, plus its attributes. If deep is set to true, it will create a clone of all its children (and so on).
 func (de *domElement) CloneNode(deep bool) Node {
-	// Clone element
+	// Clone element. The clone does not have a parent.
 	cloneElement, err := de.ownerDocument.CreateElementNS(de.namespaceURI, string(de.tagName))
 	if err != nil {
 		panic("CreateElement returned an error, but should be impossible at this point")
 	}
 	// Then its attributes.
 	for _, attrNode := range de.GetAttributes().GetItems() {
-		cloneAttr, err := de.GetOwnerDocument().CreateAttributeNS(attrNode.GetNamespaceURI(), attrNode.GetNodeName())
-		if err != nil {
-			panic("CreateAttributeNS returned an error, but should be impossible at this point")
-		}
-		cloneAttr.SetValue(attrNode.GetNodeValue())
+		cloneAttr := attrNode.CloneNode(deep).(Attr)
 		cloneElement.SetAttributeNode(cloneAttr)
 	}
 
@@ -496,8 +490,8 @@ func (de *domElement) CloneNode(deep bool) Node {
 	return cloneElement
 }
 
-func (de *domElement) ImportNode(n Node) Node {
-	return nil
+func (de *domElement) ImportNode(n Node, deep bool) Node {
+	return importNode(de.ownerDocument, n, deep)
 }
 
 // Private functions:

@@ -139,7 +139,7 @@ func (pi *domProcInst) CloneNode(deep bool) Node {
 	return clonePi
 }
 
-func (pi *domProcInst) ImportNode(n Node) Node {
+func (pi *domProcInst) ImportNode(n Node, deep bool) Node {
 	return nil
 }
 

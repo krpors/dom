@@ -131,12 +131,18 @@ func (da *domAttr) SetTextContent(content string) {
 	da.SetValue(content)
 }
 
+// CloneNode on an individual Attr will have no owner element.
 func (da *domAttr) CloneNode(deep bool) Node {
-	// TODO: clone
-	return nil
+	clone, err := da.ownerDocument.CreateAttributeNS(da.namespaceURI, string(da.attrName))
+	if err != nil {
+		panic("crap!")
+	}
+	clone.SetValue(da.attrValue)
+	return clone
 }
-func (da *domAttr) ImportNode(n Node) Node {
-	return nil
+
+func (da *domAttr) ImportNode(n Node, deep bool) Node {
+	return importNode(da.ownerDocument, n, deep)
 }
 
 // Private functions:

@@ -397,8 +397,8 @@ func (dd *domDocument) CloneNode(deep bool) Node {
 	return nil
 }
 
-func (dd *domDocument) ImportNode(n Node) Node {
-	return nil
+func (dd *domDocument) ImportNode(n Node, deep bool) Node {
+	return importNode(dd, n, deep)
 }
 
 func (dd *domDocument) String() string {
