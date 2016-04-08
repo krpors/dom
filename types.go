@@ -128,7 +128,8 @@ type Node interface {
 	GetTextContent() string // Gets the text content of the current Node.
 	SetTextContent(string)  // Sets the text content of the current Node. Any possible children are removed.
 
-	setParentNode(Node) // Sets the parent node of this Node.
+	setParentNode(Node)        // Sets the parent node of this Node.
+	setOwnerDocument(Document) // Sets the owner document of the Node. Used by ImportNode() for example.
 }
 
 // ProcessingInstruction interface represents a "processing instruction", used

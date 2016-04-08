@@ -250,6 +250,10 @@ func (dd *domDocument) setParentNode(parent Node) {
 	// no-op
 }
 
+func (dd *domDocument) setOwnerDocument(doc Document) {
+	// no-op
+}
+
 // DOCUMENT SPECIFIC FUNCTIONS
 func (dd *domDocument) CreateElement(tagName string) (Element, error) {
 	name := XMLName(tagName)

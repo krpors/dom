@@ -129,6 +129,10 @@ func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent
 }
 
+func (dt *domText) setOwnerDocument(doc Document) {
+	dt.ownerDocument = doc
+}
+
 // Text specifics:
 
 // GetText returns the character data of this text node, unescaped.

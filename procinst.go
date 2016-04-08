@@ -4,6 +4,7 @@ import "fmt"
 
 type domProcInst struct {
 	ownerDocument Document
+	parentNode    Node
 	data          string
 	target        string
 }
@@ -39,7 +40,7 @@ func (pi *domProcInst) GetChildNodes() []Node {
 }
 
 func (pi *domProcInst) GetParentNode() Node {
-	return pi.ownerDocument
+	return pi.parentNode
 }
 
 func (pi *domProcInst) GetFirstChild() Node {
@@ -143,7 +144,11 @@ func (pi *domProcInst) ImportNode(n Node) Node {
 }
 
 func (pi *domProcInst) setParentNode(parent Node) {
-	// no-op
+	pi.parentNode = parent
+}
+
+func (pi *domProcInst) setOwnerDocument(doc Document) {
+	pi.ownerDocument = doc
 }
 
 func (pi *domProcInst) String() string {

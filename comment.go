@@ -138,6 +138,10 @@ func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent
 }
 
+func (dc *domComment) setOwnerDocument(doc Document) {
+	dc.ownerDocument = doc
+}
+
 // Text specifics:
 
 // GetComment returns the comment content.

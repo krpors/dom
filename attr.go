@@ -171,6 +171,10 @@ func (da *domAttr) setOwnerElement(owner Element) {
 	da.ownerElement = owner
 }
 
+func (da *domAttr) setOwnerDocument(doc Document) {
+	da.ownerDocument = doc
+}
+
 func (da *domAttr) String() string {
 	return fmt.Sprintf("%v, %v=%v", da.GetNodeType(), da.attrName, da.attrValue)
 }

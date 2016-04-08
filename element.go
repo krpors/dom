@@ -85,7 +85,11 @@ func (de *domElement) AppendChild(child Node) error {
 		return fmt.Errorf("%v: an attempt was made to insert a node where it is not permitted", ErrorHierarchyRequest)
 	}
 
-	// TODO: remove child when already in the tree
+	// Remove child from it's exisiting parent, if any.
+	parent := child.GetParentNode()
+	if parent != nil {
+		parent.RemoveChild(child)
+	}
 
 	child.setParentNode(de)
 	de.nodes = append(de.nodes, child)
@@ -499,6 +503,10 @@ func (de *domElement) ImportNode(n Node) Node {
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent
+}
+
+func (de *domElement) setOwnerDocument(doc Document) {
+	de.ownerDocument = doc
 }
 
 // removeNSDeclAndSet finds xmlns:prefix declarations, and removes them. New namespace declarations will be
