@@ -2,7 +2,6 @@ package dom
 
 import (
 	"fmt"
-	"os"
 	"testing"
 )
 
@@ -781,8 +780,6 @@ func TestElementImportNode(t *testing.T) {
 	doc2 := NewDocument()
 	imported := doc2.ImportNode(root, true)
 	doc2.AppendChild(imported)
-
-	PrintTree(doc2, os.Stdout)
 
 	if imported.GetOwnerDocument() != doc2 {
 		t.Error("incorrect owner document")

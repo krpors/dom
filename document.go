@@ -393,8 +393,23 @@ func (dd *domDocument) SetTextContent(content string) {
 	// no-op.
 }
 
+// CloneNode creates a copy of the Document instanace. When deep is true, it will create a complete copy
+// of the whole Document, recursively. When false, it's pretty useless since it will return just a plain new
+// empty Document.
 func (dd *domDocument) CloneNode(deep bool) Node {
-	return nil
+	cloneDoc := NewDocument()
+
+	if deep {
+		for _, c := range dd.GetChildNodes() {
+			cloneChild := cloneDoc.ImportNode(c, true)
+			err := cloneDoc.AppendChild(cloneChild)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+
+	return cloneDoc
 }
 
 func (dd *domDocument) ImportNode(n Node, deep bool) Node {

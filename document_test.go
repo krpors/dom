@@ -1,6 +1,9 @@
 package dom
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 // Test the plain getters of the Document. Also some no-op setters.
 func TestDocumentGetters(t *testing.T) {
@@ -571,5 +574,49 @@ func TestDocumentNormalizeSpaces(t *testing.T) {
 		if body.GetAttributes().Length() != 0 {
 			t.Error("expected 0 attributes")
 		}
+	}
+}
+
+func TestDocumentCloneNode(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("root")
+	root.SetAttribute("first", "root-1")
+	child, _ := doc.CreateElement("child")
+	child.SetAttribute("first", "child-1")
+	child.SetAttribute("second", "child-2")
+	grandchild, _ := doc.CreateElementNS("urn:grandchild:ns", "grandchild")
+	grandchild.SetAttribute("first", "grandchild-1")
+	grandchild.SetTextContent("hello")
+
+	doc.AppendChild(root)
+	root.AppendChild(child)
+	child.AppendChild(grandchild)
+
+	PrintTree(doc, os.Stdout)
+	clone := doc.CloneNode(true)
+	if cloneDoc, ok := clone.(Document); ok {
+		// verify that all children etc. have the correct owner document.
+		var traverse func(d Document, n Node)
+		traverse = func(requiredOwnerDoc Document, n Node) {
+			t.Logf("verifying: '%v'", n)
+			// Ignore when the Node is Document
+			if n.GetNodeType() != DocumentNode {
+				if n.GetOwnerDocument() != requiredOwnerDoc {
+					t.Error("invalid owner document")
+				}
+			} else {
+				t.Log("ignoring:  Document node verification (owner Document of a Document is nil)")
+			}
+
+			for _, c := range n.GetChildNodes() {
+				traverse(requiredOwnerDoc, c)
+			}
+
+		}
+
+		// all children etc of 'clone' must have cloneDoc as owner document.
+		traverse(cloneDoc, clone)
+	} else {
+		t.Error("type assertion failed (want: Document)")
 	}
 }
