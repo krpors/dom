@@ -132,6 +132,10 @@ func (da *domAttr) SetTextContent(content string) {
 }
 
 func (da *domAttr) CloneNode(deep bool) Node {
+	// TODO: clone
+	return nil
+}
+func (da *domAttr) ImportNode(n Node) Node {
 	return nil
 }
 

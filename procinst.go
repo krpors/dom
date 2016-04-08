@@ -138,6 +138,10 @@ func (pi *domProcInst) CloneNode(deep bool) Node {
 	return clonePi
 }
 
+func (pi *domProcInst) ImportNode(n Node) Node {
+	return nil
+}
+
 func (pi *domProcInst) setParentNode(parent Node) {
 	// no-op
 }

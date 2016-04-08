@@ -390,7 +390,10 @@ func (dd *domDocument) SetTextContent(content string) {
 }
 
 func (dd *domDocument) CloneNode(deep bool) Node {
+	return nil
+}
 
+func (dd *domDocument) ImportNode(n Node) Node {
 	return nil
 }
 

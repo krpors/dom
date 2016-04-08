@@ -120,6 +120,10 @@ func (dt *domText) CloneNode(deep bool) Node {
 	return cloneText
 }
 
+func (dt *domText) ImportNode(n Node) Node {
+	return nil
+}
+
 // Private functions:
 func (dt *domText) setParentNode(parent Node) {
 	dt.parentNode = parent

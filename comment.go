@@ -129,6 +129,10 @@ func (dc *domComment) CloneNode(deep bool) Node {
 	return cloneComment
 }
 
+func (dc *domComment) ImportNode(n Node) Node {
+	return nil
+}
+
 // Private functions:
 func (dc *domComment) setParentNode(parent Node) {
 	dc.parentNode = parent

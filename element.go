@@ -492,6 +492,10 @@ func (de *domElement) CloneNode(deep bool) Node {
 	return cloneElement
 }
 
+func (de *domElement) ImportNode(n Node) Node {
+	return nil
+}
+
 // Private functions:
 func (de *domElement) setParentNode(parent Node) {
 	de.parentNode = parent
