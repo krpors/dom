@@ -65,4 +65,7 @@ func TestProcessingInstructionGetters(t *testing.T) {
 	if _, err := pi.ReplaceChild(nil, nil); err == nil {
 		t.Error("expected error, but got none")
 	}
+	if pi.HasAttributes() {
+		t.Error("processing instructions cannot have children")
+	}
 }

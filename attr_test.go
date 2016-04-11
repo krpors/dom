@@ -74,6 +74,9 @@ func TestAttrGetters(t *testing.T) {
 	if a.GetLastChild() != nil {
 		t.Error("expecting nil last child")
 	}
+	if a.HasAttributes() {
+		t.Error("attributes having attributes it just silly")
+	}
 }
 
 func TestAttrLookupNamespaceURI(t *testing.T) {

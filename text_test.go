@@ -78,6 +78,9 @@ func TestTextGetters(t *testing.T) {
 	if s != expected {
 		t.Errorf("expected '%v', got '%v'", expected, s)
 	}
+	if txt.HasAttributes() {
+		t.Error("text nodes cannot have attributes")
+	}
 }
 
 func TestTextPrevNextSibling(t *testing.T) {

@@ -65,6 +65,9 @@ func TestCommentGetters(t *testing.T) {
 	if cmt1.GetNamespacePrefix() != "" {
 		t.Error("comments should not have namespace prefixes")
 	}
+	if cmt1.HasAttributes() {
+		t.Error("comments cannot have attributes")
+	}
 }
 
 // Tests the appending of nodes, and getting previous and next siblings.

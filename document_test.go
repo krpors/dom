@@ -42,6 +42,9 @@ func TestDocumentGetters(t *testing.T) {
 	if doc.GetLastChild() != nil {
 		t.Error("no children, GetLastChild should return nil")
 	}
+	if doc.HasAttributes() {
+		t.Error("document cannot have attributes")
+	}
 }
 
 // Tests appending doc to itself, and appending two document elements.

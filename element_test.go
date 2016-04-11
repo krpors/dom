@@ -38,6 +38,9 @@ func TestElementGetters(t *testing.T) {
 	if root.GetAttribute("nonexistent") != "" {
 		t.Error("expected empty string due to unfound attribute")
 	}
+	if !root.HasAttributes() {
+		t.Error("element should have attributes")
+	}
 
 	// add some children
 	for i := 0; i < 10; i++ {
