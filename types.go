@@ -102,7 +102,9 @@ type Node interface {
 	GetParentNode() Node // Gets the parent Node, or nil of the Node has no parent.
 
 	GetAttributes() NamedNodeMap // Returns the NamedNodeMap containing attributes, if any.
-	GetOwnerDocument() Document  // Gets the owner document (the Document instance which was used to create the Node).
+	HasAttributes() bool         // Returns true if the Node has any attributes, false if othwerwise.
+
+	GetOwnerDocument() Document // Gets the owner document (the Document instance which was used to create the Node).
 
 	GetChildNodes() []Node                              // Gets the list of child nodes this Node has, if any
 	GetFirstChild() Node                                // Gets the first child Node of this Node. May return nil if no child nodes exist.

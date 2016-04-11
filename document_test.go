@@ -1,9 +1,6 @@
 package dom
 
-import (
-	"os"
-	"testing"
-)
+import "testing"
 
 // Test the plain getters of the Document. Also some no-op setters.
 func TestDocumentGetters(t *testing.T) {
@@ -592,7 +589,6 @@ func TestDocumentCloneNode(t *testing.T) {
 	root.AppendChild(child)
 	child.AppendChild(grandchild)
 
-	PrintTree(doc, os.Stdout)
 	clone := doc.CloneNode(true)
 	if cloneDoc, ok := clone.(Document); ok {
 		// verify that all children etc. have the correct owner document.

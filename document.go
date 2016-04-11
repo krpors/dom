@@ -74,6 +74,10 @@ func (dd *domDocument) GetAttributes() NamedNodeMap {
 	return nil
 }
 
+func (dd *domDocument) HasAttributes() bool {
+	return false
+}
+
 func (dd *domDocument) GetOwnerDocument() Document {
 	return nil
 }
@@ -393,7 +397,7 @@ func (dd *domDocument) SetTextContent(content string) {
 	// no-op.
 }
 
-// CloneNode creates a copy of the Document instanace. When deep is true, it will create a complete copy
+// CloneNode creates a copy of the Document instance. When deep is true, it will create a complete copy
 // of the whole Document, recursively. When false, it's pretty useless since it will return just a plain new
 // empty Document.
 func (dd *domDocument) CloneNode(deep bool) Node {

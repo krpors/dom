@@ -55,6 +55,10 @@ func (pi *domProcInst) GetAttributes() NamedNodeMap {
 	return nil
 }
 
+func (pi *domProcInst) HasAttributes() bool {
+	return false
+}
+
 func (pi *domProcInst) GetOwnerDocument() Document {
 	return pi.ownerDocument
 }

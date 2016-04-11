@@ -71,6 +71,10 @@ func (de *domElement) GetAttributes() NamedNodeMap {
 	return de.attributes
 }
 
+func (de *domElement) HasAttributes() bool {
+	return len(de.attributes.GetItems()) > 0
+}
+
 func (de *domElement) GetOwnerDocument() Document {
 	return de.ownerDocument
 }

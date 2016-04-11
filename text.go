@@ -59,6 +59,10 @@ func (dt *domText) GetAttributes() NamedNodeMap {
 	return nil
 }
 
+func (dt *domText) HasAttributes() bool {
+	return false
+}
+
 func (dt *domText) GetOwnerDocument() Document {
 	return dt.ownerDocument
 }

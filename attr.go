@@ -66,6 +66,10 @@ func (da *domAttr) GetAttributes() NamedNodeMap {
 	return nil
 }
 
+func (da *domAttr) HasAttributes() bool {
+	return false
+}
+
 // OwnerDocument returns the owner document of this Attr.
 func (da *domAttr) GetOwnerDocument() Document {
 	return da.ownerDocument

@@ -60,6 +60,10 @@ func (dc *domComment) GetAttributes() NamedNodeMap {
 	return nil
 }
 
+func (dc *domComment) HasAttributes() bool {
+	return false
+}
+
 func (dc *domComment) GetOwnerDocument() Document {
 	return dc.ownerDocument
 }
