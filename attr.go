@@ -163,6 +163,10 @@ func (da *domAttr) IsSpecified() bool {
 	return true
 }
 
+func (da *domAttr) setName(name string) {
+	da.attrName = XMLName(name)
+}
+
 // GetOwnerElement returns the Element that owns this Attr, or nil if the attribute is
 // not in use.
 func (da *domAttr) GetOwnerElement() Element {

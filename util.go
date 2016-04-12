@@ -154,9 +154,37 @@ func MoveNamespacesToRoot(d Document) {
 		//   3a. if declared, use that prefix.
 		//   3b. if not declared, declare it in base.
 		if e, ok := n.(Element); ok {
-			for k := range e.GetAttributes().GetItems() {
+			for k, cruft := range e.GetAttributes().GetItems() {
+				attr := cruft.(Attr) // This type assertion should always succeed.
+
 				if strings.HasPrefix(k, "xmlns") {
 					e.GetAttributes().RemoveNamedItem(k)
+					continue
+				}
+
+				// Tidy up namespaced attributes.
+				if attr.GetNamespaceURI() != "" {
+					// Is it predeclared already? Than use that prefix.
+					pfx := attr.LookupPrefix(attr.GetNamespaceURI())
+					if pfx != "" {
+						fmt.Printf("Attr '%s' with ns uri '%s' has prefix '%s'\n", k, attr.GetNamespaceURI(), pfx)
+						// TODO: rename attr's prefix to use 'pfx'.
+					} else {
+						// Prefix not found during lookup, but we may have specified it ourselves.
+						if attr.GetNamespacePrefix() != "" {
+							docElem.SetAttribute("xmlns:"+attr.GetNamespacePrefix(), attr.GetNamespaceURI())
+						} else {
+							// no prefix, make one up.
+							newPrefix := fmt.Sprintf("ns%d", counter)
+							docElem.SetAttribute("xmlns:"+newPrefix, attr.GetNamespaceURI())
+							// First remove it, then re-add it (otherwise, the key name doesn't match the node name)
+							e.GetAttributes().RemoveNamedItem(attr.GetName())
+							attr.setName(newPrefix + ":" + attr.GetLocalName())
+							e.GetAttributes().SetNamedItem(attr)
+
+							counter++
+						}
+					}
 				}
 			}
 

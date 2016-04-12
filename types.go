@@ -159,8 +159,8 @@ type Attr interface {
 	SetValue(string)
 	GetOwnerElement() Element
 
-	// setOwnerElement is necessary to add an owner after creation.
-	setOwnerElement(Element)
+	setOwnerElement(Element) // setOwnerElement is necessary to add an owner after creation.
+	setName(string)          // setName sets the attribute name. Used for normalizing attributes.
 }
 
 // Element represents an element in an HTML or XML document. It implements the Node interface.
