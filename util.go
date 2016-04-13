@@ -167,8 +167,10 @@ func MoveNamespacesToRoot(d Document) {
 					// Is it predeclared already? Than use that prefix.
 					pfx := attr.LookupPrefix(attr.GetNamespaceURI())
 					if pfx != "" {
-						fmt.Printf("Attr '%s' with ns uri '%s' has prefix '%s'\n", k, attr.GetNamespaceURI(), pfx)
-						// TODO: rename attr's prefix to use 'pfx'.
+						// TODO: refactor this cruft, it's some blatant copy/pasting.
+						e.GetAttributes().RemoveNamedItem(attr.GetName())
+						attr.setName(pfx + ":" + attr.GetLocalName())
+						e.GetAttributes().SetNamedItem(attr)
 					} else {
 						// Prefix not found during lookup, but we may have specified it ourselves.
 						if attr.GetNamespacePrefix() != "" {
