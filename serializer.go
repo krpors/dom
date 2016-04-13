@@ -85,6 +85,8 @@ func (s *Serializer) Serialize(node Node, w io.Writer) {
 				fmt.Fprintf(w, "%s", escape(t.GetText()))
 			}
 		case Comment:
+			// TODO: node after comment has some weird serialization.
+
 			// When pretty printing, indent the comment with the indent level.
 			if s.Configuration.PrettyPrint {
 				fmt.Fprintf(w, "%s", indent)
