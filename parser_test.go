@@ -25,6 +25,7 @@ var exampleDoc1 = `<?xml version="1.0" encoding="UTF-8"?>
 		<ns:balls ns:derp="woot">More chardata</ns:balls>
 	</ns:cruft>
 	<Grøups>asd</Grøups>
+	<!-- Comment with one-dash -->
 </directory>`
 
 // Tests a completely valid document and checks whether everything is in place.
