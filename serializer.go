@@ -56,6 +56,16 @@ func (s *Serializer) Serialize(node Node, w io.Writer) {
 			}
 			// In any case, write the tagname <x>.
 			fmt.Fprintf(w, "<%s", t.GetTagName())
+
+			// If the element has namespace cruft, properly write it
+			if t.GetNamespaceURI() != "" {
+				if t.GetNamespacePrefix() != "" {
+					fmt.Fprintf(w, " xmlns:%s=\"%s\"", t.GetNamespacePrefix(), t.GetNamespaceURI())
+				} else {
+					fmt.Fprintf(w, " xmlns=\"%s\"", t.GetNamespaceURI())
+				}
+			}
+
 			// Add any attributes
 			if t.GetAttributes() != nil {
 				for _, val := range t.GetAttributes().GetItems() {
@@ -85,13 +95,11 @@ func (s *Serializer) Serialize(node Node, w io.Writer) {
 				fmt.Fprintf(w, "%s", escape(t.GetText()))
 			}
 		case Comment:
-			// TODO: node after comment has some weird serialization.
-
 			// When pretty printing, indent the comment with the indent level.
 			if s.Configuration.PrettyPrint {
 				fmt.Fprintf(w, "%s", indent)
 			}
-			fmt.Fprintf(w, "<!-- %s -->", t.GetComment())
+			fmt.Fprintf(w, "<!-- %s -->\n", t.GetComment())
 		case ProcessingInstruction:
 			// TODO: proper serialization of target/data. Must include valid chars etc.
 			// Also, if target/data contains '?>', generate a fatal error.
