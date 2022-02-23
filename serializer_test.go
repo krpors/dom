@@ -89,7 +89,7 @@ func TestSerializationComments(t *testing.T) {
 	doc.AppendChild(root)
 
 	childElement, _ := doc.CreateElement("childElement")
-	childElement.SetTextContent("Text content some")
+	childElement.SetTextContent("Text content")
 	root.AppendChild(childElement)
 
 	comment, _ := doc.CreateComment("some comment")
