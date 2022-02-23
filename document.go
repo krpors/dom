@@ -302,6 +302,7 @@ func (dd *domDocument) CreateText(text string) Text {
 // be subject to change to get conform the spec. The Xerces implementation in Java 8
 // doesn't fail serialization, for example , but simply replaces the '--' with '- -'.
 func (dd *domDocument) CreateComment(comment string) (Comment, error) {
+	// TODO: move validation in newComment instead of here
 	if strings.Contains(comment, "--") {
 		return nil, fmt.Errorf("%v: comments may not contain a double hyphen (--)", ErrorInvalidCharacter)
 	}

@@ -10,6 +10,7 @@ type domProcInst struct {
 }
 
 func newProcInst(owner Document, target string, data string) ProcessingInstruction {
+	// TODO: validation of target and data, such as invalid characters (<? and ?> etc)
 	pi := &domProcInst{}
 	pi.ownerDocument = owner
 	pi.target = target
