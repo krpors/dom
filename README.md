@@ -51,8 +51,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	builder := dom.NewBuilder(resp.Body)
-	doc, err := builder.Parse()
+	parser := dom.NewParser(resp.Body)
+	doc, err := parser.Parse()
 	if err != nil {
 		os.Exit(2)
 	}
