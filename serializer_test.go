@@ -111,3 +111,29 @@ func TestSerializationComments(t *testing.T) {
 		t.Errorf("Expected:\n%s\nActual:\n%s", expected, actual)
 	}
 }
+
+func TestSerializationAfterReading(t *testing.T) {
+	doc := NewDocument()
+	aanleverResponse, _ := doc.CreateElementNS("http://logius.nl/digipoort/koppelvlakservices/1.2/", "aanleverResponse")
+	doc.AppendChild(aanleverResponse)
+
+	kenmerk, _ := doc.CreateElement("kenmerk")
+	kenmerk.SetTextContent("215222fb-13f4-4d9b-99a1-e61369e72acb")
+
+	berichtsoort, _ := doc.CreateElement("berichtsoort")
+	berichtsoort.SetTextContent("SBA_OB_2020")
+
+	aanleverResponse.AppendChild(kenmerk)
+	aanleverResponse.AppendChild(berichtsoort)
+
+	t.Log(serializeToString(doc))
+
+	reader := strings.NewReader(serializeToString(doc))
+	parser := NewParser(reader)
+	newdoc, _ := parser.Parse()
+
+	// FIXME: this deser/ser has crappy results. MoveNamespaceToRoot also doesn't work properly!
+	// MoveNamespacesToRoot(newdoc)
+
+	t.Logf(serializeToString(newdoc))
+}
