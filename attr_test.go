@@ -128,15 +128,16 @@ func TestAttrLookupPrefix(t *testing.T) {
 	root.AppendChild(sub4)
 	sub4.SetAttributeNode(attr1)
 
-	pfx := attr1.LookupPrefix("urn:ns:attr1")
+	pfx, _ := attr1.LookupPrefix("urn:ns:attr1")
 	if pfx != "ns1" {
 		t.Errorf("expected 'ns1', got '%v'", pfx)
 	}
 
 	// Attribute node owned by nothing:
 	attr1, _ = doc.CreateAttribute("no-owner")
-	if attr1.LookupPrefix("n") != "" {
-		t.Error("expecting empty string")
+	pfx, found := attr1.LookupPrefix("n")
+	if found {
+		t.Errorf("expected the prefix to not be found, but it was. In fact, it was '%s'", pfx)
 	}
 }
 

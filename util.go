@@ -165,8 +165,8 @@ func MoveNamespacesToRoot(d Document) {
 				// Tidy up namespaced attributes.
 				if attr.GetNamespaceURI() != "" {
 					// Is it predeclared already? Than use that prefix.
-					pfx := attr.LookupPrefix(attr.GetNamespaceURI())
-					if pfx != "" {
+					pfx, found := attr.LookupPrefix(attr.GetNamespaceURI())
+					if found {
 						// TODO: refactor this cruft, it's some blatant copy/pasting.
 						e.GetAttributes().RemoveNamedItem(attr.GetName())
 						attr.setName(pfx + ":" + attr.GetLocalName())
@@ -192,8 +192,8 @@ func MoveNamespacesToRoot(d Document) {
 
 			// Only do something if the namespace uri of the element is not empty.
 			if e.GetNamespaceURI() != "" {
-				pfx := e.LookupPrefix(e.GetNamespaceURI())
-				if pfx != "" {
+				pfx, found := e.LookupPrefix(e.GetNamespaceURI())
+				if found {
 					// Prefix is found (predeclared), so use that prefix for this namespace. Rename the element.
 					e.setTagName(pfx + ":" + e.GetLocalName())
 					// Declare an xmlns attribute in the document element.

@@ -346,32 +346,32 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 		}
 	}
 
-	expected = ""
-	actual, found = grandchild2.LookupNamespaceURI("none-this-prefix-is-not-registered")
+	_, found = grandchild2.LookupNamespaceURI("none-this-prefix-is-not-registered")
 	if found {
 		t.Error("namespace prefix should not be found")
 	}
 
-	// Test lookup prefix stuff:
-	var tests = []struct {
-		expected string
-		actual   string
-	}{
-		{"pfx", root.LookupPrefix("http://example.org/root")},
-		{"pfx", parent.LookupPrefix("http://example.org/root")},
-		{"pfx", grandchild1.LookupPrefix("http://example.org/root")},
-		{"ns1", parent.LookupPrefix("http://example.org/parent")},
-		{"abc", grandchild1.LookupPrefix("http://example.org/cruft")},
-		{"", grandchild1.LookupPrefix("urn:nonexistant:namespace")},
-		{"", grandchild1.LookupPrefix("")},
-	}
+	prefixLookupTest := func(src Node, namespaceToLookup string, expectedFound bool, expectedPrefix string) {
+		actualPfx, actualFound := src.LookupPrefix(namespaceToLookup)
+		if expectedFound != actualFound {
+			t.Errorf("Expected to find prefix '%s' for namespace '%s', but was not found", expectedPrefix, namespaceToLookup)
+		}
 
-	for _, test := range tests {
-		if test.expected != test.actual {
-			t.Errorf("expected '%s', got '%s'", test.expected, test.actual)
+		if actualFound && actualPfx != expectedPrefix {
+			t.Errorf("Prefix for namespace '%s' was resolved to '%s', but expected it to be '%s'", namespaceToLookup, actualPfx, expectedPrefix)
 		}
 	}
 
+	// should be found
+	prefixLookupTest(root, "http://example.org/root", true, "pfx")
+	prefixLookupTest(parent, "http://example.org/root", true, "pfx")
+	prefixLookupTest(grandchild1, "http://example.org/root", true, "pfx")
+	prefixLookupTest(parent, "http://example.org/parent", true, "ns1")
+	prefixLookupTest(grandchild1, "http://example.org/cruft", true, "abc")
+
+	// should not be found
+	prefixLookupTest(grandchild1, "urn:nonexistent:namespace", false, "")
+	prefixLookupTest(grandchild1, "", false, "")
 }
 
 func TestElementGetPreviousNextSibling(t *testing.T) {

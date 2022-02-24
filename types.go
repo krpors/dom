@@ -124,7 +124,7 @@ type Node interface {
 	GetNamespaceURI() string    // Returns the namespace URI of this node.
 	GetNamespacePrefix() string // Returns the namespace prefix of this node.
 
-	LookupPrefix(namespace string) string         // Look up the prefix associated to the given namespace URI, starting from this node.
+	LookupPrefix(namespace string) (string, bool) // Look up the prefix associated to the given namespace URI, starting from this node.
 	LookupNamespaceURI(pfx string) (string, bool) // LookupNamespaceURI looks up the namespace URI associated to the given prefix.
 
 	GetTextContent() string // Gets the text content of the current Node.

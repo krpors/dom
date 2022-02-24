@@ -60,8 +60,9 @@ func TestTextGetters(t *testing.T) {
 	if _, err := txt.InsertBefore(nil, nil); err == nil {
 		t.Error("inserting a child should always return an error")
 	}
-	if txt.LookupPrefix("anything") != "" {
-		t.Error("LookupPrefix should always return an empty string")
+	_, found := txt.LookupPrefix("anything")
+	if found {
+		t.Errorf("LookupPrefix should always return a false for 'found'")
 	}
 	if _, found := txt.LookupNamespaceURI("asd"); found {
 		t.Error("LookupNamespaceURI should always return an empty string and false")

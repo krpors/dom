@@ -103,8 +103,8 @@ func (dt *domText) GetNamespacePrefix() string {
 	return ""
 }
 
-func (dt *domText) LookupPrefix(namespace string) string {
-	return ""
+func (dt *domText) LookupPrefix(namespace string) (string, bool) {
+	return "", false
 }
 
 func (dt *domText) LookupNamespaceURI(pfx string) (string, bool) {

@@ -352,16 +352,16 @@ func (de *domElement) normalizeNamespaces(counter *int) {
 // The default namespace declarations are ignored by this method. See Namespace Prefix Lookup for
 // details on the algorithm used by this method:
 // https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
-func (de *domElement) LookupPrefix(namespace string) string {
+func (de *domElement) LookupPrefix(namespace string) (string, bool) {
 	if namespace == "" {
-		return ""
+		return "", false
 	}
 
 	// Check if the element has a namespace URI declared, and if there's a
 	// namespace.
 	pfx := de.GetNamespacePrefix()
 	if de.GetNamespaceURI() == namespace && pfx != "" {
-		return pfx
+		return pfx, true
 	}
 
 	// Iterate over attributes with xmlns declarations.
@@ -374,7 +374,7 @@ func (de *domElement) LookupPrefix(namespace string) string {
 			attrval := a.GetNodeValue()       // ..... : ... = namespace
 
 			if attrpfx == "xmlns" && attrval == namespace {
-				return attrloc
+				return attrloc, true
 			}
 		}
 	}
@@ -384,7 +384,7 @@ func (de *domElement) LookupPrefix(namespace string) string {
 		return parentElement.LookupPrefix(namespace)
 	}
 
-	return ""
+	return "", false
 }
 
 // LookupNamespaceURI looks up the namespace URI belonging to the prefix pfx. See

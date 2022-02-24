@@ -376,8 +376,8 @@ func (dd *domDocument) NormalizeDocument() {
 	}
 }
 
-func (dd *domDocument) LookupPrefix(namespace string) string {
-	return ""
+func (dd *domDocument) LookupPrefix(namespace string) (string, bool) {
+	return "", false
 }
 
 func (dd *domDocument) LookupNamespaceURI(pfx string) (string, bool) {

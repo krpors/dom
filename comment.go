@@ -103,11 +103,11 @@ func (dc *domComment) GetNamespacePrefix() string {
 	return ""
 }
 
-func (dc *domComment) LookupPrefix(namespace string) string {
+func (dc *domComment) LookupPrefix(namespace string) (string, bool) {
 	if dc.GetParentNode() != nil {
 		return dc.GetParentNode().LookupPrefix(namespace)
 	}
-	return ""
+	return "", false
 }
 
 func (dc *domComment) LookupNamespaceURI(pfx string) (string, bool) {
