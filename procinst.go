@@ -111,6 +111,11 @@ func (pi *domProcInst) LookupNamespaceURI(pfx string) (string, bool) {
 	return "", false
 }
 
+func (pi *domProcInst) IsDefaultNamespace(namespace string) bool {
+	// TODO ?
+	return false
+}
+
 // ProcessingInstruction methods
 func (pi *domProcInst) GetData() string {
 	return pi.data

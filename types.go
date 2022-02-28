@@ -126,6 +126,7 @@ type Node interface {
 
 	LookupPrefix(namespace string) (string, bool) // Look up the prefix associated to the given namespace URI, starting from this node.
 	LookupNamespaceURI(pfx string) (string, bool) // LookupNamespaceURI looks up the namespace URI associated to the given prefix.
+	IsDefaultNamespace(namespace string) bool     // IsDefaultNamespace checks if the node resides in the default namespace.
 
 	GetTextContent() string // Gets the text content of the current Node.
 	SetTextContent(string)  // Sets the text content of the current Node. Any possible children are removed.

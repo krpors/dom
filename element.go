@@ -352,16 +352,21 @@ func (de *domElement) normalizeNamespaces(counter *int) {
 // The default namespace declarations are ignored by this method. See Namespace Prefix Lookup for
 // details on the algorithm used by this method:
 // https://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/namespaces-algorithms.html#lookupNamespacePrefixAlgo
-func (de *domElement) LookupPrefix(namespace string) (string, bool) {
-	if namespace == "" {
+func (de *domElement) LookupPrefix(requestedNamespace string) (string, bool) {
+	if requestedNamespace == "" {
 		return "", false
 	}
 
 	// Check if the element has a namespace URI declared, and if there's a
 	// namespace.
-	pfx := de.GetNamespacePrefix()
-	if de.GetNamespaceURI() == namespace && pfx != "" {
-		return pfx, true
+	elementPrefix := de.GetNamespacePrefix()
+	lookedupNamespace, found := de.LookupNamespaceURI(elementPrefix)
+	if de.GetNamespaceURI() == requestedNamespace &&
+		elementPrefix != "" &&
+		found &&
+		lookedupNamespace == requestedNamespace {
+
+		return elementPrefix, true
 	}
 
 	// Iterate over attributes with xmlns declarations.
@@ -373,7 +378,7 @@ func (de *domElement) LookupPrefix(namespace string) (string, bool) {
 			attrloc := a.GetLocalName()       // ..... : pfx = .........
 			attrval := a.GetNodeValue()       // ..... : ... = namespace
 
-			if attrpfx == "xmlns" && attrval == namespace {
+			if attrpfx == "xmlns" && attrval == requestedNamespace {
 				return attrloc, true
 			}
 		}
@@ -381,7 +386,7 @@ func (de *domElement) LookupPrefix(namespace string) (string, bool) {
 
 	// Nothing found in this element, maybe something is declared up in the tree?
 	if parentElement, ok := de.GetParentNode().(Element); ok {
-		return parentElement.LookupPrefix(namespace)
+		return parentElement.LookupPrefix(requestedNamespace)
 	}
 
 	return "", false
@@ -434,6 +439,25 @@ func (de *domElement) LookupNamespaceURI(pfx string) (string, bool) {
 
 	// In the end, nothing is found.
 	return "", false
+}
+
+func (de *domElement) IsDefaultNamespace(namespace string) bool {
+	if de.GetNamespacePrefix() == "" {
+		return de.GetNamespaceURI() == namespace
+	}
+
+	// TODO verify this loop
+	for k, v := range de.GetAttributes().GetItems() {
+		if k == "xmlns" {
+			return v.GetNodeValue() == namespace
+		}
+	}
+
+	if parentElement, ok := de.GetParentNode().(Element); ok {
+		return parentElement.IsDefaultNamespace(namespace)
+	}
+
+	return false
 }
 
 func (de *domElement) GetTextContent() string {

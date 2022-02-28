@@ -387,6 +387,11 @@ func (dd *domDocument) LookupNamespaceURI(pfx string) (string, bool) {
 	return "", false
 }
 
+func (dd *domDocument) IsDefaultNamespace(namespace string) bool {
+	// TODO ?
+	return false
+}
+
 // GetTextContent should return null, but Go doesn't allow null strings so this method
 // will return an empty string.
 func (dd *domDocument) GetTextContent() string {
