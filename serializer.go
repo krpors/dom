@@ -32,6 +32,28 @@ func (s *Serializer) nodeContainsTextOnly(n Node) bool {
 	return true
 }
 
+func isNamespaceAttrDefined(attr Attr) bool {
+	if strings.HasPrefix(attr.GetName(), "xmlns:") {
+		if element, ok := attr.GetOwnerElement().GetParentNode().(Element); ok {
+			// check if the namespace is already declared, but NOT IN THE OWNER ELEMENT!!!
+			// of else it will always be true :|
+			ns, foundpfx := element.LookupPrefix(attr.GetValue())
+			pfx, foundns := element.LookupNamespaceURI(attr.GetLocalName())
+			if foundpfx && foundns && ns == attr.GetLocalName() && pfx == attr.GetValue() {
+				return true
+			}
+		}
+	} else if attr.GetName() == "xmlns" {
+		// FIXME: owner element can be nil in case of root element
+		if element, ok := attr.GetOwnerElement().GetParentNode().(Element); ok {
+			return element.IsDefaultNamespace(attr.GetValue())
+		}
+
+	}
+
+	return false
+}
+
 // Serialize writes the node plus its children to the writer w. The Serializer does not do any
 // specific mutations on the given Node to serialize, i.e. it will write it as-is. No normalizations,
 // alterations etc are done.
@@ -57,20 +79,32 @@ func (s *Serializer) Serialize(node Node, w io.Writer) {
 			// In any case, write the tagname <x>.
 			fmt.Fprintf(w, "<%s", t.GetTagName())
 
-			// If the element has namespace cruft, properly write it
-			if t.GetNamespaceURI() != "" {
+			// if this is the document element, make sure to write the namespace declaration,
+			// and do not try to look it up using Lookup*
+			if t.GetParentNode().GetNodeType() == DocumentNode {
 				if t.GetNamespacePrefix() != "" {
-					fmt.Fprintf(w, " xmlns:%s=\"%s\"", t.GetNamespacePrefix(), t.GetNamespaceURI())
-				} else {
-					fmt.Fprintf(w, " xmlns=\"%s\"", t.GetNamespaceURI())
+					fmt.Fprintf(w, ` xmlns:%s="%s"`, t.GetNamespacePrefix(), t.GetNamespaceURI())
+				} else if t.GetNamespacePrefix() == "" && t.GetNamespaceURI() != "" {
+					fmt.Fprintf(w, ` xmlns="%s"`, t.GetNamespaceURI())
+				}
+			} else {
+				// in other cases, look stuff up in ancestors
+				if t.GetNamespacePrefix() != "" {
+					_, found := t.GetParentNode().LookupNamespaceURI(t.GetNamespacePrefix())
+					if !found && t.GetNamespaceURI() != "" {
+						fmt.Fprintf(w, ` xmlns:%s="%s"`, t.GetNamespacePrefix(), t.GetNamespaceURI())
+					}
 				}
 			}
 
 			// Add any attributes
 			if t.GetAttributes() != nil {
 				for _, val := range t.GetAttributes().GetItems() {
+					// TODO: configurable sort on attributes to make things more deterministic
 					attr := val.(Attr)
-					fmt.Fprintf(w, " %s=\"%s\"", attr.GetNodeName(), attr.GetNodeValue())
+					if !isNamespaceAttrDefined(attr) {
+						fmt.Fprintf(w, " %s=\"%s\"", attr.GetNodeName(), attr.GetNodeValue())
+					}
 				}
 			}
 			// If the current element has any children, do not end the element, e.g. <element>

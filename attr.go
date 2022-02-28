@@ -128,7 +128,9 @@ func (da *domAttr) LookupNamespaceURI(pfx string) (string, bool) {
 }
 
 func (da *domAttr) IsDefaultNamespace(namespace string) bool {
-	// TODO ?
+	if da.GetOwnerElement() != nil {
+		return da.GetOwnerElement().IsDefaultNamespace(namespace)
+	}
 	return false
 }
 
