@@ -374,6 +374,46 @@ func TestElementLookupNamespaceURI(t *testing.T) {
 	prefixLookupTest(grandchild1, "", false, "")
 }
 
+func TestElementIsDefaultNamespace1(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElementNS("urn:root:ns", "root")
+	if !root.IsDefaultNamespace("urn:root:ns") {
+		t.Errorf("Expected the namespace to be the default namespace")
+	}
+}
+
+func TestElementIsDefaultNamespace2(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElementNS("urn:root:ns", "pfx:root")
+	if root.IsDefaultNamespace("urn:root:ns") {
+		t.Errorf("Expected the namespace to **NOT** be the default namespace")
+	}
+}
+
+func TestElementIsDefaultNamespaceAttrTest(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("pfx:root")
+	root.SetAttribute("xmlns", "urn:root:ns")
+
+	if !root.IsDefaultNamespace("urn:root:ns") {
+		t.Errorf("Expected to find the default namespace")
+	}
+}
+
+func TestElementIsDefaultNamespaceAncestors(t *testing.T) {
+	doc := NewDocument()
+	root, _ := doc.CreateElement("pfx:root")
+	root.SetAttribute("xmlns", "urn:root:ns")
+
+	child, _ := doc.CreateElement("pfx:somechild")
+	root.AppendChild(child)
+
+	if !child.IsDefaultNamespace("urn:root:ns") {
+		// The ancestors should be visited
+		t.Error("Expected to find the default namespace because it is declared in the root element")
+	}
+}
+
 func TestElementGetPreviousNextSibling(t *testing.T) {
 	doc := NewDocument()
 	root, _ := doc.CreateElement("root")
